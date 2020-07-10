@@ -9,6 +9,7 @@ final class Room {
 	private final int posx;
 	private final int posy;
 	private RoomType roomType;
+	private Room this_ = this;
 
 	Room(Dungeon dungeon, RoomType roomType, int posx, int posy) {
 		this.dungeon = dungeon;
@@ -25,6 +26,10 @@ final class Room {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
+                if (!dungeon.getRooms().get(posx + "_" + posy).equals(this_)) {
+                    dungeon.getQueue().remove(this_);
+                    return;
+                }
 				String roomTypeString = roomType.toString();
 
 				roomTypeString = checkDirection(roomTypeString, Direction.NORTH, Direction.SOUTH, 0, 1);
@@ -59,7 +64,7 @@ final class Room {
 	}
 
 	private String checkDirection(String roomTypeString, final Direction direction, final Direction opposite, final int incrementX, final int incrementY) {
-		final String getter = String.valueOf((posx + incrementX)) + "_" + String.valueOf((posy + incrementY));
+		final String getter = (posx + incrementX) + "_" + (posy + incrementY);
 
 		if (roomTypeString.contains(direction.toString())) {
 			final Room room = dungeon.getRooms().get(getter);

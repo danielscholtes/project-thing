@@ -19,7 +19,7 @@ final class Dungeon {
 	private int previousRoomSize = 0;
 	private int count = 0;
 
-	public Dungeon(final ProceduralDungeons plugin) {
+	Dungeon(final ProceduralDungeons plugin) {
 		this.plugin = plugin;
 	}
 
@@ -37,28 +37,27 @@ final class Dungeon {
 
 				if (queue.isEmpty()) {
 					System.out.println("Finished generating");
-					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-						@Override
-						public void run() {
-							final Location location = new Location(Bukkit.getWorld("world"), 0, 100, 0);
-							for (String room : rooms.keySet()) {
-								String[] xy = room.split("_");
-								int x = Integer.parseInt(xy[0]);
-								int y = Integer.parseInt(xy[1]);
-								System.out.println(x + "," + y);
+					new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            final Location location = new Location(Bukkit.getWorld("world"), 0, 100, 0);
+                            for (String room : rooms.keySet()) {
+                                String[] xy = room.split("_");
+                                int x = Integer.parseInt(xy[0]);
+                                int y = Integer.parseInt(xy[1]);
+                                System.out.println(x + "," + y);
 
-								generateStructure(location, x, y, room);
-							}
-							
-							rooms.clear();
-							queue.clear();
-						}
-					});
+                                generateStructure(location, x, y, room);
+                            }
+
+                            rooms.clear();
+                            queue.clear();
+                        }
+                    }.runTask(plugin);
 					this.cancel();
 				}
 			}
 		}.runTaskTimerAsynchronously(plugin, 0L, 1L);
-
 	}
 
 	Map<String, Room> getRooms() {
@@ -102,9 +101,9 @@ final class Dungeon {
 
 	private int setDirectionBlocks(final Location location, final Direction direction, final Direction opposite, final int x, final int y, final int incrementX, final int incrementY, final String room) {
 		System.out.println("Checking room: " + x + "," + y + " -- " + rooms.get(room).getRoomType().toString());
-		final Room adjacentRoom = rooms.get(String.valueOf((x + incrementX)) + "_" + String.valueOf((y + incrementY)));
+		final Room adjacentRoom = rooms.get((x + incrementX) + "_" + (y + incrementY));
 		if (adjacentRoom != null) {
-			System.out.println("Adjacent room in " + direction.toString() + " at " + String.valueOf((x + incrementX)) + "," + String.valueOf((y + incrementY)));
+			System.out.println("Adjacent room in " + direction.toString() + " at " + (x + incrementX) + "," + (y + incrementY));
 			System.out.println("Adjacent room type is: " + adjacentRoom.getRoomType());	
 		}
 		if (rooms.get(room).getRoomType().toString().contains(direction.toString()) && adjacentRoom != null && adjacentRoom.getRoomType().toString().contains(opposite.toString())) {
