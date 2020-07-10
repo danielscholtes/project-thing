@@ -1,7 +1,6 @@
 package me.scholtes.proceduraldungeons;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.SplittableRandom;
 
@@ -21,12 +20,7 @@ public final class ProceduralDungeons extends JavaPlugin {
     public void onEnable() {
         instance = this;
         Dungeon dungeon = new Dungeon(this);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                dungeon.generateDungeon();
-            }
-        }.runTaskLater(this, 10L);
+        dungeon.generateDungeon();
     }
 
 }
