@@ -4,7 +4,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 final class Room {
 
-	private static final int AMOUNT = 40;
+	private static final int AMOUNT = 20;
 	private final Dungeon dungeon;
 	private final int posx;
 	private final int posy;
