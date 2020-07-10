@@ -9,7 +9,6 @@ final class Room {
 	private final int posx;
 	private final int posy;
 	private RoomType roomType;
-	private Room this_ = this;
 
 	Room(Dungeon dungeon, RoomType roomType, int posx, int posy) {
 		this.dungeon = dungeon;
@@ -26,8 +25,8 @@ final class Room {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-                if (!dungeon.getRooms().get(posx + "_" + posy).equals(this_)) {
-                    dungeon.getQueue().remove(this_);
+                if (dungeon.getRooms().get(posx + "_" + posy) != getInstance()) {
+                    dungeon.getQueue().remove(getInstance());
                     return;
                 }
 				String roomTypeString = roomType.toString();
