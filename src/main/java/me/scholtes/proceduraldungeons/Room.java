@@ -87,7 +87,6 @@ final class Room {
 				}
 			}
 		}
-
 		return roomTypeString;
 	}
 
