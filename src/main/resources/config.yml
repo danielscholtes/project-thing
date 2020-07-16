@@ -1,0 +1,30 @@
+dungeons:
+  dungeon1:
+    min_floors: 2
+    max_floors: 5
+    floors:
+      1:
+        tile_sets:
+        - cave
+        min_rooms: 4
+        max_rooms: 12
+      2:
+        tile_sets:
+        - cave
+        min_rooms: 9
+        max_rooms: 15
+      3:
+        tile_sets:
+        - cave
+        min_rooms: 7
+        max_rooms: 15
+      4:
+        tile_sets:
+        - cave
+        min_rooms: 10
+        max_rooms: 20
+      5:
+        tile_sets:
+        - cave
+        min_rooms: 6
+        max_rooms: 10

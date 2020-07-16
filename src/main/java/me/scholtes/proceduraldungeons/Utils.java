@@ -2,7 +2,7 @@ package me.scholtes.proceduraldungeons;
 
 public class Utils {
 
-	public static String checkDirection(final Room room, final Dungeon dungeon, String roomTypeString, final Direction direction, final Direction opposite, final boolean checkNoRoom) {
+	public static String checkDirection(final Room room, final Floor dungeon, String roomTypeString, final Direction direction, final Direction opposite, final boolean checkNoRoom) {
 		if (roomTypeString.contains(direction.toString())) {
 			Room adjacentRoom = dungeon.getRooms().get((room.getX() + direction.getX()) + "_" + (room.getY() + direction.getY()));
 			if ((checkNoRoom && adjacentRoom == null) || (adjacentRoom != null && !adjacentRoom.getRoomType().toString().contains(opposite.toString()))) {

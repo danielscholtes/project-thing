@@ -4,19 +4,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 final class Room {
 
-	private final int AMOUNT = 20;
-	private final Dungeon dungeon;
+	private final Floor floor;
 	private final int posx;
 	private final int posy;
 	private RoomType roomType;
 
-	public Room(Dungeon dungeon, RoomType roomType, int posx, int posy) {
-		this.dungeon = dungeon;
+	public Room(Floor floor, RoomType roomType, int posx, int posy) {
+		this.floor = floor;
 		this.roomType = roomType;
 		this.posx = posx;
 		this.posy = posy;
-		if (dungeon.getRooms().size() < AMOUNT) {
-			this.dungeon.getQueue().add(this);
+		if (floor.getRooms().size() < floor.getMaxRooms()) {
+			this.floor.getQueue().add(this);
 		}
 		generateRooms();
 	}
@@ -25,8 +24,8 @@ final class Room {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-                if (dungeon.getRooms().get(posx + "_" + posy) != getInstance()) {
-                    dungeon.getQueue().remove(getInstance());
+                if (floor.getRooms().get(posx + "_" + posy) != getInstance()) {
+                	floor.getQueue().remove(getInstance());
                     return;
                 }
 				String roomTypeString = roomType.toString();
@@ -36,10 +35,10 @@ final class Room {
 				roomTypeString = checkDoors(roomTypeString, Direction.SOUTH, Direction.NORTH);
 				roomTypeString = checkDoors(roomTypeString, Direction.WEST, Direction.EAST);
 
-				dungeon.getQueue().remove(getInstance());
+				floor.getQueue().remove(getInstance());
 
 				if (roomTypeString.equals("")) {
-					dungeon.getRooms().remove(posx + "_" + posy);
+					floor.getRooms().remove(posx + "_" + posy);
 				} else {
 					if (roomTypeString.startsWith("_")) {
 						roomTypeString = roomTypeString.substring(1);
@@ -74,16 +73,16 @@ final class Room {
 		final String getter = (posx + direction.getX()) + "_" + (posy + direction.getY());
 
 		if (roomTypeString.contains(direction.toString())) {
-			final Room room = dungeon.getRooms().get(getter);
-			roomTypeString = Utils.checkDirection(this, dungeon, roomTypeString, direction, opposite, false);
+			final Room room = floor.getRooms().get(getter);
+			roomTypeString = Utils.checkDirection(this, floor, roomTypeString, direction, opposite, false);
 			if (room == null) {
-				if (dungeon.getRooms().size() < AMOUNT) {
+				if (floor.getRooms().size() < floor.getMaxRooms()) {
 					RoomType randomRoomType = RoomType.values()[ProceduralDungeons.getRandom().nextInt(RoomType.values().length)];
 					while (!randomRoomType.toString().contains(opposite.toString())) {
 						randomRoomType = RoomType.values()[ProceduralDungeons.getRandom().nextInt(RoomType.values().length)];
 					}
 					System.out.println("(" + posx + "," + posy + " " + roomTypeString + ") -->" + "(" + (posx + direction.getX()) + "," + (posy + direction.getY()) + " " + randomRoomType.toString() + ")");
-					dungeon.getRooms().put(getter, new Room(dungeon, randomRoomType, (posx + direction.getX()), (posy + direction.getY())));
+					floor.getRooms().put(getter, new Room(floor, randomRoomType, (posx + direction.getX()), (posy + direction.getY())));
 				}
 			}
 		}
