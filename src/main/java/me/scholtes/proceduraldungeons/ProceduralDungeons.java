@@ -16,14 +16,6 @@ public final class ProceduralDungeons extends JavaPlugin {
 	private static ProceduralDungeons instance = null;
 	private DungeonManager dungeonManager = null;
 
-	static Random getRandom() {
-		return RANDOM;
-	}
-
-	static ProceduralDungeons getInstance() {
-		return instance;
-	}
-
 	public void onEnable() {
 		saveDefaultConfig();
 		instance = this;
@@ -36,17 +28,6 @@ public final class ProceduralDungeons extends JavaPlugin {
 		Dungeon dungeon = new Dungeon(this, "dungeon1");
 		System.out.println("Generating dungeon1");
 		dungeon.generateDungeon();
-	}
-
-	public SlimePlugin getSlimePlugin() {
-		return (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
-	}
-
-	public DungeonManager getDungeonManager() {
-		if (dungeonManager == null) {
-			dungeonManager = new DungeonManager();
-		}
-		return dungeonManager;
 	}
 
 	public void onDisable() {
@@ -66,4 +47,22 @@ public final class ProceduralDungeons extends JavaPlugin {
     	getDungeonManager().getDungeonWorlds().clear();
     }
 
+	public SlimePlugin getSlimePlugin() {
+		return (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
+	}
+
+	public DungeonManager getDungeonManager() {
+		if (dungeonManager == null) {
+			dungeonManager = new DungeonManager();
+		}
+		return dungeonManager;
+	}
+
+	static Random getRandom() {
+		return RANDOM;
+	}
+
+	static ProceduralDungeons getInstance() {
+		return instance;
+	}
 }
