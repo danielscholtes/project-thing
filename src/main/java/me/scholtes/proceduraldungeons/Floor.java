@@ -1,5 +1,6 @@
 package me.scholtes.proceduraldungeons;
 
+import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.boydti.fawe.FaweAPI;
@@ -14,7 +15,6 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.World;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,17 +33,19 @@ final class Floor {
 	private final int maxFloors;
 	private final int currentFloor;
 	private final String dungeon;
+	private final World world;
 	private String tileSet;
 	private int maxRooms;
 
 	private int previousRoomSize = 0;
 	private int count = 0;
 
-	public Floor(final ProceduralDungeons plugin, final String dungeon, final int maxFloors, final int currentFloor, final int posX, final int posY) {
+	public Floor(final ProceduralDungeons plugin, final String dungeon, final int maxFloors, final int currentFloor, final int posX, final int posY, World world) {
 		this.plugin = plugin;
 		this.currentFloor = currentFloor;
 		this.maxFloors = maxFloors;
 		this.dungeon = dungeon;
+		this.world = world;
 		setMaxRooms();
 		setTileSet();
         System.out.println("Generating floor " + currentFloor + " for dungeon1...");
@@ -74,7 +76,6 @@ final class Floor {
 							continue;
 						}
 
-						World world = FaweAPI.getWorld("testworld");
 						File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "schematics" + File.separator, rooms.get(room).getRoomType().toString() + ".schem");
 						System.out.println(file);
 
@@ -83,7 +84,7 @@ final class Floor {
 						ClipboardFormat format = ClipboardFormats.findByFile(file);
 						try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
 							clipboard = reader.read();
-							try (EditSession editSession = new EditSessionBuilder(world).fastmode(true).build()) {
+							try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(world.getName())).fastmode(true).build()) {
 							    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x * 36, 256 - (13 * currentFloor) , y * 36)).build();
 							    try {
 									Operations.complete(operation);
@@ -106,7 +107,7 @@ final class Floor {
 			        System.out.println("Finished generating floor " + currentFloor + " for dungeon1!");
 					
 					if (currentFloor < maxFloors) {
-						new Floor(plugin, dungeon, maxFloors, currentFloor + 1, exitRoom.getX(), exitRoom.getY());
+						new Floor(plugin, dungeon, maxFloors, currentFloor + 1, exitRoom.getX(), exitRoom.getY(), world);
 					}
 
 					rooms.clear();
