@@ -116,18 +116,6 @@ final class Floor {
 			}
 		}.runTaskTimerAsynchronously(plugin, 0L, 1L);
 	}
-
-	public Map<String, Room> getRooms() {
-		return rooms;
-	}
-
-	public List<Room> getQueue() {
-		return queue;
-	}
-	
-	public int getMaxRooms() {
-		return maxRooms;
-	}
 	
 	public void setMaxRooms() {
 		int minimumRooms = plugin.getConfig().getInt("dungeons." + dungeon + ".floors." + currentFloor + ".min_rooms");
@@ -151,11 +139,23 @@ final class Floor {
 		
 		if (roomTypeString.equals("")) {
 			return RoomType.INVALID;
-		} else {
-			if (roomTypeString.startsWith("_")) {
-				roomTypeString = roomTypeString.substring(1);
-			}
-			return RoomType.valueOf(roomTypeString);
 		}
+		
+		if (roomTypeString.startsWith("_")) {
+			roomTypeString = roomTypeString.substring(1);
+		}
+		return RoomType.valueOf(roomTypeString);
+	}
+	
+	public Map<String, Room> getRooms() {
+		return rooms;
+	}
+
+	public List<Room> getQueue() {
+		return queue;
+	}
+	
+	public int getMaxRooms() {
+		return maxRooms;
 	}
 }
