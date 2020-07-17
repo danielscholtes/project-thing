@@ -17,6 +17,7 @@ import java.util.Comparator;
 //import com.grinderwolf.swm.api.world.SlimeWorld;
 
 import java.util.Random;
+import java.util.stream.Stream;
 
 public final class ProceduralDungeons extends JavaPlugin {
 
@@ -34,6 +35,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 		}*/
 
 		Dungeon dungeon = new Dungeon(this, "dungeon1");
+		getDungeonManager().getDungeons().add(dungeon);
 		System.out.println("Generating dungeon1");
 		dungeon.generateDungeon();
 	}
@@ -54,20 +56,19 @@ public final class ProceduralDungeons extends JavaPlugin {
             
 			getServer().unloadWorld(dungeon.getWorld(), false);
 			
-			try {
-				Files.walk(dungeon.getWorld().getWorldFolder().toPath())
-				.sorted(Comparator.reverseOrder())
-				.map(Path::toFile)
-				.forEach(File::delete);
-			} catch (IOException e) {
+			try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {
+	            files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+	        } catch (IOException e) {
 				e.printStackTrace();
 			}
+			
+
     		/*try {
     			Bukkit.unloadWorld(dungeon.getWorld().getName(), false);
 				getSlimePlugin().getLoader("file").deleteWorld(dungeon.getWorld().getName());
 			} catch (UnknownWorldException | IOException e) {
 				e.printStackTrace();
-			}*/
+			}*/ 
     	}
     	
     	getDungeonManager().getDungeons().clear();

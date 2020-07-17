@@ -31,6 +31,7 @@ public class Dungeon {
         WorldCreator creator = new WorldCreator("Dungeon-" + dungeonID.toString());
         creator.generator(new VoidGenerator());
         world = creator.createWorld();
+        world.setAutoSave(false);
         
         
 		/*try {

@@ -14,6 +14,11 @@ public class VoidGenerator extends ChunkGenerator {
 	public List<BlockPopulator> getDefaultPopulators(World world) {
 		return Arrays.asList(new BlockPopulator[0]);
 	}
+	
+	public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {
+		ChunkData chunk = createChunkData(world);
+		return chunk;
+	}
 
 	public boolean canSpawn(World world, int x, int z) {
 		return true;

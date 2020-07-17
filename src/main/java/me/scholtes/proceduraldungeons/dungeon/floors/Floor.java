@@ -1,5 +1,7 @@
 package me.scholtes.proceduraldungeons.dungeon.floors;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -111,13 +113,22 @@ public final class Floor {
 						exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
 					}
 			        System.out.println("Finished generating floor " + currentFloor + " for dungeon1!");
-					
-					if (currentFloor < maxFloors) {
-						new Floor(plugin, dungeon, maxFloors, currentFloor + 1, exitRoom.getX(), exitRoom.getY(), world);
-					}
+
 
 					rooms.clear();
 					queue.clear();
+					
+					if (currentFloor < maxFloors) {
+						new Floor(plugin, dungeon, maxFloors, currentFloor + 1, exitRoom.getX(), exitRoom.getY(), world);
+						return;
+					}
+					
+					Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+						@Override
+						public void run() {
+							Bukkit.getPlayer("Scholtes").teleport(new Location(world, 0 * 36, 256 - (13 * 1) , 0 * 36));
+						}
+					}, 20 * 5L);
 				}
 			}
 		}.runTaskTimerAsynchronously(plugin, 0L, 1L);
