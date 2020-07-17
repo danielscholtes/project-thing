@@ -1,16 +1,14 @@
 package me.scholtes.proceduraldungeons;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DungeonManager {
 
-	private Map<Dungeon, SlimeWorld> dungeonWorlds = new ConcurrentHashMap<Dungeon, SlimeWorld>();
+	private List<Dungeon> dungeons = new ArrayList<Dungeon>();
 	
-	public Map<Dungeon, SlimeWorld> getDungeonWorlds() {
-		return dungeonWorlds;
+	public List<Dungeon> getDungeons() {
+		return dungeons;
 	}
 	
 }

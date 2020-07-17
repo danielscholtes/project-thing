@@ -35,16 +35,16 @@ public final class ProceduralDungeons extends JavaPlugin {
     		return;
     	}
     	
-    	for (SlimeWorld world : getDungeonManager().getDungeonWorlds().values()) {
+    	for (Dungeon dungeon : getDungeonManager().getDungeons()) {
     		try {
-    			Bukkit.unloadWorld(world.getName(), false);
-				getSlimePlugin().getLoader("file").deleteWorld(world.getName());
+    			Bukkit.unloadWorld(dungeon.getWorld().getName(), false);
+				getSlimePlugin().getLoader("file").deleteWorld(dungeon.getWorld().getName());
 			} catch (UnknownWorldException | IOException e) {
 				e.printStackTrace();
 			}
     	}
     	
-    	getDungeonManager().getDungeonWorlds().clear();
+    	getDungeonManager().getDungeons().clear();
     }
 
 	public SlimePlugin getSlimePlugin() {
