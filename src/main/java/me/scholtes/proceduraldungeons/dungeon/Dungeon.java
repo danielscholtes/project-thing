@@ -1,27 +1,39 @@
-package me.scholtes.proceduraldungeons;
+package me.scholtes.proceduraldungeons.dungeon;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
-import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
-import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.api.world.properties.SlimeProperties;
-import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
+import me.scholtes.proceduraldungeons.ProceduralDungeons;
+import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
+import me.scholtes.proceduraldungeons.generator.VoidGenerator;
+
+//import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
+//import com.grinderwolf.swm.api.world.SlimeWorld;
+//import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+//import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 
 public class Dungeon {
 
 	private final ProceduralDungeons plugin;
 	private final String dungeon;
 	private final UUID dungeonID;
-	private SlimeWorld world;
+	private final World world;
+	//private SlimeWorld world;
 
 	public Dungeon(final ProceduralDungeons plugin, final String dungeon) {
 		this.plugin = plugin;
 		this.dungeon = dungeon;
 		this.dungeonID = UUID.randomUUID();
-		try {
+
+        WorldCreator creator = new WorldCreator("Dungeon-" + dungeonID.toString());
+        creator.generator(new VoidGenerator());
+        world = creator.createWorld();
+        
+        
+		/*try {
 			SlimePropertyMap properties = new SlimePropertyMap();
 			properties.setInt(SlimeProperties.SPAWN_X, 0);
 			properties.setInt(SlimeProperties.SPAWN_X, 255);
@@ -31,7 +43,7 @@ public class Dungeon {
 			plugin.getSlimePlugin().generateWorld(world);
 		} catch (WorldAlreadyExistsException | IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void generateDungeon() {
@@ -46,20 +58,19 @@ public class Dungeon {
 				int maxFloors = plugin.getConfig().getInt("dungeons." + dungeon + ".max_floors");
 				int floorCount = ProceduralDungeons.getRandom().nextInt((maxFloors - minFloors) + 1) + minFloors;
 				System.out.println("Started floor generation for dungeon1");
-				SlimePropertyMap properties = new SlimePropertyMap();
-				properties.setInt(SlimeProperties.SPAWN_X, 0);
-				properties.setInt(SlimeProperties.SPAWN_X, 255);
-				properties.setInt(SlimeProperties.SPAWN_X, 0);
-				properties.setBoolean(SlimeProperties.PVP, false);
 
-				new Floor(plugin, dungeon, floorCount, 1, 0, 0, Bukkit.getWorld(getWorld().getName()));
+				new Floor(plugin, dungeon, floorCount, 1, 0, 0, getWorld());
 
 			}
 		});
 
 	}
 	
-	public SlimeWorld getWorld() {
+	/*public SlimeWorld getWorld() {
+		return world;
+	}*/
+	
+	public World getWorld() {
 		return world;
 	}
 

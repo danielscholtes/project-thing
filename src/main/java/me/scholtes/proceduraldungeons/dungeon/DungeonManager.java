@@ -1,4 +1,4 @@
-package me.scholtes.proceduraldungeons;
+package me.scholtes.proceduraldungeons.dungeon;
 
 import java.util.ArrayList;
 import java.util.List;

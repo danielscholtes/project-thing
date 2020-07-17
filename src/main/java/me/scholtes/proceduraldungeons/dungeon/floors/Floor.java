@@ -1,4 +1,4 @@
-package me.scholtes.proceduraldungeons;
+package me.scholtes.proceduraldungeons.dungeon.floors;
 
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,6 +16,12 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
+import me.scholtes.proceduraldungeons.ProceduralDungeons;
+import me.scholtes.proceduraldungeons.Utils;
+import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
+import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
+import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class Floor {
+public final class Floor {
 	
 	private final ProceduralDungeons plugin;
 	private final Map<String, Room> rooms = new ConcurrentHashMap<String, Room>();

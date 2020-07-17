@@ -1,8 +1,12 @@
-package me.scholtes.proceduraldungeons;
+package me.scholtes.proceduraldungeons.dungeon.rooms;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-final class Room {
+import me.scholtes.proceduraldungeons.ProceduralDungeons;
+import me.scholtes.proceduraldungeons.Utils;
+import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
+
+public final class Room {
 
 	private final Floor floor;
 	private final int posx;

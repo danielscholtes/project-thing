@@ -1,5 +1,9 @@
 package me.scholtes.proceduraldungeons;
 
+import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
+import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
+import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
+
 public class Utils {
 
 	public static String checkDirection(final Room room, final Floor dungeon, String roomTypeString, final Direction direction, final Direction opposite, final boolean checkNoRoom) {

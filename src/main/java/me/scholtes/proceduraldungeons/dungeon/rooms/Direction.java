@@ -1,4 +1,4 @@
-package me.scholtes.proceduraldungeons;
+package me.scholtes.proceduraldungeons.dungeon.rooms;
 
 public enum Direction {
 	
