@@ -1,8 +1,19 @@
 package me.scholtes.proceduraldungeons.dungeon.floors;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.boydti.fawe.FaweAPI;
@@ -24,15 +35,6 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 public final class Floor {
 	
 	private final ProceduralDungeons plugin;
@@ -44,16 +46,18 @@ public final class Floor {
 	private final World world;
 	private String tileSet;
 	private int maxRooms;
+	private UUID player;
 
 	private int previousRoomSize = 0;
 	private int count = 0;
 
-	public Floor(final ProceduralDungeons plugin, final String dungeon, final int maxFloors, final int currentFloor, final int posX, final int posY, World world) {
+	public Floor(ProceduralDungeons plugin, String dungeon, int maxFloors, int currentFloor, int posX, int posY, World world, UUID player) {
 		this.plugin = plugin;
 		this.currentFloor = currentFloor;
 		this.maxFloors = maxFloors;
 		this.dungeon = dungeon;
 		this.world = world;
+		this.player = player;
 		setMaxRooms();
 		setTileSet();
         System.out.println("Generating floor " + currentFloor + " for dungeon1...");
@@ -119,16 +123,22 @@ public final class Floor {
 					queue.clear();
 					
 					if (currentFloor < maxFloors) {
-						new Floor(plugin, dungeon, maxFloors, currentFloor + 1, exitRoom.getX(), exitRoom.getY(), world);
+						new Floor(plugin, dungeon, maxFloors, currentFloor + 1, exitRoom.getX(), exitRoom.getY(), world, player);
 						return;
 					}
 					
-					Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+					Bukkit.getScheduler().runTask(plugin, new Runnable() {
 						@Override
 						public void run() {
-							Bukkit.getPlayer("Scholtes").teleport(new Location(world, 0 * 36, 256 - (13 * 1) , 0 * 36));
+							Player bukkitPlayer = Bukkit.getPlayer(player);
+							if (bukkitPlayer == null) {
+								return;
+							}
+
+							Utils.message(bukkitPlayer, "&aDungeon generated! Teleporting...");
+							bukkitPlayer.teleport(new Location(world, -18, 256 - 6.5 , -18));
 						}
-					}, 20 * 5L);
+					});
 				}
 			}
 		}.runTaskTimerAsynchronously(plugin, 0L, 1L);

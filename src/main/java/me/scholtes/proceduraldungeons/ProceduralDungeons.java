@@ -1,8 +1,10 @@
 package me.scholtes.proceduraldungeons;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.scholtes.proceduraldungeons.commands.DungeonCommand;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 
@@ -28,34 +30,31 @@ public final class ProceduralDungeons extends JavaPlugin {
 	public void onEnable() {
 		saveDefaultConfig();
 		instance = this;
-		
-		Dungeon dungeon = new Dungeon(this, "dungeon1");
-		getDungeonManager().getDungeons().add(dungeon);
-		System.out.println("Generating dungeon1");
-		dungeon.generateDungeon();
+
+		getCommand("dungeon").setExecutor(new DungeonCommand(this, getDungeonManager()));
 	}
 
 	public void onDisable() {
-    	for (Dungeon dungeon : getDungeonManager().getDungeons()) {
-    		if (dungeon.getWorld() == null) {
-    			continue;
-    		}
-    		
-    		for (Player p : getServer().getWorlds().get(0).getPlayers()) {
-    			p.teleport(getServer().getWorlds().get(0).getSpawnLocation());
-    		}
-            
-			getServer().unloadWorld(dungeon.getWorld(), false);
-			
+		for (Dungeon dungeon : getDungeonManager().getDungeons().values()) {
+			if (dungeon.getWorld() == null) {
+				continue;
+			}
+
+			for (Player p : dungeon.getWorld().getPlayers()) {
+				p.teleport(getServer().getWorlds().get(0).getSpawnLocation());
+			}
+
+			Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
+
 			try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {
-	            files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-	        } catch (IOException e) {
+				files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    	}
-    	
-    	getDungeonManager().getDungeons().clear();
-    }
+		}
+
+		getDungeonManager().getDungeons().clear();
+	}
 
 	public DungeonManager getDungeonManager() {
 		if (dungeonManager == null) {

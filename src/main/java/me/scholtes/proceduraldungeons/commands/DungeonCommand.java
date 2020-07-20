@@ -29,17 +29,18 @@ public class DungeonCommand implements CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if (args.length < 2 || args[0].equalsIgnoreCase("join")) {
-			Utils.message(sender, "&cTo join a dungeon use /dungeon join <dungeon-name>");
+		if (args.length < 2 || !args[0].equalsIgnoreCase("join")) {
+			Utils.message(player, "&cTo join a dungeon use /dungeon join <dungeon-name>");
 			return true;
 		}
 		
 		if (!plugin.getConfig().isSet("dungeons." + args[1])) {
-			Utils.message(sender, "&cThat dungeon doesn't exist!");
+			Utils.message(player, "&cThat dungeon doesn't exist!");
 			return true;
 		}
-		
-		
+
+		Utils.message(player, "&aGenerating dungeon...");
+		dungeonManager.joinDungeon(player, args[1]);
 		
 		return true;
 	}

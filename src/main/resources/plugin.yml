@@ -5,3 +5,7 @@ description: ProceduralDungeons
 main: me.scholtes.proceduraldungeons.ProceduralDungeons
 api-version: 1.16
 depend: [WorldEdit]
+
+commands:
+  dungeon:
+    description: Main dungeon command
