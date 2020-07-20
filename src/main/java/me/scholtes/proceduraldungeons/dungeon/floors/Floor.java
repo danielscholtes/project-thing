@@ -7,12 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,6 +29,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.Utils;
+import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
@@ -40,43 +39,65 @@ public final class Floor {
 	private final ProceduralDungeons plugin;
 	private final Map<String, Room> rooms = new ConcurrentHashMap<String, Room>();
 	private final List<Room> queue = new ArrayList<>();
-	private final int maxFloors;
 	private final int currentFloor;
-	private final String dungeon;
-	private final World world;
+	private final Dungeon dungeon;
 	private String tileSet;
 	private int maxRooms;
-	private UUID player;
 
 	private int previousRoomSize = 0;
 	private int count = 0;
 
-	public Floor(ProceduralDungeons plugin, String dungeon, int maxFloors, int currentFloor, int posX, int posY, World world, UUID player) {
+	/**
+	 * Constructor for the {@link Floor}
+	 * 
+	 * @param plugin The instance of {@link ProceduralDungeons}
+	 * @param dungeon The instance of {@link Dungeon}
+	 * @param currentFloor The current floor
+	 * @param posX The X position of the first room
+	 * @param posY The Y position of the first room
+	 */
+	public Floor(ProceduralDungeons plugin, Dungeon dungeon, int currentFloor, int posX, int posY) {
 		this.plugin = plugin;
 		this.currentFloor = currentFloor;
-		this.maxFloors = maxFloors;
 		this.dungeon = dungeon;
-		this.world = world;
-		this.player = player;
 		setMaxRooms();
 		setTileSet();
-        System.out.println("Generating floor " + currentFloor + " for dungeon1...");
+        System.out.println("Generating floor " + currentFloor + " for " + dungeon.getDungeonName());
 		generateFloor(posX, posY);
 	}
 
+	/**
+	 * Generates the floor
+	 * 
+	 * @param startPosX The X position of the first room
+	 * @param startPosY The Y position of the first room
+	 */
 	public void generateFloor(final int startPosX, final int startPosY) {
 		rooms.put(startPosX + "_" + startPosY, new Room(this, RoomType.values()[ProceduralDungeons.getRandom().nextInt(RoomType.values().length)], startPosX, startPosY));
 		new BukkitRunnable() {
 			public void run() {
+				
+				/**
+				 * After 6 ticks with no changes clear queue
+				 */
 				if (count >= 6 && previousRoomSize == rooms.size()) {
 					queue.clear();
 				}
 				count++;
 				previousRoomSize = rooms.size();
 
+				/**
+				 * If queue is empty paste schematics
+				 */
 				if (queue.isEmpty()) {
 					this.cancel();
 
+					/*
+					 * A loop that goes through all the rooms, checks if they are valid
+					 * and if they are, gets a tile from the tileset
+					 * 
+					 * TO-DO: Add it so it gets a random tile variation
+					 */
 					for (String room : rooms.keySet()) {
 						String[] xy = room.split("_");
 						int x = Integer.parseInt(xy[0]);
@@ -88,15 +109,16 @@ public final class Floor {
 							continue;
 						}
 
+						/*
+						 * Pastes the schematic of the tile
+						 */
 						File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "schematics" + File.separator, rooms.get(room).getRoomType().toString() + ".schem");
-						System.out.println(file);
-
 						Clipboard clipboard;
 
 						ClipboardFormat format = ClipboardFormats.findByFile(file);
 						try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
 							clipboard = reader.read();
-							try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(world.getName())).fastmode(true).build()) {
+							try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(dungeon.getWorld().getName())).fastmode(true).build()) {
 							    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x * 36, 256 - (13 * currentFloor) , y * 36)).build();
 							    try {
 									Operations.complete(operation);
@@ -111,32 +133,40 @@ public final class Floor {
 						}
 						
 					}
-					
-					Room exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
-					while (exitRoom.getRoomType() == RoomType.INVALID) {
-						exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
-					}
-			        System.out.println("Finished generating floor " + currentFloor + " for dungeon1!");
-
+			        System.out.println("Finished generating floor " + currentFloor + " for " + dungeon.getDungeonName() + " !");
 
 					rooms.clear();
 					queue.clear();
 					
-					if (currentFloor < maxFloors) {
-						new Floor(plugin, dungeon, maxFloors, currentFloor + 1, exitRoom.getX(), exitRoom.getY(), world, player);
+					/*
+					 * Checks if this is the last floor, and if not gets a random room that
+					 * isn't the starting room to be the exit to the starting room
+					 * of the next floor
+					 */
+					if (currentFloor < dungeon.getMaxFloors()) {
+						Room exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
+						while (exitRoom.getRoomType() == RoomType.INVALID && exitRoom.getX() == startPosX && exitRoom.getY() == startPosY) {
+							exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
+						}
+						new Floor(plugin, dungeon, currentFloor + 1, exitRoom.getX(), exitRoom.getY());
 						return;
 					}
 					
+					/*
+					 * If this is the last floor, teleports the player to the dungeon
+					 * 
+					 * TO-DO: Add a party system and stuff
+					 */
 					Bukkit.getScheduler().runTask(plugin, new Runnable() {
 						@Override
 						public void run() {
-							Player bukkitPlayer = Bukkit.getPlayer(player);
+							Player bukkitPlayer = Bukkit.getPlayer(dungeon.getPlayer());
 							if (bukkitPlayer == null) {
 								return;
 							}
 
 							Utils.message(bukkitPlayer, "&aDungeon generated! Teleporting...");
-							bukkitPlayer.teleport(new Location(world, -18, 256 - 6.5 , -18));
+							bukkitPlayer.teleport(new Location(dungeon.getWorld(), -18, 256 - 6.5 , -18));
 						}
 					});
 				}
@@ -144,18 +174,33 @@ public final class Floor {
 		}.runTaskTimerAsynchronously(plugin, 0L, 1L);
 	}
 	
+	/**
+	 * Sets a random maximum amount of {@link Room}s between a specified
+	 * minimum and maximum range of {@link Room}s in the config for the {@link Floor}
+	 */
 	public void setMaxRooms() {
-		int minimumRooms = plugin.getConfig().getInt("dungeons." + dungeon + ".floors." + currentFloor + ".min_rooms");
-		int maximumRooms = plugin.getConfig().getInt("dungeons." + dungeon + ".floors." + currentFloor + ".max_rooms");
+		int minimumRooms = plugin.getConfig().getInt("dungeons." + dungeon.getDungeonName() + ".floors." + currentFloor + ".min_rooms");
+		int maximumRooms = plugin.getConfig().getInt("dungeons." + dungeon.getDungeonName() + ".floors." + currentFloor + ".max_rooms");
 		maxRooms = ProceduralDungeons.getRandom().nextInt((maximumRooms - minimumRooms) + 1) + minimumRooms;
 		System.out.println("Max room set to " + maxRooms);
 	}
 	
+	/**
+	 * Sets a random tileset from a specified list of
+	 * tilesets defined for the floor
+	 */
 	public void setTileSet() {
-		List<String> tileSets = plugin.getConfig().getStringList("dungeons." + dungeon + ".floors." + currentFloor + ".tile_sets");
+		List<String> tileSets = plugin.getConfig().getStringList("dungeons." + dungeon.getDungeonName() + ".floors." + currentFloor + ".tile_sets");
 		tileSet = tileSets.get(ProceduralDungeons.getRandom().nextInt(tileSets.size()));
 	}
 	
+	/**
+	 * Checks and fixes any invalid doors a {@link Room} may have from
+	 * generation
+	 * 
+	 * @param room A {@link Room} to check and fix any invalid doors it may have
+	 * @return A {@link RoomType} for the doors the room has available
+	 */
 	private RoomType getFinalRoomType(final Room room) {
 		String roomTypeString = room.getRoomType().toString();
 		
@@ -174,14 +219,30 @@ public final class Floor {
 		return RoomType.valueOf(roomTypeString);
 	}
 	
+	/**
+	 * Gets all the {@link Room}s this instance of the {@link Floor} has
+	 * 
+	 * @return A {@link Map<String, Room>} containing the rooms
+	 */
 	public Map<String, Room> getRooms() {
 		return rooms;
 	}
 
+	/**
+	 * Gets the queue for any {@link Room}s generating a new {@link Room} in this
+	 * instance of the {@link Floor}
+	 * 
+	 * @return A {@link List<Room>} containing the queue
+	 */
 	public List<Room> getQueue() {
 		return queue;
 	}
 	
+	/**
+	 * Gets the maximum amount of {@link Room}s this floor can have
+	 * 
+	 * @return The maximum amount of rooms
+	 */
 	public int getMaxRooms() {
 		return maxRooms;
 	}

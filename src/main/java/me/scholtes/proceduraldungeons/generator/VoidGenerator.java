@@ -11,6 +11,8 @@ import org.bukkit.generator.ChunkGenerator;
 
 public class VoidGenerator extends ChunkGenerator {
 
+	// IDK i found this on google because I couldn't be bothered to make it
+	
 	public List<BlockPopulator> getDefaultPopulators(World world) {
 		return Arrays.asList(new BlockPopulator[0]);
 	}
