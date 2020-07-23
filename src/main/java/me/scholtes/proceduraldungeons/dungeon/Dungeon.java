@@ -13,7 +13,7 @@ import me.scholtes.proceduraldungeons.generator.VoidGenerator;
 public class Dungeon {
 
 	private final ProceduralDungeons plugin;
-	private final String dungeonName;
+	private final DungeonInfo dungeonInfo;
 	private final UUID dungeonID;
 	private final World world;
 	private int maxFloors = 0;
@@ -26,9 +26,9 @@ public class Dungeon {
 	 * @param dungeonName The name of the dungeon
 	 * @param player The UUID of the main dungeon player
 	 */
-	public Dungeon(final ProceduralDungeons plugin, final String dungeonName, final UUID player) {
+	public Dungeon(final ProceduralDungeons plugin, final DungeonInfo dungeonInfo, final UUID player) {
 		this.plugin = plugin;
-		this.dungeonName = dungeonName;
+		this.dungeonInfo = dungeonInfo;
 		this.player = player;
 		this.dungeonID = UUID.randomUUID();
 
@@ -61,12 +61,10 @@ public class Dungeon {
 					return;
 				}
 				
-				int minFloors = plugin.getConfig().getInt("dungeons." + getDungeonName() + ".min_floors");
-				int maxFloors = plugin.getConfig().getInt("dungeons." + getDungeonName() + ".max_floors");
-				setMaxFloors(ProceduralDungeons.getRandom().nextInt((maxFloors - minFloors) + 1) + minFloors);
-				System.out.println("Started floor generation for " + getDungeonName());
+				setMaxFloors(ProceduralDungeons.getRandom().nextInt((dungeonInfo.getMaxFloors() - dungeonInfo.getMinFloors()) + 1) + dungeonInfo.getMinFloors());
+				System.out.println("Started floor generation for " + dungeonInfo.getDungeonName());
 
-				new Floor(plugin, getInstance(), 1, 0, 0);
+				new Floor(plugin, getInstance(), dungeonInfo.getFloors().get(1), 0, 0);
 
 			}
 		});
@@ -128,12 +126,12 @@ public class Dungeon {
 	}
 	
 	/**
-	 * Gets the dungeon name of this {@link Dungeon}
+	 * Gets the {@link DungeonInfo} name of this {@link Dungeon}
 	 * 
-	 * @return The dungeon name
+	 * @return The {@link DungeonInfo}
 	 */
-	public String getDungeonName() {
-		return dungeonName;
+	public DungeonInfo getDungeonInfo() {
+		return dungeonInfo;
 	}
 
 }

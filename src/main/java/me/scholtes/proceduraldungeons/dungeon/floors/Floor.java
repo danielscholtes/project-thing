@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -38,10 +39,9 @@ public final class Floor {
 	
 	private final ProceduralDungeons plugin;
 	private final Map<String, Room> rooms = new ConcurrentHashMap<String, Room>();
-	private final List<Room> queue = new ArrayList<>();
-	private final int currentFloor;
+	private final Set<Room> queue = new HashSet<Room>();
 	private final Dungeon dungeon;
-	private String tileSet;
+	private final FloorInfo floorInfo;
 	private int maxRooms;
 
 	private int previousRoomSize = 0;
@@ -51,18 +51,17 @@ public final class Floor {
 	 * Constructor for the {@link Floor}
 	 * 
 	 * @param plugin The instance of {@link ProceduralDungeons}
-	 * @param dungeon The instance of {@link Dungeon}
+	 * @param floorInfo The {@link FloorInfo} of this {@link Floor}
 	 * @param currentFloor The current floor
 	 * @param posX The X position of the first room
 	 * @param posY The Y position of the first room
 	 */
-	public Floor(ProceduralDungeons plugin, Dungeon dungeon, int currentFloor, int posX, int posY) {
+	public Floor(ProceduralDungeons plugin, Dungeon dungeon, FloorInfo floorInfo, int posX, int posY) {
 		this.plugin = plugin;
-		this.currentFloor = currentFloor;
+		this.floorInfo = floorInfo;
 		this.dungeon = dungeon;
 		setMaxRooms();
-		setTileSet();
-        System.out.println("Generating floor " + currentFloor + " for " + dungeon.getDungeonName());
+        System.out.println("Generating floor " + floorInfo.getFloor() + " for " + floorInfo.getDungeonInfo().getDungeonName());
 		generateFloor(posX, posY);
 	}
 
@@ -119,7 +118,7 @@ public final class Floor {
 						try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
 							clipboard = reader.read();
 							try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(dungeon.getWorld().getName())).fastmode(true).build()) {
-							    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x * 36, 256 - (13 * currentFloor) , y * 36)).build();
+							    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x * 36, 256 - (13 * floorInfo.getFloor()) , y * 36)).build();
 							    try {
 									Operations.complete(operation);
 								} catch (WorldEditException e) {
@@ -133,7 +132,7 @@ public final class Floor {
 						}
 						
 					}
-			        System.out.println("Finished generating floor " + currentFloor + " for " + dungeon.getDungeonName() + " !");
+			        System.out.println("Finished generating floor " + floorInfo.getFloor() + " for " + floorInfo.getDungeonInfo().getDungeonName() + " !");
 
 					rooms.clear();
 					queue.clear();
@@ -143,12 +142,12 @@ public final class Floor {
 					 * isn't the starting room to be the exit to the starting room
 					 * of the next floor
 					 */
-					if (currentFloor < dungeon.getMaxFloors()) {
+					if (floorInfo.getFloor() < floorInfo.getDungeonInfo().getMaxFloors()) {
 						Room exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
 						while (exitRoom.getRoomType() == RoomType.INVALID && exitRoom.getX() == startPosX && exitRoom.getY() == startPosY) {
 							exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
 						}
-						new Floor(plugin, dungeon, currentFloor + 1, exitRoom.getX(), exitRoom.getY());
+						new Floor(plugin, dungeon, floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), exitRoom.getX(), exitRoom.getY());
 						return;
 					}
 					
@@ -179,19 +178,8 @@ public final class Floor {
 	 * minimum and maximum range of {@link Room}s in the config for the {@link Floor}
 	 */
 	public void setMaxRooms() {
-		int minimumRooms = plugin.getConfig().getInt("dungeons." + dungeon.getDungeonName() + ".floors." + currentFloor + ".min_rooms");
-		int maximumRooms = plugin.getConfig().getInt("dungeons." + dungeon.getDungeonName() + ".floors." + currentFloor + ".max_rooms");
-		maxRooms = ProceduralDungeons.getRandom().nextInt((maximumRooms - minimumRooms) + 1) + minimumRooms;
+		maxRooms = ProceduralDungeons.getRandom().nextInt((floorInfo.getMaxRooms() - floorInfo.getMinRooms()) + 1) + floorInfo.getMinRooms();
 		System.out.println("Max room set to " + maxRooms);
-	}
-	
-	/**
-	 * Sets a random tileset from a specified list of
-	 * tilesets defined for the floor
-	 */
-	public void setTileSet() {
-		List<String> tileSets = plugin.getConfig().getStringList("dungeons." + dungeon.getDungeonName() + ".floors." + currentFloor + ".tile_sets");
-		tileSet = tileSets.get(ProceduralDungeons.getRandom().nextInt(tileSets.size()));
 	}
 	
 	/**
@@ -234,7 +222,7 @@ public final class Floor {
 	 * 
 	 * @return A {@link List<Room>} containing the queue
 	 */
-	public List<Room> getQueue() {
+	public Set<Room> getQueue() {
 		return queue;
 	}
 	

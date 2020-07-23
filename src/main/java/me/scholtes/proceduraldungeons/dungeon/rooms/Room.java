@@ -4,7 +4,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.Utils;
-import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
 
 public final class Room {

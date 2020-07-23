@@ -1,10 +1,17 @@
 package me.scholtes.proceduraldungeons;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
@@ -67,6 +74,21 @@ public class Utils {
 	}
 	
 	/**
+	 * Colorizes the given {@link List<String>}
+	 * 
+	 * @param list The {@link List<String>} to colorize
+	 * @return Colorized version of the {@link List<String>}
+	 */
+	public static List<String> colorList(List<String> list) {
+		List<String> colored = new ArrayList<String>();
+		for (String s : list) {
+			colored.add(color(s));
+		}
+		
+		return colored;
+	}
+	
+	/**
 	 * Sends a message to the specified sender with colorized text
 	 * 
 	 * @param sender The {@link CommandSender} who should receive the message
@@ -74,6 +96,78 @@ public class Utils {
 	 */
 	public static void message(CommandSender sender, String text) {
 		sender.sendMessage(color(text));
+	}
+	
+	/**
+	 * Creates an {@link ItemStack} with the specified paramaters
+	 * 
+	 * @param material The {@link Material} of the {@link ItemStack}
+	 * @param amount The amount of the {@link ItemStack}
+	 * @return An {@link ItemStack}
+	 */
+	public static ItemStack createItemStack(Material material, int amount) {
+		return new ItemStack(material, amount);
+	}
+	
+	/**
+	 * Creates an {@link ItemStack} with the specified paramaters
+	 * 
+	 * @param material The {@link Material} of the {@link ItemStack}
+	 * @param amount The amount of the {@link ItemStack}
+	 * @param name The name of the {@link ItemStack}
+	 * @return An {@link ItemStack}
+	 */
+	public static ItemStack createItemStack(Material material, int amount, String name) {
+		ItemStack item = new ItemStack(material, amount);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(color(name));
+		item.setItemMeta(meta);
+		return item;
+	}
+	
+	/**
+	 * Creates an {@link ItemStack} with the specified paramaters
+	 * 
+	 * @param material The {@link Material} of the {@link ItemStack}
+	 * @param amount The amount of the {@link ItemStack}
+	 * @param name The name of the {@link ItemStack}
+	 * @param lore The lore of the {@link ItemStack}
+	 * @return An {@link ItemStack}
+	 */
+	public static ItemStack createItemStack(Material material, int amount, String name, List<String> lore) {
+		ItemStack item = new ItemStack(material, amount);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(color(name));
+		meta.setLore(colorList(lore));
+		item.setItemMeta(meta);
+		return item;
+	}
+	
+	/**
+	 * Creates an {@link ItemStack} with the specified paramaters
+	 * 
+	 * @param material The {@link Material} of the {@link ItemStack}
+	 * @param amount The amount of the {@link ItemStack}
+	 * @param name The name of the {@link ItemStack}
+	 * @param lore The lore of the {@link ItemStack}
+	 * @param enchants The enchantments of the {@link ItemStack}
+	 * @return An {@link ItemStack}
+	 */
+	public static ItemStack createItemStack(Material material, int amount, String name, List<String> lore, List<String> enchants) {
+		ItemStack item = new ItemStack(material, amount);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(color(name));
+		meta.setLore(colorList(lore));
+		item.setItemMeta(meta);
+		
+		for (String enchant : enchants) {
+			String[] split = enchant.split(";");
+			Enchantment enchantment = Enchantment.getByKey(new NamespacedKey(ProceduralDungeons.getInstance(), split[0]));
+			int level = Integer.valueOf(split[1]);
+			item.addEnchantment(enchantment, level);
+		}
+		
+		return item;
 	}
 	
 }
