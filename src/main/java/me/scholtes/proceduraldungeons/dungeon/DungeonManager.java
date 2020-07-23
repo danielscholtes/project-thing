@@ -8,11 +8,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
+import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 
 public class DungeonManager {
 
 	private Map<UUID, Dungeon> dungeons = new ConcurrentHashMap<UUID, Dungeon>();
 	private Map<String, DungeonInfo> dungeonInfo = new ConcurrentHashMap<String, DungeonInfo>();
+	private Map<String, TileSet> tileSets = new ConcurrentHashMap<String, TileSet>();
 	
 	public void loadDungeonInfo() {
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
@@ -21,7 +23,19 @@ public class DungeonManager {
 				dungeonInfo.clear();
 				
 				for (String dungeon : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("dungeons").getKeys(false)) {
-					dungeonInfo.put(dungeon, new DungeonInfo(dungeon));
+					dungeonInfo.put(dungeon, new DungeonInfo(dungeon, getInstance()));
+				}
+			}
+		});
+	}
+	public void loadTileSets() {
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
+			@Override
+			public void run() {
+				tileSets.clear();
+				
+				for (String tileSet : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("tile_sets").getKeys(false)) {
+					tileSets.put(tileSet, new TileSet(tileSet));
 				}
 			}
 		});
@@ -51,6 +65,14 @@ public class DungeonManager {
 	
 	public DungeonInfo getDungeonInfo(String dungeonName) {
 		return dungeonInfo.get(dungeonName);
+	}
+	
+	public TileSet getTileSet(String tileSet) {
+		return tileSets.get(tileSet);
+	}
+	
+	public DungeonManager getInstance() {
+		return this;
 	}
 	
 }

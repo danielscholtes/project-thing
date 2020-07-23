@@ -1,16 +1,19 @@
 package me.scholtes.proceduraldungeons.dungeon.floors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.DungeonInfo;
+import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
+import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 
 public class FloorInfo {
 
 	private List<String> items;
-	private List<String> tileSets;
+	private List<TileSet> tileSets;
 	private double chestChance;
 	private int minRooms;
 	private int maxRooms;
@@ -19,13 +22,17 @@ public class FloorInfo {
 	private final int floor;
 	private final DungeonInfo dungeonInfo;
 	
-	public FloorInfo(DungeonInfo dungeonInfo, int floor) {
+	public FloorInfo(DungeonInfo dungeonInfo, DungeonManager dungeonManager, int floor) {
 		this.dungeonInfo = dungeonInfo;
 		this.floor = floor;
+		items = new ArrayList<String>();
+		tileSets = new ArrayList<TileSet>();
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				tileSets = ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".tile_sets"); 
+				for (String tileSet : ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".tile_sets")) {
+					tileSets.add(dungeonManager.getTileSet(tileSet));
+				}
 				minRooms = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".min_rooms");
 				minRooms = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".max_rooms");
 				items = ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".items");
@@ -51,9 +58,10 @@ public class FloorInfo {
 		return maxItems;
 	}
 
-	public List<String> getTileSets() {
+	public List<TileSet> getTileSets() {
 		return tileSets;
 	}
+	
 	public int getMinRooms() {
 		return minRooms;
 	}

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +65,7 @@ public final class Floor {
 	}
 
 	/**
-	 * Generates the floor
+	 * Generates the {@link Floor}
 	 * 
 	 * @param startPosX The X position of the first room
 	 * @param startPosY The Y position of the first room
