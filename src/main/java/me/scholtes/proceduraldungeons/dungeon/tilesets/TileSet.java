@@ -22,24 +22,21 @@ public class TileSet {
 	
 	public TileSet(String tileSetName) {
 		this.tileSetName = tileSetName;
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				tileVariations = new ConcurrentHashMap<RoomType, List<TileVariation>>();
-				for (RoomType roomType : RoomType.values()) {
-					String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + roomType.toString() + File.separator;
-					File file = new File(path, "variations.yml");
-					FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-					
-					List<TileVariation> variations = new ArrayList<TileVariation>();
-					for (String variation : config.getConfigurationSection("variations").getKeys(false)) {
-						variations.add(new TileVariation(getInstance(), variation, roomType));
-					}
-					tileVariations.put(roomType, variations);
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+			tileVariations = new ConcurrentHashMap<RoomType, List<TileVariation>>();
+			for (RoomType roomType : RoomType.values()) {
+				String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + roomType.toString() + File.separator;
+				File file = new File(path, "variations.yml");
+				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+				
+				List<TileVariation> variations = new ArrayList<TileVariation>();
+				for (String variation : config.getConfigurationSection("variations").getKeys(false)) {
+					variations.add(new TileVariation(getInstance(), variation, roomType));
 				}
-				size = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".size");
-				height = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".height");
+				tileVariations.put(roomType, variations);
 			}
+			size = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".size");
+			height = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".height");
 		});
 		
 	}

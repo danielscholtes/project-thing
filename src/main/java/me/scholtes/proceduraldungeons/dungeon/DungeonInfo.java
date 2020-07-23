@@ -17,18 +17,15 @@ public class DungeonInfo {
 	
 	public DungeonInfo(String dungeonName, DungeonManager dungeonManager) {
 		this.dungeonName = dungeonName;
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				floors = new ConcurrentHashMap<Integer, FloorInfo>();
-				for (String floor : ProceduralDungeons.getInstance().getConfig().getConfigurationSection(("dungeons." + dungeonName + ".floors")).getKeys(false)) {
-					int floorNumber = Integer.valueOf(floor);
-					floors.put(floorNumber, new FloorInfo(getInstance(), dungeonManager, floorNumber));
-				}
-				
-				minFloors = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonName + ".min_floors");
-				maxFloors = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonName + ".max_floors");
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+			floors = new ConcurrentHashMap<Integer, FloorInfo>();
+			for (String floor : ProceduralDungeons.getInstance().getConfig().getConfigurationSection(("dungeons." + dungeonName + ".floors")).getKeys(false)) {
+				int floorNumber = Integer.valueOf(floor);
+				floors.put(floorNumber, new FloorInfo(getInstance(), dungeonManager, floorNumber));
 			}
+			
+			minFloors = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonName + ".min_floors");
+			maxFloors = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonName + ".max_floors");
 		});
 	}
 

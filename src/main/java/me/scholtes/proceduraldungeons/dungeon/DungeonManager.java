@@ -17,26 +17,20 @@ public class DungeonManager {
 	private Map<String, TileSet> tileSets = new ConcurrentHashMap<String, TileSet>();
 	
 	public void loadDungeonInfo() {
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				dungeonInfo.clear();
-				
-				for (String dungeon : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("dungeons").getKeys(false)) {
-					dungeonInfo.put(dungeon, new DungeonInfo(dungeon, getInstance()));
-				}
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+			dungeonInfo.clear();
+			
+			for (String dungeon : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("dungeons").getKeys(false)) {
+				dungeonInfo.put(dungeon, new DungeonInfo(dungeon, getInstance()));
 			}
 		});
 	}
 	public void loadTileSets() {
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				tileSets.clear();
-				
-				for (String tileSet : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("tile_sets").getKeys(false)) {
-					tileSets.put(tileSet, new TileSet(tileSet));
-				}
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+			tileSets.clear();
+			
+			for (String tileSet : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("tile_sets").getKeys(false)) {
+				tileSets.put(tileSet, new TileSet(tileSet));
 			}
 		});
 	}

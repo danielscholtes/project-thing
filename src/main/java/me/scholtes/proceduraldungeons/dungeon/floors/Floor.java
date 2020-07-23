@@ -156,17 +156,15 @@ public final class Floor {
 					 * 
 					 * TO-DO: Add a party system and stuff
 					 */
-					Bukkit.getScheduler().runTask(plugin, new Runnable() {
-						@Override
-						public void run() {
-							Player bukkitPlayer = Bukkit.getPlayer(dungeon.getPlayer());
-							if (bukkitPlayer == null) {
-								return;
-							}
-
-							ChatUtils.message(bukkitPlayer, "&aDungeon generated! Teleporting...");
-							bukkitPlayer.teleport(new Location(dungeon.getWorld(), -18, 256 - 6.5 , -18));
+					Bukkit.getScheduler().runTask(plugin, () -> {
+						Player bukkitPlayer = Bukkit.getPlayer(dungeon.getPlayer());
+						if (bukkitPlayer == null) {
+							return;
 						}
+
+						ChatUtils.message(bukkitPlayer, "&aDungeon generated! Teleporting...");
+						bukkitPlayer.teleport(new Location(dungeon.getWorld(), -18, 256 - 6.5 , -18));
+						
 					});
 				}
 			}

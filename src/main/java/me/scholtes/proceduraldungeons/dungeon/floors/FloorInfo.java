@@ -27,19 +27,16 @@ public class FloorInfo {
 		this.floor = floor;
 		items = new ArrayList<String>();
 		tileSets = new ArrayList<TileSet>();
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				for (String tileSet : ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".tile_sets")) {
-					tileSets.add(dungeonManager.getTileSet(tileSet));
-				}
-				minRooms = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".min_rooms");
-				minRooms = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".max_rooms");
-				items = ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".items");
-				chestChance = ProceduralDungeons.getInstance().getConfig().getDouble("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".chest_chance");
-				minItems = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".min_items");
-				maxItems = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".max_items");
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {	
+			for (String tileSet : ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".tile_sets")) {
+				tileSets.add(dungeonManager.getTileSet(tileSet));
 			}
+			minRooms = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".min_rooms");
+			minRooms = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".max_rooms");
+			items = ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".items");
+			chestChance = ProceduralDungeons.getInstance().getConfig().getDouble("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".chest_chance");
+			minItems = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".min_items");
+			maxItems = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".max_items");	
 		});
 	}
 	

@@ -49,24 +49,20 @@ public class Dungeon {
 		/**
 		 * Generates the dungeon asynchronously
 		 */
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			@Override
-			public void run() {
-
-				/*
-				 * Checks if the world was properly created
-				 */
-				if (getWorld() == null) {
-					System.out.println("The world was not properly created!");
-					return;
-				}
-				
-				setMaxFloors(ProceduralDungeons.getRandom().nextInt((dungeonInfo.getMaxFloors() - dungeonInfo.getMinFloors()) + 1) + dungeonInfo.getMinFloors());
-				System.out.println("Started floor generation for " + dungeonInfo.getDungeonName());
-
-				new Floor(plugin, getInstance(), dungeonInfo.getFloors().get(1), 0, 0);
-
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			
+			/*
+			 * Checks if the world was properly created
+			 */
+			if (getWorld() == null) {
+				System.out.println("The world was not properly created!");
+				return;
 			}
+			
+			setMaxFloors(ProceduralDungeons.getRandom().nextInt((dungeonInfo.getMaxFloors() - dungeonInfo.getMinFloors()) + 1) + dungeonInfo.getMinFloors());
+			System.out.println("Started floor generation for " + dungeonInfo.getDungeonName());
+
+			new Floor(plugin, getInstance(), dungeonInfo.getFloors().get(1), 0, 0);
 		});
 
 	}
