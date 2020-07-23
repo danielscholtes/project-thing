@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
-import me.scholtes.proceduraldungeons.Utils;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
+import me.scholtes.proceduraldungeons.utils.ItemUtils;
 
 public class DungeonCommand implements CommandExecutor {
 	
@@ -35,7 +35,7 @@ public class DungeonCommand implements CommandExecutor {
 		 * Checks if the CommandSender is a Player
 		 */
 		if (!(sender instanceof Player)) {
-			Utils.message(sender, "&cYou need to be a player!");
+			ItemUtils.message(sender, "&cYou need to be a player!");
 			return true;
 		}
 		
@@ -45,7 +45,7 @@ public class DungeonCommand implements CommandExecutor {
 		 * Checks if the player put in the right arguments
 		 */
 		if (args.length < 2 || !args[0].equalsIgnoreCase("join")) {
-			Utils.message(player, "&cTo join a dungeon use /dungeon join <dungeon-name>");
+			ItemUtils.message(player, "&cTo join a dungeon use /dungeon join <dungeon-name>");
 			return true;
 		}
 		
@@ -53,14 +53,14 @@ public class DungeonCommand implements CommandExecutor {
 		 * Checks if the specified dungeon name exists in the config
 		 */
 		if (!plugin.getConfig().isSet("dungeons." + args[1])) {
-			Utils.message(player, "&cThat dungeon doesn't exist!");
+			ItemUtils.message(player, "&cThat dungeon doesn't exist!");
 			return true;
 		}
 
 		/*
 		 * Makes the player join the dungeon
 		 */
-		Utils.message(player, "&aGenerating dungeon...");
+		ItemUtils.message(player, "&aGenerating dungeon...");
 		dungeonManager.joinDungeon(player, args[1]);
 		
 		return true;

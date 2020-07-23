@@ -71,7 +71,7 @@ public class DungeonManager {
 		return tileSets.get(tileSet);
 	}
 	
-	public DungeonManager getInstance() {
+	private DungeonManager getInstance() {
 		return this;
 	}
 	

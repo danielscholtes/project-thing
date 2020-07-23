@@ -48,7 +48,7 @@ public class DungeonInfo {
 		return dungeonName;
 	}
 	
-	public DungeonInfo getInstance() {
+	private DungeonInfo getInstance() {
 		return this;
 	}
 

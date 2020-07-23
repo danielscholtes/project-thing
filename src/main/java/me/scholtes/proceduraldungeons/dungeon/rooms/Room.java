@@ -3,8 +3,8 @@ package me.scholtes.proceduraldungeons.dungeon.rooms;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
-import me.scholtes.proceduraldungeons.Utils;
 import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
+import me.scholtes.proceduraldungeons.utils.DungeonUtils;
 
 public final class Room {
 
@@ -145,7 +145,7 @@ public final class Room {
 			 * Updates available doors if there is a room in the direction that
 			 * has no door in the opposite direction
 			 */
-			roomTypeString = Utils.checkDirection(this, floor, roomTypeString, direction, opposite, false);
+			roomTypeString = DungeonUtils.checkDirection(this, floor, roomTypeString, direction, opposite, false);
 			
 			/*
 			 * Checks if there is no room in the direction, and if not checks if

@@ -28,11 +28,12 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
-import me.scholtes.proceduraldungeons.Utils;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
+import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.DungeonUtils;
 
 public final class Floor {
 	
@@ -163,7 +164,7 @@ public final class Floor {
 								return;
 							}
 
-							Utils.message(bukkitPlayer, "&aDungeon generated! Teleporting...");
+							ChatUtils.message(bukkitPlayer, "&aDungeon generated! Teleporting...");
 							bukkitPlayer.teleport(new Location(dungeon.getWorld(), -18, 256 - 6.5 , -18));
 						}
 					});
@@ -191,10 +192,10 @@ public final class Floor {
 	private RoomType getFinalRoomType(final Room room) {
 		String roomTypeString = room.getRoomType().toString();
 		
-		roomTypeString = Utils.checkDirection(room, this, roomTypeString, Direction.NORTH, Direction.SOUTH, true);
-		roomTypeString = Utils.checkDirection(room, this, roomTypeString, Direction.EAST, Direction.WEST, true);
-		roomTypeString = Utils.checkDirection(room, this, roomTypeString, Direction.SOUTH, Direction.NORTH, true);
-		roomTypeString = Utils.checkDirection(room, this, roomTypeString, Direction.WEST, Direction.EAST, true);
+		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.NORTH, Direction.SOUTH, true);
+		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.EAST, Direction.WEST, true);
+		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.SOUTH, Direction.NORTH, true);
+		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.WEST, Direction.EAST, true);
 		
 		if (roomTypeString.equals("")) {
 			return RoomType.INVALID;
