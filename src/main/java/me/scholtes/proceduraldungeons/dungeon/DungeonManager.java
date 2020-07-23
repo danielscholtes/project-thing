@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import me.scholtes.proceduraldungeons.AsyncScheduler;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 
@@ -17,7 +17,7 @@ public class DungeonManager {
 	private Map<String, TileSet> tileSets = new ConcurrentHashMap<String, TileSet>();
 	
 	public void loadDungeonInfo() {
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+		AsyncScheduler.runAsync(() -> {
 			dungeonInfo.clear();
 			
 			for (String dungeon : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("dungeons").getKeys(false)) {
@@ -26,7 +26,7 @@ public class DungeonManager {
 		});
 	}
 	public void loadTileSets() {
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+		AsyncScheduler.runAsync(() -> {
 			tileSets.clear();
 			
 			for (String tileSet : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("tile_sets").getKeys(false)) {

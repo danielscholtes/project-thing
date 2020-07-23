@@ -2,10 +2,10 @@ package me.scholtes.proceduraldungeons.dungeon;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
+import me.scholtes.proceduraldungeons.AsyncScheduler;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
 import me.scholtes.proceduraldungeons.generator.VoidGenerator;
@@ -49,8 +49,7 @@ public class Dungeon {
 		/**
 		 * Generates the dungeon asynchronously
 		 */
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			
+		AsyncScheduler.runAsync(() -> {
 			/*
 			 * Checks if the world was properly created
 			 */

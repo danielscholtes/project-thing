@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import me.scholtes.proceduraldungeons.AsyncScheduler;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 
@@ -22,7 +22,7 @@ public class TileSet {
 	
 	public TileSet(String tileSetName) {
 		this.tileSetName = tileSetName;
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+		AsyncScheduler.runAsync(() -> {
 			tileVariations = new ConcurrentHashMap<RoomType, List<TileVariation>>();
 			for (RoomType roomType : RoomType.values()) {
 				String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + roomType.toString() + File.separator;

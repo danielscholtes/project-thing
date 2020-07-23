@@ -3,8 +3,7 @@ package me.scholtes.proceduraldungeons.dungeon.floors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-
+import me.scholtes.proceduraldungeons.AsyncScheduler;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.DungeonInfo;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
@@ -27,7 +26,7 @@ public class FloorInfo {
 		this.floor = floor;
 		items = new ArrayList<String>();
 		tileSets = new ArrayList<TileSet>();
-		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {	
+		AsyncScheduler.runAsync(() -> {
 			for (String tileSet : ProceduralDungeons.getInstance().getConfig().getStringList("dungeons." + dungeonInfo.getDungeonName() + ".floors." + floor + ".tile_sets")) {
 				tileSets.add(dungeonManager.getTileSet(tileSet));
 			}
