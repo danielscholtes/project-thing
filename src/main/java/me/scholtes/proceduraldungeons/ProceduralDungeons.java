@@ -30,7 +30,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 		saveDefaultConfig();
 		instance = this;
 
-		/*
+		/**
 		 * Registering the commands
 		 */
 		getCommand("dungeon").setExecutor(new DungeonCommand(this, getDungeonManager()));
@@ -42,7 +42,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 	 * Run when the plugin is disabled
 	 */
 	public void onDisable() {
-		/*
+		/**
 		 * Goes through all the dungeon worlds and deletes them
 		 */
 		for (Dungeon dungeon : getDungeonManager().getDungeons().values()) {
@@ -56,7 +56,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 
 			Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
 
-			/*
+			/**
 			 * Deletes the world files of the dungeon world
 			 */
 			try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {

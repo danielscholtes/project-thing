@@ -37,13 +37,13 @@ public final class Room {
 	 * it can then it does
 	 */
 	private void generateRooms() {
-		/*
+		/**
 		 * Generates Rooms asynchronously
 		 */
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				/*
+				/**
 				 * Makes sure the Room didn't get overriden
 				 */
                 if (floor.getRooms().get(posx + "_" + posy) != getInstance()) {
@@ -52,7 +52,7 @@ public final class Room {
                 }
 				String roomTypeString = roomType.toString();
 
-				/*
+				/**
 				 * Checks if Direction is valid, if yes generate a new Room and
 				 * if not update the available doors of this Room
 				 */
@@ -63,7 +63,7 @@ public final class Room {
 
 				floor.getQueue().remove(getInstance());
 
-				/*
+				/**
 				 * Updates RoomType of the Room according to previous checks
 				 */
 				if (roomTypeString.equals("")) {

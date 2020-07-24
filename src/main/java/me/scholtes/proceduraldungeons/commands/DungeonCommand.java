@@ -30,8 +30,8 @@ public class DungeonCommand implements CommandExecutor {
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		
-		/*
+
+		/**
 		 * Checks if the CommandSender is a Player
 		 */
 		if (!(sender instanceof Player)) {
@@ -40,16 +40,16 @@ public class DungeonCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player) sender;
-		
-		/*
+
+		/**
 		 * Checks if the player put in the right arguments
 		 */
 		if (args.length < 2 || !args[0].equalsIgnoreCase("join")) {
 			ChatUtils.message(player, "&cTo join a dungeon use /dungeon join <dungeon-name>");
 			return true;
 		}
-		
-		/*
+
+		/**
 		 * Checks if the specified dungeon name exists in the config
 		 */
 		if (!plugin.getConfig().isSet("dungeons." + args[1])) {
@@ -57,7 +57,7 @@ public class DungeonCommand implements CommandExecutor {
 			return true;
 		}
 
-		/*
+		/**
 		 * Makes the player join the dungeon
 		 */
 		ChatUtils.message(player, "&aGenerating dungeon...");

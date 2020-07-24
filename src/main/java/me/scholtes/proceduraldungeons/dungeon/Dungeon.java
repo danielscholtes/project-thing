@@ -32,7 +32,7 @@ public class Dungeon {
 		this.player = player;
 		this.dungeonID = UUID.randomUUID();
 
-		/*
+		/**
 		 * Creates a void world
 		 */
 		WorldCreator creator = new WorldCreator("Dungeon-" + dungeonID.toString());
@@ -50,7 +50,7 @@ public class Dungeon {
 		 * Generates the dungeon asynchronously
 		 */
 		AsyncScheduler.runAsync(() -> {
-			/*
+			/**
 			 * Checks if the world was properly created
 			 */
 			if (getWorld() == null) {

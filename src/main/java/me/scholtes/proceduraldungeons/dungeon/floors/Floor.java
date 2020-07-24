@@ -91,7 +91,7 @@ public final class Floor {
 				if (queue.isEmpty()) {
 					this.cancel();
 
-					/*
+					/**
 					 * A loop that goes through all the rooms, checks if they are valid
 					 * and if they are, gets a tile from the tileset
 					 * 
@@ -108,7 +108,7 @@ public final class Floor {
 							continue;
 						}
 
-						/*
+						/**
 						 * Pastes the schematic of the tile
 						 */
 						File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "schematics" + File.separator, rooms.get(room).getRoomType().toString() + ".schem");
@@ -136,8 +136,8 @@ public final class Floor {
 
 					rooms.clear();
 					queue.clear();
-					
-					/*
+
+					/**
 					 * Checks if this is the last floor, and if not gets a random room that
 					 * isn't the starting room to be the exit to the starting room
 					 * of the next floor
@@ -150,8 +150,8 @@ public final class Floor {
 						new Floor(plugin, dungeon, floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), exitRoom.getX(), exitRoom.getY());
 						return;
 					}
-					
-					/*
+
+					/**
 					 * If this is the last floor, teleports the player to the dungeon
 					 * 
 					 * TO-DO: Add a party system and stuff
