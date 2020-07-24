@@ -16,6 +16,9 @@ public class DungeonManager {
 	private Map<String, DungeonInfo> dungeonInfo = new ConcurrentHashMap<String, DungeonInfo>();
 	private Map<String, TileSet> tileSets = new ConcurrentHashMap<String, TileSet>();
 	
+	/**
+	 * Loads all the {@link DungeonInfo} and puts it into a {@link Map<String, DungeonInfo>}
+	 */
 	public void loadDungeonInfo() {
 		AsyncScheduler.runAsync(() -> {
 			dungeonInfo.clear();
@@ -25,6 +28,10 @@ public class DungeonManager {
 			}
 		});
 	}
+	
+	/**
+	 * Loads all the {@link TileSet} and puts it into a {@link Map<String, TileSet>}
+	 */
 	public void loadTileSets() {
 		AsyncScheduler.runAsync(() -> {
 			tileSets.clear();

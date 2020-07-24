@@ -20,8 +20,17 @@ public class TileSet {
 	private double height;
 	private final String tileSetName;
 	
+	/**
+	 * Constructor for the {@link TileSet}
+	 * 
+	 * @param tileSetName The name of the {@link TileSet}
+	 */
 	public TileSet(String tileSetName) {
 		this.tileSetName = tileSetName;
+		
+		/**
+		 * Loads all the information about this TileSet
+		 */
 		AsyncScheduler.runAsync(() -> {
 			tileVariations = new ConcurrentHashMap<RoomType, List<TileVariation>>();
 			for (RoomType roomType : RoomType.values()) {
@@ -41,22 +50,47 @@ public class TileSet {
 		
 	}
 
+	/**
+	 * Gets a {@link Map<RoomType, List<TileVariation>>} of all the {@link TileVariation}
+	 * 
+	 * @return A {@link Map<RoomType, List<TileVariation>>} of all the {@link TileVariation}
+	 */
 	public Map<RoomType, List<TileVariation>> getTileVariations() {
 		return tileVariations;
 	}
 	
+	/**
+	 * Gets the instance of this {@link TileSet}
+	 * 
+	 * @return Instance of this {@link TileSet}
+	 */
 	public TileSet getInstance() {
 		return this;
 	}
 
+	/**
+	 * Gets the schematic size of this {@link TileSet}
+	 * 
+	 * @return Schematic size of this {@link TileSet}
+	 */
 	public double getSize() {
 		return size;
 	}
 
+	/**
+	 * Gets the schematic height of this {@link TileSet}
+	 * 
+	 * @return Schematic height of this {@link TileSet}
+	 */
 	public double getHeight() {
 		return height;
 	}
 
+	/**
+	 * Gets the name of this {@link TileSet}
+	 * 
+	 * @return Name of this {@link TileSet}
+	 */
 	public String getTileSetName() {
 		return tileSetName;
 	}
