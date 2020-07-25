@@ -1,16 +1,18 @@
 package me.scholtes.proceduraldungeons.dungeon.floors;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -32,6 +34,8 @@ import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
+import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
+import me.scholtes.proceduraldungeons.dungeon.tilesets.TileVariation;
 import me.scholtes.proceduraldungeons.utils.ChatUtils;
 import me.scholtes.proceduraldungeons.utils.DungeonUtils;
 
@@ -56,13 +60,13 @@ public final class Floor {
 	 * @param posX The X position of the first room
 	 * @param posY The Y position of the first room
 	 */
-	public Floor(ProceduralDungeons plugin, Dungeon dungeon, FloorInfo floorInfo, int posX, int posY) {
+	public Floor(ProceduralDungeons plugin, Dungeon dungeon, FloorInfo floorInfo, int posX, int posY, double previousHeight) {
 		this.plugin = plugin;
 		this.floorInfo = floorInfo;
 		this.dungeon = dungeon;
-		setMaxRooms();
+		this.maxRooms = ProceduralDungeons.getRandom().nextInt((floorInfo.getMaxRooms() - floorInfo.getMinRooms()) + 1) + floorInfo.getMinRooms();
         System.out.println("Generating floor " + floorInfo.getFloor() + " for " + floorInfo.getDungeonInfo().getDungeonName());
-		generateFloor(posX, posY);
+		generateFloor(posX, posY, previousHeight);
 	}
 
 	/**
@@ -71,7 +75,7 @@ public final class Floor {
 	 * @param startPosX The X position of the first room
 	 * @param startPosY The Y position of the first room
 	 */
-	public void generateFloor(final int startPosX, final int startPosY) {
+	public void generateFloor(final int startPosX, final int startPosY, double previousHeight) {
 		rooms.put(startPosX + "_" + startPosY, new Room(this, RoomType.values()[ProceduralDungeons.getRandom().nextInt(RoomType.values().length)], startPosX, startPosY));
 		new BukkitRunnable() {
 			public void run() {
@@ -93,10 +97,15 @@ public final class Floor {
 
 					/**
 					 * A loop that goes through all the rooms, checks if they are valid
-					 * and if they are, gets a tile from the tileset
+					 * and if they are, gets a tile variation from the tileset
 					 * 
 					 * TO-DO: Add it so it gets a random tile variation
 					 */
+					
+					List<TileSet> tileSets =  floorInfo.getTileSets();
+					TileSet tileSet =  tileSets.get(ProceduralDungeons.getRandom().nextInt(tileSets.size()));
+					double newHeight = previousHeight - tileSet.getHeight();
+					
 					for (String room : rooms.keySet()) {
 						String[] xy = room.split("_");
 						int x = Integer.parseInt(xy[0]);
@@ -107,18 +116,25 @@ public final class Floor {
 						if (rooms.get(room).getRoomType() == RoomType.INVALID) {
 							continue;
 						}
+						
+						if (dungeon.getSpawnPoint() == null) {
+							dungeon.setSpawnPoint(new Location(dungeon.getWorld(), (x + 1) * tileSet.getSize() / 2, previousHeight - (tileSet.getHeight() / 2), (y + 1) * tileSet.getSize() / 2));
+						}
+						
+						List<TileVariation> variations = tileSet.getTileVariations().get(rooms.get(room).getRoomType());
+						
+						TileVariation variation = variations.get(ProceduralDungeons.getRandom().nextInt(variations.size()));
 
 						/**
 						 * Pastes the schematic of the tile
 						 */
-						File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "schematics" + File.separator, rooms.get(room).getRoomType().toString() + ".schem");
 						Clipboard clipboard;
 
-						ClipboardFormat format = ClipboardFormats.findByFile(file);
-						try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+						ClipboardFormat format = ClipboardFormats.findByFile(variation.getSchematic());
+						try (ClipboardReader reader = format.getReader(new FileInputStream(variation.getSchematic()))) {
 							clipboard = reader.read();
 							try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(dungeon.getWorld().getName())).fastmode(true).build()) {
-							    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x * 36, 256 - (13 * floorInfo.getFloor()) , y * 36)).build();
+							    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x * tileSet.getSize(), newHeight , y * tileSet.getSize())).build();
 							    try {
 									Operations.complete(operation);
 								} catch (WorldEditException e) {
@@ -131,11 +147,44 @@ public final class Floor {
 							e.printStackTrace();
 						}
 						
+						/**
+						 * Generates the chests with loot
+						 */
+						
+						for (String loc : variation.getChestLocations()) {
+							if (Math.random() >= floorInfo.getChestChance()) {
+								continue;
+							}
+							
+							Bukkit.getScheduler().runTask(plugin, () -> {
+								String[] split = loc.split(";");
+								double locX = (x * tileSet.getSize()) + Double.valueOf(split[0]);
+								double locY = previousHeight + Double.valueOf(split[1]);
+								double locZ = (y * tileSet.getSize()) + Double.valueOf(split[2]);
+								System.out.println(locX + ";" + locY + ";" + locZ);
+								Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
+								
+								location.getBlock().setType(Material.CHEST);
+								
+								System.out.println(location.getBlock().getType());
+								
+								Chest chest = (Chest) location.getBlock().getState();
+								
+								int itemAmount = ProceduralDungeons.getRandom().nextInt((floorInfo.getMaxItems() - floorInfo.getMinItems()) + 1) + floorInfo.getMinItems();
+								List<String> items = floorInfo.getItems();
+								
+								for (int i = 0; i < itemAmount; i++) {
+									String randomItem = items.get(ProceduralDungeons.getRandom().nextInt(items.size()));
+									chest.getInventory().setItem(ProceduralDungeons.getRandom().nextInt(27), plugin.getDungeonManager().getItem(randomItem));
+								}
+								
+								chest.update();
+							});
+						}
+						
 					}
-			        System.out.println("Finished generating floor " + floorInfo.getFloor() + " for " + floorInfo.getDungeonInfo().getDungeonName() + " !");
-
-					rooms.clear();
-					queue.clear();
+					
+					System.out.println("Finished generating floor " + floorInfo.getFloor() + " for " + floorInfo.getDungeonInfo().getDungeonName() + " !");
 
 					/**
 					 * Checks if this is the last floor, and if not gets a random room that
@@ -147,9 +196,12 @@ public final class Floor {
 						while (exitRoom.getRoomType() == RoomType.INVALID && exitRoom.getX() == startPosX && exitRoom.getY() == startPosY) {
 							exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
 						}
-						new Floor(plugin, dungeon, floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), exitRoom.getX(), exitRoom.getY());
+						new Floor(plugin, dungeon, floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), exitRoom.getX(), exitRoom.getY(), newHeight);
 						return;
 					}
+					
+					rooms.clear();
+					queue.clear();
 
 					/**
 					 * If this is the last floor, teleports the player to the dungeon
@@ -163,23 +215,13 @@ public final class Floor {
 						}
 
 						ChatUtils.message(bukkitPlayer, "&aDungeon generated! Teleporting...");
-						bukkitPlayer.teleport(new Location(dungeon.getWorld(), -18, 256 - 6.5 , -18));
+						bukkitPlayer.teleport(dungeon.getSpawnPoint());
 						
 					});
 				}
 			}
 		}.runTaskTimerAsynchronously(plugin, 0L, 1L);
 	}
-	
-	/**
-	 * Sets a random maximum amount of {@link Room}s between a specified
-	 * minimum and maximum range of {@link Room}s in the config for the {@link Floor}
-	 */
-	public void setMaxRooms() {
-		maxRooms = ProceduralDungeons.getRandom().nextInt((floorInfo.getMaxRooms() - floorInfo.getMinRooms()) + 1) + floorInfo.getMinRooms();
-		System.out.println("Max room set to " + maxRooms);
-	}
-	
 	/**
 	 * Checks and fixes any invalid doors a {@link Room} may have from
 	 * generation

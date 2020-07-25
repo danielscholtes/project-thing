@@ -2,10 +2,11 @@ package me.scholtes.proceduraldungeons.dungeon;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
-import me.scholtes.proceduraldungeons.AsyncScheduler;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
 import me.scholtes.proceduraldungeons.generator.VoidGenerator;
@@ -18,6 +19,7 @@ public class Dungeon {
 	private final World world;
 	private int maxFloors = 0;
 	private UUID player;
+	private Location spawnPoint = null;
 
 	/**
 	 * Constructor for the {@link Dungeon}
@@ -49,7 +51,7 @@ public class Dungeon {
 		/**
 		 * Generates the dungeon asynchronously
 		 */
-		AsyncScheduler.runAsync(() -> {
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			/**
 			 * Checks if the world was properly created
 			 */
@@ -61,11 +63,30 @@ public class Dungeon {
 			setMaxFloors(ProceduralDungeons.getRandom().nextInt((dungeonInfo.getMaxFloors() - dungeonInfo.getMinFloors()) + 1) + dungeonInfo.getMinFloors());
 			System.out.println("Started floor generation for " + dungeonInfo.getDungeonName());
 
-			new Floor(plugin, getInstance(), dungeonInfo.getFloors().get(1), 0, 0);
+			new Floor(plugin, getInstance(), dungeonInfo.getFloors().get(1), 0, 0, 256);
 		});
 
 	}
-	
+
+
+	/**
+	 * Gets the spawn point {@link Location} of the {@link Dungeon}
+	 * 
+	 * @return Spawn point {@link Location}
+	 */
+	public Location getSpawnPoint() {
+		return spawnPoint;
+	}
+
+	/**
+	 * Sets the spawn point {@link Location} of the {@link Dungeon}
+	 * 
+	 * @param spawnPoint Spawn point {@link Location}
+	 */
+	public void setSpawnPoint(Location spawnPoint) {
+		this.spawnPoint = spawnPoint;
+	}
+
 	/**
 	 * Sets the maximum amount of {@link Floor}s the {@link Dungeon} can have
 	 * 

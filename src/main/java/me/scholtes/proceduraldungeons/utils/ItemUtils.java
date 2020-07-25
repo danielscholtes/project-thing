@@ -8,8 +8,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.scholtes.proceduraldungeons.ProceduralDungeons;
-
 public class ItemUtils {
 	
 	/**
@@ -76,9 +74,9 @@ public class ItemUtils {
 		
 		for (String enchant : enchants) {
 			String[] split = enchant.split(";");
-			Enchantment enchantment = Enchantment.getByKey(new NamespacedKey(ProceduralDungeons.getInstance(), split[0]));
+			Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(split[0].toLowerCase()));
 			int level = Integer.valueOf(split[1]);
-			item.addEnchantment(enchantment, level);
+			item.addUnsafeEnchantment(enchantment, level);
 		}
 		
 		return item;

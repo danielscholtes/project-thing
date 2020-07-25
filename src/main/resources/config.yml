@@ -1,7 +1,7 @@
 tile_sets:
   cave:
-    tile_size: 36
-    tile_height: 13
+    size: 36
+    height: 13
 
 dungeons:
   dungeon1:

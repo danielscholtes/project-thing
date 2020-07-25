@@ -1,30 +1,59 @@
 package me.scholtes.proceduraldungeons.dungeon;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
-import me.scholtes.proceduraldungeons.AsyncScheduler;
+import org.bukkit.inventory.ItemStack;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
+import me.scholtes.proceduraldungeons.utils.ItemUtils;
 
 public class DungeonManager {
 
 	private Map<UUID, Dungeon> dungeons = new ConcurrentHashMap<UUID, Dungeon>();
 	private Map<String, DungeonInfo> dungeonInfo = new ConcurrentHashMap<String, DungeonInfo>();
 	private Map<String, TileSet> tileSets = new ConcurrentHashMap<String, TileSet>();
+	private Map<String, ItemStack> items = new ConcurrentHashMap<String, ItemStack>();
+
+	/**
+	 * Loads all the {@link ItemStack} and puts it into a {@link Map<String, ItemStack>}
+	 */
+	public void loadItems() {
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
+			dungeonInfo.clear();
+			
+			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator;
+			File file = new File(path, "items.yml");
+			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+			
+			for (String item : config.getConfigurationSection("").getKeys(false)) {
+				Material material = Material.valueOf(config.getString(item + ".material").toUpperCase());
+				int amount = config.getInt(item + ".amount");
+				String name = config.getString(item + ".name");
+				List<String> lore = config.getStringList(item + ".lore");
+				List<String> enchants = config.getStringList(item + ".enchants");
+				items.put(item, ItemUtils.createItemStack(material, amount, name, lore, enchants));
+			}
+		});
+	}
 	
 	/**
 	 * Loads all the {@link DungeonInfo} and puts it into a {@link Map<String, DungeonInfo>}
 	 */
 	public void loadDungeonInfo() {
-		AsyncScheduler.runAsync(() -> {
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			dungeonInfo.clear();
 			
 			for (String dungeon : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("dungeons").getKeys(false)) {
-				dungeonInfo.put(dungeon, new DungeonInfo(dungeon, getInstance()));
+				dungeonInfo.put(dungeon, new DungeonInfo(dungeon, ProceduralDungeons.getInstance().getDungeonManager()));
 			}
 		});
 	}
@@ -33,7 +62,7 @@ public class DungeonManager {
 	 * Loads all the {@link TileSet} and puts it into a {@link Map<String, TileSet>}
 	 */
 	public void loadTileSets() {
-		AsyncScheduler.runAsync(() -> {
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			tileSets.clear();
 			
 			for (String tileSet : ProceduralDungeons.getInstance().getConfig().getConfigurationSection("tile_sets").getKeys(false)) {
@@ -64,16 +93,34 @@ public class DungeonManager {
 		return dungeons;
 	}
 	
+	/**
+	 * Gets the {@link ItemStack} for the specified item name
+	 * 
+	 * @param item The name of the item
+	 * @return {@link ItemStack} for the specified item name
+	 */
+	public ItemStack getItem(String item) {
+		return items.get(item);
+	}
+	
+	/**
+	 * Gets the {@link DungeonInfo} for the specified dungeon name
+	 * 
+	 * @param dungeonName The name of the dungeon
+	 * @return {@link DungeonInfo} for the specified dungeon name
+	 */
 	public DungeonInfo getDungeonInfo(String dungeonName) {
 		return dungeonInfo.get(dungeonName);
 	}
-	
+
+	/**
+	 * Gets the {@link TileSet} for the specified tileset name
+	 * 
+	 * @param tileSet The name of the tileset
+	 * @return {@link TileSet} for the specified tileset name
+	 */
 	public TileSet getTileSet(String tileSet) {
 		return tileSets.get(tileSet);
-	}
-	
-	private DungeonManager getInstance() {
-		return this;
 	}
 	
 }

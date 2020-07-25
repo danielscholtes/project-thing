@@ -35,7 +35,9 @@ public final class ProceduralDungeons extends JavaPlugin {
 		 */
 		getCommand("dungeon").setExecutor(new DungeonCommand(this, getDungeonManager()));
 		
+		getDungeonManager().loadItems();
 		getDungeonManager().loadDungeonInfo();
+		getDungeonManager().loadTileSets();
 	}
 
 	/**

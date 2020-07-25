@@ -3,7 +3,8 @@ package me.scholtes.proceduraldungeons.dungeon;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.scholtes.proceduraldungeons.AsyncScheduler;
+import org.bukkit.Bukkit;
+
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.floors.FloorInfo;
 
@@ -26,7 +27,7 @@ public class DungeonInfo {
 		/**
 		 * Loads all the information about this DungeonInfo
 		 */
-		AsyncScheduler.runAsync(() -> {
+		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			floors = new ConcurrentHashMap<Integer, FloorInfo>();
 			for (String floor : ProceduralDungeons.getInstance().getConfig().getConfigurationSection(("dungeons." + dungeonName + ".floors")).getKeys(false)) {
 				int floorNumber = Integer.valueOf(floor);
