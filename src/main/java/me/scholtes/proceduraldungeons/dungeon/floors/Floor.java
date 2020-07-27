@@ -1,8 +1,6 @@
 package me.scholtes.proceduraldungeons.dungeon.floors;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,19 +14,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.boydti.fawe.FaweAPI;
-import com.boydti.fawe.util.EditSessionBuilder;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.session.ClipboardHolder;
-
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
@@ -38,6 +23,7 @@ import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileVariation;
 import me.scholtes.proceduraldungeons.utils.ChatUtils;
 import me.scholtes.proceduraldungeons.utils.DungeonUtils;
+import me.scholtes.proceduraldungeons.utils.WorldUtils;
 
 public final class Floor {
 	
@@ -81,9 +67,9 @@ public final class Floor {
 			public void run() {
 				
 				/**
-				 * After 6 ticks with no changes clear queue
+				 * After 20 ticks with no changes clear queue
 				 */
-				if (count >= 6 && previousRoomSize == rooms.size()) {
+				if (count >= 20 && previousRoomSize == rooms.size()) {
 					queue.clear();
 				}
 				count++;
@@ -118,33 +104,18 @@ public final class Floor {
 						}
 						
 						if (dungeon.getSpawnPoint() == null) {
-							dungeon.setSpawnPoint(new Location(dungeon.getWorld(), (x + 1) * tileSet.getSize() / 2, previousHeight - (tileSet.getHeight() / 2), (y + 1) * tileSet.getSize() / 2));
+							dungeon.setSpawnPoint(new Location(dungeon.getWorld(), x * tileSet.getSize() - (tileSet.getSize() / 2), previousHeight - (tileSet.getHeight() / 2),  y * tileSet.getSize() - (tileSet.getSize() / 2)));
 						}
 						
 						List<TileVariation> variations = tileSet.getTileVariations().get(rooms.get(room).getRoomType());
 						
 						TileVariation variation = variations.get(ProceduralDungeons.getRandom().nextInt(variations.size()));
-
-						/**
-						 * Pastes the schematic of the tile
-						 */
-						Clipboard clipboard;
-
-						ClipboardFormat format = ClipboardFormats.findByFile(variation.getSchematic());
-						try (ClipboardReader reader = format.getReader(new FileInputStream(variation.getSchematic()))) {
-							clipboard = reader.read();
-							try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(dungeon.getWorld().getName())).fastmode(true).build()) {
-							    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x * tileSet.getSize(), newHeight , y * tileSet.getSize())).build();
-							    try {
-									Operations.complete(operation);
-								} catch (WorldEditException e) {
-									e.printStackTrace();
-								}
-							}
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
+						
+						WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), x * tileSet.getSize(), newHeight , y * tileSet.getSize());
+						
+						if (x == startPosX && y == startPosY && floorInfo.getFloor() > 1) {
+							File randomStairs = tileSet.getStairVariations().get(ProceduralDungeons.getRandom().nextInt(tileSet.getStairVariations().size()));
+							WorldUtils.pasteSchematic(randomStairs, dungeon.getWorld().getName(), x * tileSet.getSize() - (tileSet.getSize() / 2), previousHeight , y * tileSet.getSize() - (tileSet.getSize() / 2));
 						}
 						
 						/**
@@ -161,12 +132,9 @@ public final class Floor {
 								double locX = (x * tileSet.getSize()) + Double.valueOf(split[0]);
 								double locY = previousHeight + Double.valueOf(split[1]);
 								double locZ = (y * tileSet.getSize()) + Double.valueOf(split[2]);
-								System.out.println(locX + ";" + locY + ";" + locZ);
 								Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
 								
 								location.getBlock().setType(Material.CHEST);
-								
-								System.out.println(location.getBlock().getType());
 								
 								Chest chest = (Chest) location.getBlock().getState();
 								
@@ -177,8 +145,6 @@ public final class Floor {
 									String randomItem = items.get(ProceduralDungeons.getRandom().nextInt(items.size()));
 									chest.getInventory().setItem(ProceduralDungeons.getRandom().nextInt(27), plugin.getDungeonManager().getItem(randomItem));
 								}
-								
-								chest.update();
 							});
 						}
 						
@@ -193,7 +159,7 @@ public final class Floor {
 					 */
 					if (floorInfo.getFloor() < floorInfo.getDungeonInfo().getMaxFloors()) {
 						Room exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
-						while (exitRoom.getRoomType() == RoomType.INVALID && exitRoom.getX() == startPosX && exitRoom.getY() == startPosY) {
+						while (exitRoom.getRoomType() == RoomType.INVALID || (exitRoom.getX() == startPosX && exitRoom.getY() == startPosY)) {
 							exitRoom = (Room) rooms.values().toArray()[ProceduralDungeons.getRandom().nextInt(rooms.values().toArray().length)];
 						}
 						new Floor(plugin, dungeon, floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), exitRoom.getX(), exitRoom.getY(), newHeight);

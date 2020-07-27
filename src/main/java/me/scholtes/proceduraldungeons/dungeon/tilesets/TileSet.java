@@ -15,10 +15,11 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 
 public class TileSet {
 	
-	private Map<RoomType, List<TileVariation>> tileVariations;
+	private final Map<RoomType, List<TileVariation>> tileVariations;
 	private double size;
 	private double height;
 	private final String tileSetName;
+	private final List<File> stairVariations;
 	
 	/**
 	 * Constructor for the {@link TileSet}
@@ -27,12 +28,13 @@ public class TileSet {
 	 */
 	public TileSet(String tileSetName) {
 		this.tileSetName = tileSetName;
+		tileVariations = new ConcurrentHashMap<RoomType, List<TileVariation>>();
+		stairVariations = new ArrayList<File>();
 		
 		/**
 		 * Loads all the information about this TileSet
 		 */
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
-			tileVariations = new ConcurrentHashMap<RoomType, List<TileVariation>>();
 			for (RoomType roomType : RoomType.values()) {
 				if (roomType == RoomType.INVALID) {
 					continue;
@@ -50,6 +52,15 @@ public class TileSet {
 			}
 			size = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".size");
 			height = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".height");
+			
+
+			String pathStairs = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + "STAIRS" + File.separator;
+			File fileStairs = new File(pathStairs, "variations.yml");
+			FileConfiguration configStairs = YamlConfiguration.loadConfiguration(fileStairs);
+
+			for (String variation : configStairs.getStringList("variations")) {
+				stairVariations.add(new File(pathStairs, variation + ".schem"));
+			}
 		});
 		
 	}
@@ -97,6 +108,15 @@ public class TileSet {
 	 */
 	public String getTileSetName() {
 		return tileSetName;
+	}
+
+	/**
+	 * Gets a {@link List<File>} of all the stair variations
+	 * 
+	 * @return A {@link List<File>} of all the stair variations
+	 */
+	public List<File> getStairVariations() {
+		return stairVariations;
 	}
 
 }
