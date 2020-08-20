@@ -1,14 +1,17 @@
 package me.scholtes.proceduraldungeons.dungeon;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.floors.Floor;
+import me.scholtes.proceduraldungeons.dungeon.floors.FloorInfo;
 import me.scholtes.proceduraldungeons.generator.VoidGenerator;
 
 public class Dungeon {
@@ -20,6 +23,7 @@ public class Dungeon {
 	private int maxFloors = 0;
 	private UUID player;
 	private Location spawnPoint = null;
+	private ActiveMob boss = null;
 
 	/**
 	 * Constructor for the {@link Dungeon}
@@ -60,10 +64,10 @@ public class Dungeon {
 				return;
 			}
 			
-			setMaxFloors(ProceduralDungeons.getRandom().nextInt((dungeonInfo.getMaxFloors() - dungeonInfo.getMinFloors()) + 1) + dungeonInfo.getMinFloors());
+			setMaxFloors(ThreadLocalRandom.current().nextInt((dungeonInfo.getMaxFloors() - dungeonInfo.getMinFloors()) + 1) + dungeonInfo.getMinFloors());
 			System.out.println("Started floor generation for " + dungeonInfo.getDungeonName());
 
-			new Floor(plugin, getInstance(), dungeonInfo.getFloors().get(1), 0, 0, 256);
+			new Floor(plugin, getInstance(), (FloorInfo) dungeonInfo.getFloors().get(1), 0, 0, 256, 0);
 		});
 
 	}
@@ -76,6 +80,24 @@ public class Dungeon {
 	 */
 	public Location getSpawnPoint() {
 		return spawnPoint;
+	}
+
+	/**
+	 * Gets the {@link ActiveMob} boss of the {@link Dungeon}
+	 * 
+	 * @return {@link ActiveMob} boss
+	 */
+	public ActiveMob getBoss() {
+		return boss;
+	}
+
+	/**
+	 * Sets the {@link ActiveMob} boss of the {@link Dungeon}
+	 * 
+	 * @param boss {@link ActiveMob} boss
+	 */
+	public void setBoss(ActiveMob boss) {
+		this.boss = boss;
 	}
 
 	/**

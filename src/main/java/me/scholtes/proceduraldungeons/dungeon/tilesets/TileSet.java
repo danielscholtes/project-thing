@@ -15,9 +15,12 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 
 public class TileSet {
 	
-	private final Map<RoomType, List<TileVariation>> tileVariations;
-	private double size;
-	private double height;
+	private final Map<RoomType, List<Variation>> variations;
+	private double roomSize;
+	private double roomHeight;
+	private double bossHeight;
+	private double bossSizeX;
+	private double bossSizeZ;
 	private final String tileSetName;
 	private final List<File> stairVariations;
 	
@@ -28,7 +31,7 @@ public class TileSet {
 	 */
 	public TileSet(String tileSetName) {
 		this.tileSetName = tileSetName;
-		tileVariations = new ConcurrentHashMap<RoomType, List<TileVariation>>();
+		variations = new ConcurrentHashMap<RoomType, List<Variation>>();
 		stairVariations = new ArrayList<File>();
 		
 		/**
@@ -44,14 +47,23 @@ public class TileSet {
 				File file = new File(path, "variations.yml");
 				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 				
-				List<TileVariation> variations = new ArrayList<TileVariation>();
-				for (String variation : config.getConfigurationSection("variations").getKeys(false)) {
-					variations.add(new TileVariation(getInstance(), variation, roomType));
+				List<Variation> tileVariations = new ArrayList<Variation>();
+				if (roomType == RoomType.BOSS) {
+					for (String variation : config.getConfigurationSection("variations").getKeys(false)) {
+						tileVariations.add(new BossVariation(getInstance(), variation, roomType));
+					}
+				} else {
+					for (String variation : config.getConfigurationSection("variations").getKeys(false)) {
+						tileVariations.add(new TileVariation(getInstance(), variation, roomType));
+					}
 				}
-				tileVariations.put(roomType, variations);
+				variations.put(roomType, tileVariations);
 			}
-			size = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".size");
-			height = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".height");
+			roomSize = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".room_size");
+			roomHeight = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".room_height");
+			bossHeight = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".boss_height");
+			bossSizeX = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".boss_size_x");
+			bossSizeZ = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".boss_size_z");
 			
 
 			String pathStairs = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + "STAIRS" + File.separator;
@@ -66,12 +78,12 @@ public class TileSet {
 	}
 
 	/**
-	 * Gets a {@link Map<RoomType, List<TileVariation>>} of all the {@link TileVariation}
+	 * Gets a {@link Map<RoomType, List<Variation>>} of all the {@link Variation}
 	 * 
-	 * @return A {@link Map<RoomType, List<TileVariation>>} of all the {@link TileVariation}
+	 * @return A {@link Map<RoomType, List<Variation>>} of all the {@link Variation}
 	 */
-	public Map<RoomType, List<TileVariation>> getTileVariations() {
-		return tileVariations;
+	public Map<RoomType, List<Variation>> getVariations() {
+		return variations;
 	}
 	
 	/**
@@ -84,23 +96,50 @@ public class TileSet {
 	}
 
 	/**
-	 * Gets the schematic size of this {@link TileSet}
+	 * Gets the schematic room size of this {@link TileSet}
 	 * 
-	 * @return Schematic size of this {@link TileSet}
+	 * @return Schematic room size of this {@link TileSet}
 	 */
-	public double getSize() {
-		return size;
+	public double getRoomSize() {
+		return roomSize;
 	}
 
 	/**
-	 * Gets the schematic height of this {@link TileSet}
+	 * Gets the schematic room height of this {@link TileSet}
 	 * 
-	 * @return Schematic height of this {@link TileSet}
+	 * @return Schematic room height of this {@link TileSet}
 	 */
-	public double getHeight() {
-		return height;
+	public double getRoomHeight() {
+		return roomHeight;
 	}
 
+	/**
+	 * Gets the schematic boss room height of this {@link TileSet}
+	 * 
+	 * @return Schematic boss room height of this {@link TileSet}
+	 */
+	public double getBossHeight() {
+		return bossHeight;
+	}
+	
+	/**
+	 * Gets the schematic boss room size on the X axis of this {@link TileSet}
+	 * 
+	 * @return Schematicboss room size on the X axis of this {@link TileSet}
+	 */
+	public double getBossSizeX() {
+		return bossSizeX;
+	}
+
+	/**
+	 * Gets the schematic boss room size on the Z axis of this {@link TileSet}
+	 * 
+	 * @return Schematic boss room size on the Z axis of this {@link TileSet}
+	 */
+	public double getBossSizeZ() {
+		return bossSizeZ;
+	}
+	
 	/**
 	 * Gets the name of this {@link TileSet}
 	 * 

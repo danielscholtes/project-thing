@@ -14,12 +14,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-import java.util.Random;
 import java.util.stream.Stream;
 
 public final class ProceduralDungeons extends JavaPlugin {
 
-	private static final Random RANDOM = new Random();
 	private static ProceduralDungeons instance = null;
 	private DungeonManager dungeonManager = null;
 
@@ -81,15 +79,6 @@ public final class ProceduralDungeons extends JavaPlugin {
 			dungeonManager = new DungeonManager();
 		}
 		return dungeonManager;
-	}
-
-	/**
-	 * Gets the instance of the {@link Random}
-	 * 
-	 * @return Instance of the random
-	 */
-	public static Random getRandom() {
-		return RANDOM;
 	}
 
 	/**

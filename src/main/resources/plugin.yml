@@ -4,7 +4,7 @@ version: 1.0
 description: ProceduralDungeons
 main: me.scholtes.proceduraldungeons.ProceduralDungeons
 api-version: 1.16
-depend: [WorldEdit]
+depend: [WorldEdit, MythicMobs]
 
 commands:
   dungeon:

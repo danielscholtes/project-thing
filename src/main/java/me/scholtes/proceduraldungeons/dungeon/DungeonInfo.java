@@ -1,19 +1,25 @@
 package me.scholtes.proceduraldungeons.dungeon;
 
+import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
+import me.scholtes.proceduraldungeons.dungeon.floors.AbstractFloorInfo;
+import me.scholtes.proceduraldungeons.dungeon.floors.BossFloor;
 import me.scholtes.proceduraldungeons.dungeon.floors.FloorInfo;
 
 public class DungeonInfo {
 	
-	private Map<Integer, FloorInfo> floors;
+	private Map<Integer, AbstractFloorInfo> floors;
 	private int minFloors;
 	private int maxFloors;
 	private final String dungeonName;
+	private final FileConfiguration config;
 
 	/**
 	 * Constructor for the {@link DungeonInfo}
@@ -24,18 +30,29 @@ public class DungeonInfo {
 	public DungeonInfo(String dungeonName, DungeonManager dungeonManager) {
 		this.dungeonName = dungeonName;
 		
+
+		String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + "dungeons" + File.separator;
+		File file = new File(path, dungeonName + ".yml");
+		this.config = YamlConfiguration.loadConfiguration(file);
+		
+		
 		/**
 		 * Loads all the information about this DungeonInfo
 		 */
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
-			floors = new ConcurrentHashMap<Integer, FloorInfo>();
-			for (String floor : ProceduralDungeons.getInstance().getConfig().getConfigurationSection(("dungeons." + dungeonName + ".floors")).getKeys(false)) {
-				int floorNumber = Integer.valueOf(floor);
-				floors.put(floorNumber, new FloorInfo(getInstance(), dungeonManager, floorNumber));
+			floors = new ConcurrentHashMap<Integer, AbstractFloorInfo>();
+			for (String floor : config.getConfigurationSection("floors").getKeys(false)) {
+				if (floor.equalsIgnoreCase("boss")) {
+					int floorNumber = -1;
+					floors.put(floorNumber, new BossFloor(getInstance(), dungeonManager, floor));
+				} else {
+					int floorNumber = Integer.valueOf(floor);
+					floors.put(floorNumber, new FloorInfo(getInstance(), dungeonManager, floor));
+				}
 			}
 			
-			minFloors = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonName + ".min_floors");
-			maxFloors = ProceduralDungeons.getInstance().getConfig().getInt("dungeons." + dungeonName + ".max_floors");
+			minFloors = config.getInt("min_floors");
+			maxFloors = config.getInt("max_floors");
 		});
 		
 	}
@@ -43,9 +60,9 @@ public class DungeonInfo {
 	/**
 	 * Gets all the {@link FloorInfo} in a {@link Map<Integer, FloorInfo>}
 	 * 
-	 * @return a {@link Map<Integer, FloorInfo>} with the {@link FloorInfo}
+	 * @return {@link Map<Integer, FloorInfo>} with the {@link FloorInfo}
 	 */
-	public Map<Integer, FloorInfo> getFloors() {
+	public Map<Integer, AbstractFloorInfo> getFloors() {
 		return floors;
 	}
 	
@@ -74,6 +91,15 @@ public class DungeonInfo {
 	 */
 	public String getDungeonName() {
 		return dungeonName;
+	}
+
+	/**
+	 * Gets the {@link FileConfiguration} of the {@link DungeonInfo}
+	 * 
+	 * @return {@link FileConfiguration} of the {@link DungeonInfo}
+	 */
+	public FileConfiguration getConfig() {
+		return config;
 	}
 	
 	/**

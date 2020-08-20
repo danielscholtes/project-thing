@@ -1,5 +1,7 @@
 package me.scholtes.proceduraldungeons.dungeon.rooms;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
@@ -154,9 +156,9 @@ public final class Room {
 			 */
 			if (room == null) {
 				if (floor.getRooms().size() < floor.getMaxRooms()) {
-					RoomType randomRoomType = RoomType.values()[ProceduralDungeons.getRandom().nextInt(RoomType.values().length)];
+					RoomType randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
 					while (!randomRoomType.toString().contains(opposite.toString())) {
-						randomRoomType = RoomType.values()[ProceduralDungeons.getRandom().nextInt(RoomType.values().length)];
+						randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
 					}
 					System.out.println("(" + posx + "," + posy + " " + roomTypeString + ") -->" + "(" + (posx + direction.getX()) + "," + (posy + direction.getY()) + " " + randomRoomType.toString() + ")");
 					floor.getRooms().put(getter, new Room(floor, randomRoomType, (posx + direction.getX()), (posy + direction.getY())));
