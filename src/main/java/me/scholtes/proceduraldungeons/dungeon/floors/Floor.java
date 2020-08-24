@@ -104,8 +104,6 @@ public final class Floor {
 						/**
 						 * A loop that goes through all the rooms, checks if they are valid
 						 * and if they are, gets a tile variation from the tileset
-						 * 
-						 * TO-DO: Add it so it gets a random tile variation
 						 */
 						
 						List<TileSet> tileSets =  floorInfo.getTileSets();
@@ -160,7 +158,7 @@ public final class Floor {
 						/**
 						 * Checks if this is the last floor, and if not generates a new one
 						 */
-						if (floorInfo.getFloor() < floorInfo.getDungeonInfo().getMaxFloors()) {
+						if (floorInfo.getFloor() < dungeon.getMaxFloors()) {
 							new Floor(plugin, dungeon, (FloorInfo) floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), exitRoom.getX(), exitRoom.getY(), newHeight, tileSet.getRoomSize());
 							return;
 						}
