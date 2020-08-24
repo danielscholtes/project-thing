@@ -1,6 +1,6 @@
 name: ProceduralDungeons
 author: Scholtes
-version: 1.0-STABLE
+version: 1.0.1-STABLE
 description: ProceduralDungeons
 main: me.scholtes.proceduraldungeons.ProceduralDungeons
 api-version: 1.16

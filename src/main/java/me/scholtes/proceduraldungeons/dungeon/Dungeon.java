@@ -58,6 +58,7 @@ public class Dungeon {
 		world.setGameRule(GameRule.MOB_GRIEFING, false);
 		world.setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
 		world.setGameRule(GameRule.KEEP_INVENTORY, true);
+		world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 
 	}
 
