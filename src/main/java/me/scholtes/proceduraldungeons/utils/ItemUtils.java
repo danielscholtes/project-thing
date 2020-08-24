@@ -50,7 +50,7 @@ public class ItemUtils {
 		ItemStack item = new ItemStack(material, amount);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(ChatUtils.color(name));
-		meta.setLore(ChatUtils.colorList(lore));
+		meta.setLore(ChatUtils.color(lore));
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -69,7 +69,7 @@ public class ItemUtils {
 		ItemStack item = new ItemStack(material, amount);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(ChatUtils.color(name));
-		meta.setLore(ChatUtils.colorList(lore));
+		meta.setLore(ChatUtils.color(lore));
 		item.setItemMeta(meta);
 		
 		for (String enchant : enchants) {

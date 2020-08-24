@@ -30,23 +30,39 @@ public class WorldUtils {
 	 * @param z The Z position
 	 */
 	public static void pasteSchematic(File file, String worldName, double x, double y, double z) {
-		Clipboard clipboard;
 
-		ClipboardFormat format = ClipboardFormats.findByFile(file);
-		try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
-			clipboard = reader.read();
-			try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(worldName)).fastmode(true).build()) {
-			    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).build();
-			    try {
-					Operations.complete(operation);
-				} catch (WorldEditException e) {
-					e.printStackTrace();
+		FileInputStream input = null;
+		try {
+
+			input = new FileInputStream(file);
+			Clipboard clipboard;
+
+			ClipboardFormat format = ClipboardFormats.findByFile(file);
+			try (ClipboardReader reader = format.getReader(input)) {
+				clipboard = reader.read();
+				try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(worldName)).fastmode(true).build()) {
+				    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).build();
+				    try {
+						Operations.complete(operation);
+					} catch (WorldEditException e) {
+						e.printStackTrace();
+					}
 				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} finally {
+			try {
+				if (input != null) {
+					input.close();	
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

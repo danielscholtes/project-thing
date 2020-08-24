@@ -3,8 +3,8 @@ tile_sets:
     room_size: 36
     room_height: 13
     boss_height: 22
-    boss_size_x: 77
-    boss_size_z: 52
+party:
+  max_members: 4
 
 dungeons:
   dungeon1:

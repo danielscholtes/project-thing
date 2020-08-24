@@ -12,6 +12,7 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 public abstract class Variation {
 	
 	private File schematic;
+	private String variationName;
 	private List<String> chestLocations;
 	private List<String> mobLocations;
 	
@@ -23,6 +24,7 @@ public abstract class Variation {
 	 * @param roomType The {@link RoomType} of this {@link TileVariation}
 	 */
 	public Variation(TileSet tileSet, String variation, RoomType roomType) {
+		this.variationName = variation;
 		/**
 		 * Loads all the information about the TileVariation
 		 */
@@ -35,6 +37,15 @@ public abstract class Variation {
 			schematic = new File(path, variation + ".schem");
 			mobLocations = config.getStringList("variations." + variation + ".mobs");
 		});
+	}
+	
+	/**
+	 * Gets the name of this {@link Variation}
+	 * 
+	 * @return Name of this {@link Variation}
+	 */
+	public String getVariationName() {
+		return variationName;
 	}
 
 	/**

@@ -1,10 +1,15 @@
 package me.scholtes.proceduraldungeons.dungeon;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,8 +17,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
+import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.utils.ItemUtils;
 
 public class DungeonManager {
@@ -43,6 +50,40 @@ public class DungeonManager {
 				items.put(item, ItemUtils.createItemStack(material, amount, name, lore, enchants));
 			}
 		});
+	}
+	
+	/**
+	 * Gets the {@link Dungeon} from the specified {@link UUID}
+	 * 
+	 * @param uuid The {@link UUID} of the {@link Dungeon}
+	 * @return The {@link Dungeon} if one is found, otherwise it will return {@link null}
+	 */
+	public Dungeon getDungeonFromID(UUID uuid) {
+		for (Dungeon dungeon : dungeons.values()) {
+			if (dungeon.getDungeonID().equals(uuid)) {
+				return dungeon;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the {@link Dungeon} from a player {@link UUID} or {@link Party}
+	 * 
+	 * @param uuid The player {@link UUID}
+	 * @param party The {@link Party}
+	 * @return The {@link Dungeon} if one is found, otherwise it will return {@link null}
+	 */
+	public Dungeon getDungeonFromPlayer(UUID uuid, Party party) {
+		if ((party == null && !getDungeons().containsKey(uuid)) || (party != null && !getDungeons().containsKey(party.getOwner()))) {
+			return null;
+		}
+		
+		if (party == null) {
+			return getDungeons().get(uuid);
+		} else {
+			return getDungeons().get(party.getOwner());
+		}
 	}
 	
 	/**
@@ -79,8 +120,44 @@ public class DungeonManager {
 	 */
 	public void joinDungeon(Player player, String dungeonName) {
 		Dungeon dungeon = new Dungeon(ProceduralDungeons.getInstance(), getDungeonInfo(dungeonName), player.getUniqueId());
-		dungeons.put(player.getUniqueId(), dungeon);  
-		dungeon.generateDungeon();	
+		dungeons.put(player.getUniqueId(), dungeon);
+		dungeon.generateDungeon();
+	}
+	
+	/**
+	 * Removes the {@link Dungeon} specified
+	 * 
+	 * @param dungeon The {@link Dungeon} to remove
+	 */
+	public void removeDungeon(Dungeon dungeon) {
+		for (Player p : dungeon.getWorld().getPlayers()) {
+			p.teleport(dungeon.getDungeonInfo().getFinishLocation());
+		}
+		
+		Party party = ProceduralDungeons.getInstance().getPartyData().getPartyFromPlayer(dungeon.getPlayer());
+		if (party != null) {
+			for (UUID uuid : party.getMembers()) {
+				Player bukkitPlayer = Bukkit.getPlayer(uuid);
+				if (bukkitPlayer == null) {
+					continue;
+				}
+				bukkitPlayer.teleport(dungeon.getDungeonInfo().getFinishLocation());
+			}
+			Bukkit.getPlayer(party.getOwner()).teleport(dungeon.getDungeonInfo().getFinishLocation());
+		}
+
+		Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
+
+		/**
+		 * Deletes the world files of the dungeon world
+		 */
+		try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {
+			files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		dungeons.remove(dungeon.getPlayer());
 	}
 	
 	/**

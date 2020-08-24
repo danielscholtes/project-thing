@@ -4,9 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.scholtes.proceduraldungeons.commands.DungeonCommand;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
+import me.scholtes.proceduraldungeons.dungeon.commands.DungeonCommand;
+import me.scholtes.proceduraldungeons.dungeon.listeners.BossListener;
+import me.scholtes.proceduraldungeons.dungeon.listeners.PlayerListeners;
+import me.scholtes.proceduraldungeons.dungeon.listeners.WandListeners;
+import me.scholtes.proceduraldungeons.party.PartyData;
+import me.scholtes.proceduraldungeons.party.commands.PartyCommand;
+import me.scholtes.proceduraldungeons.utils.ChatUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +26,8 @@ public final class ProceduralDungeons extends JavaPlugin {
 
 	private static ProceduralDungeons instance = null;
 	private DungeonManager dungeonManager = null;
+	private PartyData partyData = null;
+	private File messageFile = null;
 
 	/**
 	 * Run when the plugin is enabled
@@ -31,11 +39,20 @@ public final class ProceduralDungeons extends JavaPlugin {
 		/**
 		 * Registering the commands
 		 */
-		getCommand("dungeon").setExecutor(new DungeonCommand(this, getDungeonManager()));
+		getCommand("dungeon").setExecutor(new DungeonCommand(this, getDungeonManager(), getPartyData()));
+		getCommand("party").setExecutor(new PartyCommand(getDungeonManager(), getPartyData()));
 		
 		getDungeonManager().loadItems();
 		getDungeonManager().loadDungeonInfo();
 		getDungeonManager().loadTileSets();
+		ChatUtils.loadMessages(getMessageFile());
+		
+		/**
+		 * Registering the listeners
+		 */
+		getServer().getPluginManager().registerEvents(new PlayerListeners(getDungeonManager(), getPartyData()), this);
+		getServer().getPluginManager().registerEvents(new BossListener(this, getDungeonManager(), getPartyData()), this);
+		getServer().getPluginManager().registerEvents(new WandListeners(getDungeonManager(), this), this);
 	}
 
 	/**
@@ -51,7 +68,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 			}
 
 			for (Player p : dungeon.getWorld().getPlayers()) {
-				p.teleport(getServer().getWorlds().get(0).getSpawnLocation());
+				p.teleport(dungeon.getDungeonInfo().getFinishLocation());
 			}
 
 			Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
@@ -69,6 +86,13 @@ public final class ProceduralDungeons extends JavaPlugin {
 		getDungeonManager().getDungeons().clear();
 	}
 
+	public File getMessageFile() {
+		if (messageFile == null) {
+			messageFile = new File(getDataFolder().getAbsolutePath(), "messages.yml");
+		}
+		return messageFile;
+	}
+	
 	/**
 	 * Gets the instance of the {@link DungeonManager}
 	 * 
@@ -79,6 +103,18 @@ public final class ProceduralDungeons extends JavaPlugin {
 			dungeonManager = new DungeonManager();
 		}
 		return dungeonManager;
+	}
+
+	/**
+	 * Gets the instance of the {@link DungeonManager}
+	 * 
+	 * @return Instance of the DungeonManager
+	 */
+	public PartyData getPartyData() {
+		if (partyData == null) {
+			partyData = new PartyData();
+		}
+		return partyData;
 	}
 
 	/**

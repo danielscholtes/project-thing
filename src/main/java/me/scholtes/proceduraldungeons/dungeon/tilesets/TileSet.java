@@ -19,8 +19,6 @@ public class TileSet {
 	private double roomSize;
 	private double roomHeight;
 	private double bossHeight;
-	private double bossSizeX;
-	private double bossSizeZ;
 	private final String tileSetName;
 	private final List<File> stairVariations;
 	
@@ -62,9 +60,6 @@ public class TileSet {
 			roomSize = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".room_size");
 			roomHeight = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".room_height");
 			bossHeight = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".boss_height");
-			bossSizeX = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".boss_size_x");
-			bossSizeZ = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".boss_size_z");
-			
 
 			String pathStairs = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + "STAIRS" + File.separator;
 			File fileStairs = new File(pathStairs, "variations.yml");
@@ -120,24 +115,6 @@ public class TileSet {
 	 */
 	public double getBossHeight() {
 		return bossHeight;
-	}
-	
-	/**
-	 * Gets the schematic boss room size on the X axis of this {@link TileSet}
-	 * 
-	 * @return Schematicboss room size on the X axis of this {@link TileSet}
-	 */
-	public double getBossSizeX() {
-		return bossSizeX;
-	}
-
-	/**
-	 * Gets the schematic boss room size on the Z axis of this {@link TileSet}
-	 * 
-	 * @return Schematic boss room size on the Z axis of this {@link TileSet}
-	 */
-	public double getBossSizeZ() {
-		return bossSizeZ;
 	}
 	
 	/**

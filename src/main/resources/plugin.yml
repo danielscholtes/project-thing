@@ -9,3 +9,5 @@ depend: [WorldEdit, MythicMobs]
 commands:
   dungeon:
     description: Main dungeon command
+  party:
+    description: Main party command

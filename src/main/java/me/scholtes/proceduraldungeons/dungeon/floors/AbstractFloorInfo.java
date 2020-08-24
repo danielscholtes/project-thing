@@ -8,7 +8,6 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
-import me.scholtes.proceduraldungeons.dungeon.AbstractMob;
 import me.scholtes.proceduraldungeons.dungeon.DungeonInfo;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 import me.scholtes.proceduraldungeons.dungeon.Mob;
@@ -18,7 +17,7 @@ public abstract class AbstractFloorInfo {
 
 	private List<String> items;
 	private List<TileSet> tileSets;
-	private Set<AbstractMob> mobs;
+	private Set<Mob> mobs;
 	private double chestChance;
 	private int minItems;
 	private int maxItems;
@@ -39,7 +38,7 @@ public abstract class AbstractFloorInfo {
 		} else { 
 			this.floor = Integer.valueOf(floor);
 		}
-		mobs = new HashSet<>();
+		mobs = new HashSet<Mob>();
 		items = new ArrayList<String>();
 		tileSets = new ArrayList<TileSet>();
 		
@@ -67,11 +66,11 @@ public abstract class AbstractFloorInfo {
 	}
 
 	/**
-	 * Gets a {@link Set<AbstractMob>} of all the mobs this {@link AbstractFloorInfo} has
+	 * Gets a {@link Set<Mob>} of all the mobs this {@link AbstractFloorInfo} has
 	 * 
-	 * @return A {@link Set<AbstractMob>} of all the mobs
+	 * @return A {@link Set<Mob>} of all the mobs
 	 */
-	public Set<AbstractMob> getMobs() {
+	public Set<Mob> getMobs() {
 		return mobs;
 	}
 	
