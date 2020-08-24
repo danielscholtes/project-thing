@@ -244,7 +244,17 @@ public final class Floor {
 			}
 		}.runTaskTimerAsynchronously(plugin, 0L, 1L);
 	}
-	
+
+	/**
+	 * Generates all the chests for the {@link Room}
+	 * 
+	 * @param floorInfo The {@link AbstractFloorInfo} of this {@link Room}
+	 * @param variation The {@link Variation} of this {@link Room}
+	 * @param x The X coordinate of the {@link Room}
+	 * @param y The Y coordinate of the {@link Room}
+	 * @param tileSet The {@link TileSet} for this {@link Room}
+	 * @param height The height of the {@link Room}
+	 */
 	private void generateChests(AbstractFloorInfo floorInfo, Variation variation, double x, double y, TileSet tileSet, double height) {
 		for (String loc : variation.getChestLocations()) {
 			if (Math.random() >= floorInfo.getChestChance()) {
@@ -273,6 +283,16 @@ public final class Floor {
 		}
 	}
 	
+	/**
+	 * Generates all the mobs for the {@link Room}
+	 * 
+	 * @param mobs A {@link Set<Mob>} of mobs to spawn
+	 * @param locations A {@link List<String>} list of all possible locations
+	 * @param x The X coordinate of the {@link Room}
+	 * @param y The Y coordinate of the {@link Room}
+	 * @param tileSet The {@link TileSet} for this {@link Room}
+	 * @param height The height of the {@link Room}
+	 */
 	private void generateMobs(Set<Mob> mobs, List<String> locations, double x, double y, TileSet tileSet, double height) {
 		for (String loc : locations) {
 			for (Mob mob : mobs) {
