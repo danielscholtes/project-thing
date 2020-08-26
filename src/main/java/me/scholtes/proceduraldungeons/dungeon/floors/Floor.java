@@ -233,7 +233,7 @@ public final class Floor {
 
 								Player bukkitPlayer = Bukkit.getPlayer(dungeon.getPlayer());
 								if (bukkitPlayer == null) {
-									;
+									return;
 								}
 								ChatUtils.message(bukkitPlayer, ChatUtils.getMessage(Message.DUNGEON_JOIN_GENERATED));
 								ChatUtils.message(bukkitPlayer, ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
