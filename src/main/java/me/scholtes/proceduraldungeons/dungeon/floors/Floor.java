@@ -210,8 +210,9 @@ public final class Floor {
 									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.SOUTH).getLocation());
 								} else if (dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH).getType() != Material.AIR) {
 									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.WEST).getLocation());
+								} else {
+									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH_EAST).getLocation());	
 								}
-								dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH_EAST).getLocation());
 							}
 							
 							dungeon.setBossID(MythicMobs.inst().getMobManager().spawnMob(randomBoss.getName(), location).getUniqueId());
