@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -49,35 +48,47 @@ public final class Floor {
 	private int previousRoomSize = 0;
 	private int count = 0;
 
-	/**
+	/**	
 	 * Constructor for the {@link Floor}
 	 * 
 	 * @param plugin The instance of {@link ProceduralDungeons}
+	 * @param dungeon The {@link Dungeon} associated to this {@link Floor}
 	 * @param floorInfo The {@link FloorInfo} of this {@link Floor}
-	 * @param currentFloor The current floor
-	 * @param posX The X position of the first room
-	 * @param posY The Y position of the first room
+	 * @param startWorldX The X world position to add onto the pasting of the {@link Floor}
+	 * @param startWorldY The Y world position to add onto the pasting of the {@link Floor}
+	 * @param prevStartWorldX The previous X world position to add onto the pasting of the previous {@link Floor}
+	 * @param prevStartWorldY The previous Y world position to add onto the pasting of the previous {@link Floor}
+	 * @param exitRoomX The X position of the exit room for the previous {@link Floor}
+	 * @param exitRoomY The Y position of the exit room for the previous {@link Floor}
+	 * @param previousHeight The pasting height of the last {@link Floor}
+	 * @param previousTileSize The previous tile size (room size) of the previous {@link Floor}
 	 */
-	public Floor(ProceduralDungeons plugin, Dungeon dungeon, FloorInfo floorInfo, int posX, int posY, double previousHeight, double previousTileSize) {
+	public Floor(ProceduralDungeons plugin, Dungeon dungeon, FloorInfo floorInfo, double startWorldX, double startWorldY, double prevStartWorldX, double prevStartWorldY, int exitRoomX, int exitRoomY, double previousHeight, double previousTileSize) {
 		this.plugin = plugin;
 		this.floorInfo = floorInfo;
 		this.dungeon = dungeon;
 		this.maxRooms = ThreadLocalRandom.current().nextInt((floorInfo.getMaxRooms() - floorInfo.getMinRooms()) + 1) + floorInfo.getMinRooms();
-		generateFloor(posX, posY, previousHeight, previousTileSize);
+		generateFloor(exitRoomX, exitRoomY, startWorldX, startWorldY, prevStartWorldX, prevStartWorldY, previousHeight, previousTileSize);
 	}
 
 	/**
 	 * Generates the {@link Floor}
 	 * 
-	 * @param startPosX The X position of the first room
-	 * @param startPosY The Y position of the first room
+	 * @param exitRoomX The X position of the exit room for the previous {@link Floor}
+	 * @param exitRoomY The Y position of the exit room for the previous {@link Floor}
+	 * @param startWorldX The X world position to add onto the pasting of the {@link Floor}
+	 * @param startWorldY The Y world position to add onto the pasting of the {@link Floor}
+	 * @param prevStartWorldX The previous X world position to add onto the pasting of the previous {@link Floor}
+	 * @param prevStartWorldY The previous Y world position to add onto the pasting of the previous {@link Floor}
+	 * @param previousHeight The pasting height of the last {@link Floor}
+	 * @param previousTileSize The previous tile size (room size) of the previous {@link Floor}
 	 */
-	public void generateFloor(final int startPosX, final int startPosY, final double previousHeight, final double previousTileSize) {
+	public void generateFloor(int exitRoomX, int exitRoomY, double startWorldX, double startWorldY, double prevStartWorldX, double prevStartWorldY, double previousHeight, double previousTileSize) {
 		RoomType randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
 		while (randomRoomType == RoomType.INVALID || randomRoomType == RoomType.BOSS) {
 			randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
 		}
-		rooms.put(startPosX + "_" + startPosY, new Room(this, randomRoomType, startPosX, startPosY));
+		rooms.put("0_0", new Room(this, randomRoomType, 0, 0));
 		new BukkitRunnable() {
 			public void run() {
 				/**
@@ -96,10 +107,19 @@ public final class Floor {
 				 */
 				if (queue.isEmpty() || generateAnyway) {
 					this.cancel();
+					
+					if (rooms.size() < floorInfo.getMinRooms()) {
+						rooms.clear();
+						queue.clear();
+						generateFloor(exitRoomX, exitRoomY, startWorldX, startWorldY, prevStartWorldX, prevStartWorldY, previousHeight, previousTileSize);
+						return;
+					}
+					
 					TaskManager.IMP.async(() -> {
 						
-						int startRoomX = startPosX;
-						int startRoomY = startPosY;
+
+						int startRoomX = 0;
+						int startRoomY = 0;
 						
 						/**
 						 * A loop that goes through all the rooms, checks if they are valid
@@ -108,6 +128,7 @@ public final class Floor {
 						
 						List<TileSet> tileSets =  floorInfo.getTileSets();
 						TileSet tileSet =  tileSets.get(ThreadLocalRandom.current().nextInt(tileSets.size()));
+						double oldTileSize = (previousTileSize == 0) ? tileSet.getRoomSize() : previousTileSize;
 						double newHeight = previousHeight - tileSet.getRoomHeight();
 						
 						for (String room : rooms.keySet()) {
@@ -124,25 +145,26 @@ public final class Floor {
 							if (dungeon.getSpawnPoint() == null) {
 								startRoomX = x;
 								startRoomY = y;
-								dungeon.setSpawnPoint(new Location(dungeon.getWorld(), x * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2), newHeight + (tileSet.getRoomHeight() / 2),  y * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2)));
+								dungeon.setSpawnPoint(new Location(dungeon.getWorld(), startWorldX + x * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2), newHeight + (tileSet.getRoomHeight() / 2),  startWorldY + y * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2)));
 							}
 							
 							List<Variation> variations = tileSet.getVariations().get(rooms.get(room).getRoomType());
 							
 							TileVariation variation = (TileVariation) variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
 							
-							WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), x * tileSet.getRoomSize(), newHeight , y * tileSet.getRoomSize());
-							
-							if (x == startPosX && y == startPosY && floorInfo.getFloor() > 1) {
+							//WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), startWorldX + x * tileSet.getRoomSize(), newHeight , startWorldY + y * tileSet.getRoomSize());
+							WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), startWorldX + x * tileSet.getRoomSize() + ((tileSet.getRoomSize() - oldTileSize) / 2), newHeight , startWorldY + y * tileSet.getRoomSize() + ((tileSet.getRoomSize() - oldTileSize) / 2));
+
+							if (startRoomX == x && startRoomY == y && floorInfo.getFloor() > 1) {
 								File randomStairs = tileSet.getStairVariations().get(ThreadLocalRandom.current().nextInt(tileSet.getStairVariations().size()));
-								WorldUtils.pasteSchematic(randomStairs, dungeon.getWorld().getName(), x * previousTileSize - (previousTileSize / 2), previousHeight , y * previousTileSize - (previousTileSize / 2));
+								WorldUtils.pasteSchematic(randomStairs, dungeon.getWorld().getName(), prevStartWorldX + exitRoomX * oldTileSize - (oldTileSize / 2), previousHeight, prevStartWorldY + exitRoomY * oldTileSize - (oldTileSize / 2));	
 							}
 							
 							/**
 							 * Generates the chests with loot and all the mobs
 							 */
-							generateChests(floorInfo, variation, x, y, tileSet, newHeight);
-							generateMobs(floorInfo.getMobs(), variation.getMobLocations(), x, y, tileSet, newHeight);
+							generateChests(floorInfo, variation, startWorldX, startWorldY, x, y, tileSet, newHeight);
+							generateMobs(floorInfo.getMobs(), variation.getMobLocations(), startWorldX, startWorldY, x, y, tileSet, newHeight);
 							
 						}
 
@@ -158,8 +180,11 @@ public final class Floor {
 						/**
 						 * Checks if this is the last floor, and if not generates a new one
 						 */
+
+						double startWorldXNew = startWorldX + exitRoom.getX() * tileSet.getRoomSize() + ((tileSet.getRoomSize() - oldTileSize) / 2);
+						double startWorldYNew = startWorldY + exitRoom.getY() * tileSet.getRoomSize() + ((tileSet.getRoomSize() - oldTileSize) / 2);
 						if (floorInfo.getFloor() < dungeon.getMaxFloors()) {
-							new Floor(plugin, dungeon, (FloorInfo) floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), exitRoom.getX(), exitRoom.getY(), newHeight, tileSet.getRoomSize());
+							new Floor(plugin, dungeon, (FloorInfo) floorInfo.getDungeonInfo().getFloors().get(floorInfo.getFloor() + 1), startWorldXNew, startWorldYNew, startWorldX, startWorldY, exitRoom.getX(), exitRoom.getY(), newHeight, tileSet.getRoomSize());
 							return;
 						}
 						
@@ -173,21 +198,22 @@ public final class Floor {
 						TileSet bossTileSet =  bossTileSets.get(ThreadLocalRandom.current().nextInt(bossTileSets.size()));	
 						List<Variation> variations = bossTileSet.getVariations().get(RoomType.BOSS);
 						BossVariation variation = (BossVariation) variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
-						
-						WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), exitRoom.getX() * tileSet.getRoomSize(), height , exitRoom.getY() * tileSet.getRoomSize());
-						File randomStairs = variation.getBossStairVariations().get(ThreadLocalRandom.current().nextInt(tileSet.getStairVariations().size()));
-						WorldUtils.pasteSchematic(randomStairs, dungeon.getWorld().getName(), exitRoom.getX() * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2), newHeight , exitRoom.getY() * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2));
-						
+						double positionXSchematic = startWorldXNew + ((bossTileSet.getRoomSize() - tileSet.getRoomSize()) / 2);
+						double positionYSchematic = startWorldYNew + ((bossTileSet.getRoomSize() - tileSet.getRoomSize()) / 2);
+						WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), positionXSchematic, height , positionYSchematic);
 
-						generateChests(bossFloor, variation, exitRoom.getX(), exitRoom.getY(), tileSet, height);
-						generateMobs(bossFloor.getMobs(), variation.getMobLocations(), exitRoom.getX(), exitRoom.getY(), tileSet, height);;
+						File randomStairs = variation.getBossStairVariations().get(ThreadLocalRandom.current().nextInt(variation.getBossStairVariations().size()));
+						WorldUtils.pasteSchematic(randomStairs, dungeon.getWorld().getName(), startWorldXNew - (tileSet.getRoomSize() / 2), newHeight , startWorldYNew - (tileSet.getRoomSize() / 2));
+						
+						generateChests(bossFloor, variation, startWorldXNew, startWorldYNew, 0, 0, tileSet, height);
+						generateMobs(bossFloor.getMobs(), variation.getMobLocations(), startWorldXNew, startWorldYNew, 0, 0, tileSet, height);
 						List<Boss> bosses = bossFloor.getBosses();
 						Boss randomBoss = bosses.get(ThreadLocalRandom.current().nextInt(bosses.size()));
 						
 						String[] split = variation.getBossLocation().split(";");
-						double locX = (exitRoom.getX() * tileSet.getRoomSize()) + Double.valueOf(split[0]);
+						double locX = startWorldXNew + Double.valueOf(split[0]);
 						double locY = height + Double.valueOf(split[1]);
-						double locZ = (exitRoom.getY() * tileSet.getRoomSize()) + Double.valueOf(split[2]);
+						double locZ = startWorldYNew + Double.valueOf(split[2]);
 						Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
 						
 						rooms.clear();
@@ -197,22 +223,37 @@ public final class Floor {
 						 * Teleports the players to the dungeon
 						 */
 						Bukkit.getScheduler().runTask(plugin, () -> {
-							
-							while (dungeon.getSpawnPoint().getBlock().getType() != Material.AIR || dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
-								System.out.println(dungeon.getSpawnPoint().getX() + "," + dungeon.getSpawnPoint().getY() + "," + dungeon.getSpawnPoint().getZ());
-								if (dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR) {
-									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.DOWN).getLocation());
-								} else if (dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH).getType() != Material.AIR) {
-									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH).getLocation());
-								} else if (dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH).getType() != Material.AIR) {
-									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.EAST).getLocation());
-								} else if (dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH).getType() != Material.AIR) {
-									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.SOUTH).getLocation());
-								} else if (dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH).getType() != Material.AIR) {
-									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.WEST).getLocation());
+							while (dungeon.getSpawnPoint().getBlock().getType() != Material.AIR || 
+									dungeon.getSpawnPoint().clone().add(0, 1, 0).getBlock().getType()!= Material.AIR || 
+											dungeon.getSpawnPoint().clone().add(0, 2, 0).getBlock().getType() != Material.AIR) {
+								
+								if (dungeon.getSpawnPoint().clone().add(0, -1, 0).getBlock().getType() != Material.AIR && 
+										dungeon.getSpawnPoint().clone().add(0, 0, 0).getBlock().getType() != Material.AIR && 
+												dungeon.getSpawnPoint().clone().add(0, 1, 0).getBlock().getType() != Material.AIR) {
+									dungeon.setSpawnPoint(dungeon.getSpawnPoint().clone().add(0, -1, 0));
+								} else if (dungeon.getSpawnPoint().clone().add(0, 0, -1).getBlock().getType() != Material.AIR && 
+										dungeon.getSpawnPoint().clone().add(0, 1, -1).getBlock().getType() != Material.AIR && 
+												dungeon.getSpawnPoint().clone().add(0, 2, -1).getBlock().getType() != Material.AIR) {
+									dungeon.setSpawnPoint(dungeon.getSpawnPoint().clone().add(0, 0, -1));
+								} else if (dungeon.getSpawnPoint().clone().add(1, 0, 0).getBlock().getType() != Material.AIR && 
+										dungeon.getSpawnPoint().clone().add(1, 1, 0).getBlock().getType() != Material.AIR && 
+												dungeon.getSpawnPoint().clone().add(1, 2, 0).getBlock().getType() != Material.AIR) {
+									dungeon.setSpawnPoint(dungeon.getSpawnPoint().clone().add(1, 0, 0));
+								} else if (dungeon.getSpawnPoint().clone().add(0, 0, 1).getBlock().getType() != Material.AIR && 
+										dungeon.getSpawnPoint().clone().add(0, 1, 1).getBlock().getType() != Material.AIR && 
+												dungeon.getSpawnPoint().clone().add(0, 2, 1).getBlock().getType() != Material.AIR) {
+									dungeon.setSpawnPoint(dungeon.getSpawnPoint().clone().add(0, 0, 1));
+								} else if (dungeon.getSpawnPoint().clone().add(-1, 0,  0).getBlock().getType() != Material.AIR && 
+										dungeon.getSpawnPoint().clone().add(-1, 1, 0).getBlock().getType() != Material.AIR && 
+												dungeon.getSpawnPoint().clone().add(-1, 2, 0).getBlock().getType() != Material.AIR) {
+									dungeon.setSpawnPoint(dungeon.getSpawnPoint().clone().add(-1, 0, 0));
 								} else {
-									dungeon.setSpawnPoint(dungeon.getSpawnPoint().getBlock().getRelative(BlockFace.NORTH_EAST).getLocation());	
+									dungeon.setSpawnPoint(dungeon.getSpawnPoint().clone().add(0, -1, 0));
 								}
+								
+								dungeon.getSpawnPoint().getBlock().setType(Material.AIR);
+								dungeon.getSpawnPoint().clone().add(0, 1, 0).getBlock().setType(Material.AIR);
+								dungeon.getSpawnPoint().clone().add(0, 2, 0).getBlock().setType(Material.AIR);
 							}
 							
 							dungeon.setBossID(MythicMobs.inst().getMobManager().spawnMob(randomBoss.getName(), location).getUniqueId());
@@ -251,12 +292,14 @@ public final class Floor {
 	 * 
 	 * @param floorInfo The {@link AbstractFloorInfo} of this {@link Room}
 	 * @param variation The {@link Variation} of this {@link Room}
+	 * @param startWorldX The X world position to add onto the spawning of the chests
+	 * @param startWorldY The Y world position to add onto the pasting of the chests
 	 * @param x The X coordinate of the {@link Room}
 	 * @param y The Y coordinate of the {@link Room}
 	 * @param tileSet The {@link TileSet} for this {@link Room}
 	 * @param height The height of the {@link Room}
 	 */
-	private void generateChests(AbstractFloorInfo floorInfo, Variation variation, double x, double y, TileSet tileSet, double height) {
+	private void generateChests(AbstractFloorInfo floorInfo, Variation variation, double startWorldX, double startWorldY, double x, double y, TileSet tileSet, double height) {
 		for (String loc : variation.getChestLocations()) {
 			if (Math.random() >= floorInfo.getChestChance()) {
 				continue;
@@ -264,9 +307,9 @@ public final class Floor {
 			
 			Bukkit.getScheduler().runTask(plugin, () -> {
 				String[] split = loc.split(";");
-				double locX = (x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
+				double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
 				double locY = height + Double.valueOf(split[1]);
-				double locZ = (y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
+				double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
 				Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
 				
 				location.getBlock().setType(Material.CHEST);
@@ -289,12 +332,14 @@ public final class Floor {
 	 * 
 	 * @param mobs A {@link Set<Mob>} of mobs to spawn
 	 * @param locations A {@link List<String>} list of all possible locations
+	 * @param startWorldX The X world position to add onto the spawning of the mobs
+	 * @param startWorldY The Y world position to add onto the pasting of the mobs
 	 * @param x The X coordinate of the {@link Room}
 	 * @param y The Y coordinate of the {@link Room}
 	 * @param tileSet The {@link TileSet} for this {@link Room}
 	 * @param height The height of the {@link Room}
 	 */
-	private void generateMobs(Set<Mob> mobs, List<String> locations, double x, double y, TileSet tileSet, double height) {
+	private void generateMobs(Set<Mob> mobs, List<String> locations, double startWorldX, double startWorldY, double x, double y, TileSet tileSet, double height) {
 		for (String loc : locations) {
 			for (Mob mob : mobs) {
 				if (Math.random() >=  mob.getChance()) {
@@ -303,9 +348,9 @@ public final class Floor {
 				
 				Bukkit.getScheduler().runTask(plugin, () -> {
 					String[] split = loc.split(";");
-					double locX = (x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
+					double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
 					double locY = height + Double.valueOf(split[1]);
-					double locZ = (y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
+					double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
 					Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
 					int mobAmount = 1;
 					mobAmount = ThreadLocalRandom.current().nextInt((mob.getMaxMobs() -  mob.getMinMobs()) + 1) + mob.getMinMobs();

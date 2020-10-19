@@ -1,7 +1,6 @@
 package me.scholtes.proceduraldungeons.dungeon.commands;
 
 import java.util.Arrays;
-
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,7 +15,6 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.nbt.NBT;
 import me.scholtes.proceduraldungeons.party.Party;
-import me.scholtes.proceduraldungeons.party.PartyData;
 import me.scholtes.proceduraldungeons.utils.ChatUtils;
 import me.scholtes.proceduraldungeons.utils.ItemUtils;
 import me.scholtes.proceduraldungeons.utils.Message;
@@ -24,8 +22,6 @@ import me.scholtes.proceduraldungeons.utils.Message;
 public class DungeonCommand implements CommandExecutor {
 	
 	private final ProceduralDungeons plugin;
-	private final DungeonManager dungeonManager;
-	private final PartyData partyData;
 	
 	/**
 	 * The constructor of the {@link DungeonCommand}
@@ -33,10 +29,8 @@ public class DungeonCommand implements CommandExecutor {
 	 * @param plugin The instance of {@link ProceduralDungeons}
 	 * @param dungeonManager The instance of {@link DungeonManager}
 	 */
-	public DungeonCommand(ProceduralDungeons plugin, DungeonManager dungeonManager, PartyData partyData) {
+	public DungeonCommand(ProceduralDungeons plugin) {
 		this.plugin = plugin;
-		this.dungeonManager = dungeonManager;
-		this.partyData = partyData;
 	}
 
 	/**
@@ -62,7 +56,11 @@ public class DungeonCommand implements CommandExecutor {
 					return true;
 				}
 
+				/**
+				 * Reloads all dungeon information and messages
+				 */
 				ChatUtils.loadMessages(plugin.getMessageFile());
+				plugin.getDungeonManager().reloadDungeons();
 				ChatUtils.message(sender, ChatUtils.getMessage(Message.RELOAD_RELOADED));
 				
 				return true;
@@ -99,12 +97,12 @@ public class DungeonCommand implements CommandExecutor {
 				/**
 				 * Checks if the tileset exists
 				 */
-				if (dungeonManager.getTileSet(args[1]) == null) {
+				if (plugin.getDungeonManager().getTileSet(args[1]) == null) {
 					ChatUtils.message(sender, ChatUtils.getMessage(Message.CHESTWAND_TILESET_NOT_EXIST));
 					return true;
 				}
 				
-				TileSet tileSet = dungeonManager.getTileSet(args[1]);
+				TileSet tileSet = plugin.getDungeonManager().getTileSet(args[1]);
 				
 				/**
 				 * Checks if the tile is valid, and if so gives the player the wand
@@ -157,12 +155,12 @@ public class DungeonCommand implements CommandExecutor {
 				/**
 				 * Checks if the tileset exists
 				 */
-				if (dungeonManager.getTileSet(args[1]) == null) {
+				if (plugin.getDungeonManager().getTileSet(args[1]) == null) {
 					ChatUtils.message(sender, ChatUtils.getMessage(Message.MOBWAND_TILESET_NOT_EXIST));
 					return true;
 				}
 				
-				TileSet tileSet = dungeonManager.getTileSet(args[1]);
+				TileSet tileSet = plugin.getDungeonManager().getTileSet(args[1]);
 
 				/**
 				 * Checks if the tile is valid, and if so gives the player the wand
@@ -223,7 +221,7 @@ public class DungeonCommand implements CommandExecutor {
 				/**
 				 * Checks if the player is in a party and a party leader
 				 */
-				Party party = partyData.getPartyFromPlayer(player.getUniqueId());
+				Party party = plugin.getPartyData().getPartyFromPlayer(player.getUniqueId());
 				if (party != null && !party.getOwner().equals(player.getUniqueId())) {
 					ChatUtils.message(player,  ChatUtils.getMessage(Message.NOT_LEADER));
 					return true;
@@ -233,7 +231,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player is in a dungeon
 				 */
 				
-				if (dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party) != null) {
+				if (plugin.getDungeonManager().getDungeonFromPlayer(player.getUniqueId(), party) != null) {
 					ChatUtils.message(player,  ChatUtils.getMessage(Message.DUNGEON_JOIN_ALREADY_IN));
 					return true;
 				}
@@ -246,7 +244,7 @@ public class DungeonCommand implements CommandExecutor {
 				} else {
 					ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_JOIN_GENERATING));
 				}
-				dungeonManager.joinDungeon(player, args[1]);
+				plugin.getDungeonManager().joinDungeon(player, args[1]);
 				return true;
 			}
 			
@@ -264,8 +262,8 @@ public class DungeonCommand implements CommandExecutor {
 				/**
 				 * Checks if the player is in a dungeon
 				 */
-				Party party = partyData.getPartyFromPlayer(player.getUniqueId());
-				Dungeon dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party);
+				Party party = plugin.getPartyData().getPartyFromPlayer(player.getUniqueId());
+				Dungeon dungeon = plugin.getDungeonManager().getDungeonFromPlayer(player.getUniqueId(), party);
 				if (dungeon == null) {
 					ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_LEAVE_NOT_IN));
 					return true;
@@ -275,13 +273,13 @@ public class DungeonCommand implements CommandExecutor {
 				 * Makes the player leave the dungeon
 				 */
 				if (party != null) {
-					partyData.removePlayerFromParty(party, player.getUniqueId());
+					plugin.getPartyData().removePlayerFromParty(party, player.getUniqueId());
 					ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
 					party.messageMembers(ChatUtils.replaceAll(ChatUtils.getMessage(Message.PARTY_PLAYER_LEFT), "{player}", player.getName()));
 					return true;
 				}
 				ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
-				dungeonManager.removeDungeon(dungeon);
+				plugin.getDungeonManager().removeDungeon(dungeon);
 				return true;
 			}
 			

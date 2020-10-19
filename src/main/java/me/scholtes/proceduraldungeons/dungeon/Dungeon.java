@@ -79,7 +79,7 @@ public class Dungeon {
 			
 			setMaxFloors(ThreadLocalRandom.current().nextInt((dungeonInfo.getMaxFloors() - dungeonInfo.getMinFloors()) + 1) + dungeonInfo.getMinFloors());
 
-			new Floor(plugin, getInstance(), (FloorInfo) dungeonInfo.getFloors().get(1), 0, 0, 256, 0);
+			new Floor(plugin, getInstance(), (FloorInfo) dungeonInfo.getFloors().get(1), 0, 0, 0, 0, 0, 0, 256, 0);
 		});
 
 	}

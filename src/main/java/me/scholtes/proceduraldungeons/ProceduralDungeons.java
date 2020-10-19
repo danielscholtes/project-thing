@@ -1,10 +1,11 @@
 package me.scholtes.proceduraldungeons;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 import me.scholtes.proceduraldungeons.dungeon.commands.DungeonCommand;
 import me.scholtes.proceduraldungeons.dungeon.listeners.BossListener;
@@ -39,12 +40,10 @@ public final class ProceduralDungeons extends JavaPlugin {
 		/**
 		 * Registering the commands
 		 */
-		getCommand("dungeon").setExecutor(new DungeonCommand(this, getDungeonManager(), getPartyData()));
+		getCommand("dungeon").setExecutor(new DungeonCommand(this));
 		getCommand("party").setExecutor(new PartyCommand(getDungeonManager(), getPartyData()));
 		
-		getDungeonManager().loadItems();
-		getDungeonManager().loadDungeonInfo();
-		getDungeonManager().loadTileSets();
+		getDungeonManager().reloadDungeons();
 		ChatUtils.loadMessages(getMessageFile());
 		
 		/**
@@ -53,37 +52,44 @@ public final class ProceduralDungeons extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new PlayerListeners(getDungeonManager(), getPartyData()), this);
 		getServer().getPluginManager().registerEvents(new BossListener(this, getDungeonManager(), getPartyData()), this);
 		getServer().getPluginManager().registerEvents(new WandListeners(getDungeonManager(), this), this);
+		
+		/**
+		 * Gets rid of any unremoved worlds from a potential crash
+		 */
+
+		String[] loc = getConfig().getString("crash_location").split(";");
+		Location crashLocation = new Location(Bukkit.getWorld(loc[3]), Double.valueOf(loc[0]), Double.valueOf(loc[1]), Double.valueOf(loc[2]));
+		for (World world : Bukkit.getWorlds()) {
+			if (world == null) {
+				continue;
+			}
+			
+			if (!world.getName().startsWith("Dungeon-")) {
+				continue;
+			}
+
+			for (Player p : world.getPlayers()) {
+				p.teleport(crashLocation);
+			}
+
+			Bukkit.getServer().unloadWorld(world, false);
+
+			/**
+			 * Deletes the world files of the dungeon world
+			 */
+			try (Stream<Path> files = Files.walk(world.getWorldFolder().toPath())) {
+				files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
 	 * Run when the plugin is disabled
 	 */
 	public void onDisable() {
-		/**
-		 * Goes through all the dungeon worlds and deletes them
-		 */
-		for (Dungeon dungeon : getDungeonManager().getDungeons().values()) {
-			if (dungeon.getWorld() == null) {
-				continue;
-			}
-
-			for (Player p : dungeon.getWorld().getPlayers()) {
-				p.teleport(dungeon.getDungeonInfo().getFinishLocation());
-			}
-
-			Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
-
-			/**
-			 * Deletes the world files of the dungeon world
-			 */
-			try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {
-				files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		getDungeonManager().getDungeons().clear();
+		getDungeonManager().clearDungeons();
 	}
 
 	public File getMessageFile() {

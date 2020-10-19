@@ -5,6 +5,7 @@ tile_sets:
     boss_height: 22
 party:
   max_members: 4
+crash_location: 100;80;100;world
 
 dungeons:
   dungeon1:

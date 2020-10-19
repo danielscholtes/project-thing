@@ -44,7 +44,7 @@ public class DungeonInfo {
 		allowedCommands = new HashSet<String>();
 
 		String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + "dungeons" + File.separator;
-		File file = new File(path, dungeonName + ".yml");
+		File file = new File(path, ProceduralDungeons.getInstance().getConfig().getString("dungeons." + dungeonName + ".file") + ".yml");
 		this.config = YamlConfiguration.loadConfiguration(file);
 		
 		/**

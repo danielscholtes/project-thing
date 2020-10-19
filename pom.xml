@@ -5,7 +5,7 @@
 
 	<groupId>me.scholtes</groupId>
 	<artifactId>ProceduralDungeons</artifactId>
-	<version>1.0.1-STABLE</version>
+	<version>1.0.6-STABLE</version>
 	<packaging>jar</packaging>
 
 	<name>ProceduralDungeons</name>
@@ -71,13 +71,13 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.16.1-R0.1-SNAPSHOT</version>
+			<version>1.16.3-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
-			<version>7.1.0</version>
+			<version>7.2.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>io.lumine.xikage</groupId>
 			<artifactId>MythicMobs</artifactId>
-			<version>4.9.1</version>
+			<version>4.10.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

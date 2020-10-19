@@ -161,6 +161,58 @@ public class DungeonManager {
 	}
 	
 	/**
+	 * Gets rid of all active dungeons
+	 */
+	public void clearDungeons() {
+		for (Dungeon dungeon : getDungeons().values()) {
+			if (dungeon.getWorld() == null) {
+				continue;
+			}
+
+			for (Player p : dungeon.getWorld().getPlayers()) {
+				p.teleport(dungeon.getDungeonInfo().getFinishLocation());
+			}
+
+			Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
+
+			/**
+			 * Deletes the world files of the dungeon world
+			 */
+			try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {
+				files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		getDungeons().clear();
+	}
+	
+	/**
+	 * Clears all dungeon information and loads it again with updated information
+	 */
+	public void reloadDungeons() {
+		/**
+		 * Gets rid of all active dungeons
+		 */
+		clearDungeons();
+		
+		/**
+		 * Clears all information
+		 */
+		tileSets.clear();
+		dungeonInfo.clear();
+		items.clear();
+		
+		/**
+		 * Loads all the updated information
+		 */
+		loadItems();
+		loadDungeonInfo();
+		loadTileSets();
+	}
+	
+	/**
 	 * Gets a {@link Map<UUID, Dungeon>} with all the solo players and/or party leaders 
 	 * currently in a dungeon
 	 * 
