@@ -22,6 +22,7 @@ import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.utils.ItemUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 
 public class DungeonManager {
 
@@ -132,6 +133,10 @@ public class DungeonManager {
 	public void removeDungeon(Dungeon dungeon) {
 		for (Player p : dungeon.getWorld().getPlayers()) {
 			p.teleport(dungeon.getDungeonInfo().getFinishLocation());
+			p.setGameMode(dungeon.getDungeonInfo().getLeaveGameMode());
+			if (!dungeon.getDungeonInfo().getLeaveResourcePack().equalsIgnoreCase("none")) {
+				p.setResourcePack(dungeon.getDungeonInfo().getLeaveResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getLeaveResourcePack()).getBytes());	
+			}
 		}
 		
 		Party party = ProceduralDungeons.getInstance().getPartyData().getPartyFromPlayer(dungeon.getPlayer());
@@ -142,8 +147,10 @@ public class DungeonManager {
 					continue;
 				}
 				bukkitPlayer.teleport(dungeon.getDungeonInfo().getFinishLocation());
+				bukkitPlayer.setGameMode(dungeon.getDungeonInfo().getLeaveGameMode());
 			}
 			Bukkit.getPlayer(party.getOwner()).teleport(dungeon.getDungeonInfo().getFinishLocation());
+			Bukkit.getPlayer(party.getOwner()).setGameMode(dungeon.getDungeonInfo().getLeaveGameMode());
 		}
 
 		Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);

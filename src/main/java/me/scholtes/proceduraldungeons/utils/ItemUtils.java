@@ -15,51 +15,6 @@ public class ItemUtils {
 	 * 
 	 * @param material The {@link Material} of the {@link ItemStack}
 	 * @param amount The amount of the {@link ItemStack}
-	 * @return An {@link ItemStack}
-	 */
-	public static ItemStack createItemStack(Material material, int amount) {
-		return new ItemStack(material, amount);
-	}
-	
-	/**
-	 * Creates an {@link ItemStack} with the specified paramaters
-	 * 
-	 * @param material The {@link Material} of the {@link ItemStack}
-	 * @param amount The amount of the {@link ItemStack}
-	 * @param name The name of the {@link ItemStack}
-	 * @return An {@link ItemStack}
-	 */
-	public static ItemStack createItemStack(Material material, int amount, String name) {
-		ItemStack item = new ItemStack(material, amount);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(ChatUtils.color(name));
-		item.setItemMeta(meta);
-		return item;
-	}
-	
-	/**
-	 * Creates an {@link ItemStack} with the specified paramaters
-	 * 
-	 * @param material The {@link Material} of the {@link ItemStack}
-	 * @param amount The amount of the {@link ItemStack}
-	 * @param name The name of the {@link ItemStack}
-	 * @param lore The lore of the {@link ItemStack}
-	 * @return An {@link ItemStack}
-	 */
-	public static ItemStack createItemStack(Material material, int amount, String name, List<String> lore) {
-		ItemStack item = new ItemStack(material, amount);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(ChatUtils.color(name));
-		meta.setLore(ChatUtils.color(lore));
-		item.setItemMeta(meta);
-		return item;
-	}
-	
-	/**
-	 * Creates an {@link ItemStack} with the specified paramaters
-	 * 
-	 * @param material The {@link Material} of the {@link ItemStack}
-	 * @param amount The amount of the {@link ItemStack}
 	 * @param name The name of the {@link ItemStack}
 	 * @param lore The lore of the {@link ItemStack}
 	 * @param enchants The enchantments of the {@link ItemStack}
@@ -68,15 +23,21 @@ public class ItemUtils {
 	public static ItemStack createItemStack(Material material, int amount, String name, List<String> lore, List<String> enchants) {
 		ItemStack item = new ItemStack(material, amount);
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(ChatUtils.color(name));
-		meta.setLore(ChatUtils.color(lore));
+		if (name != null) {
+			meta.setDisplayName(StringUtils.color(name));	
+		}
+		if (lore != null) {
+			meta.setLore(StringUtils.color(lore));
+		}
 		item.setItemMeta(meta);
 		
-		for (String enchant : enchants) {
-			String[] split = enchant.split(";");
-			Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(split[0].toLowerCase()));
-			int level = Integer.valueOf(split[1]);
-			item.addUnsafeEnchantment(enchantment, level);
+		if (enchants != null) {
+			for (String enchant : enchants) {
+				String[] split = enchant.split(";");
+				Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(split[0].toLowerCase()));
+				int level = Integer.valueOf(split[1]);
+				item.addUnsafeEnchantment(enchantment, level);
+			}
 		}
 		
 		return item;

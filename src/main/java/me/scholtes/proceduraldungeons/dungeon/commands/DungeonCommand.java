@@ -15,7 +15,7 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.nbt.NBT;
 import me.scholtes.proceduraldungeons.party.Party;
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 import me.scholtes.proceduraldungeons.utils.ItemUtils;
 import me.scholtes.proceduraldungeons.utils.Message;
 
@@ -42,7 +42,7 @@ public class DungeonCommand implements CommandExecutor {
 		 * Checks if player has any arguments
 		 */
 		if (args.length < 1) {
-			ChatUtils.message(sender,  ChatUtils.getMessage(Message.DUNGEON_HELP));
+			StringUtils.message(sender,  StringUtils.getMessage(Message.DUNGEON_HELP));
 			return true;
 		}
 		
@@ -52,16 +52,16 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player has permission
 				 */
 				if (!sender.hasPermission("proceduraldungeons.admin")) {
-					ChatUtils.message(sender,  ChatUtils.getMessage(Message.RELOAD_NO_PERMISSION));
+					StringUtils.message(sender,  StringUtils.getMessage(Message.RELOAD_NO_PERMISSION));
 					return true;
 				}
 
 				/**
 				 * Reloads all dungeon information and messages
 				 */
-				ChatUtils.loadMessages(plugin.getMessageFile());
+				StringUtils.loadMessages(plugin.getMessageFile());
 				plugin.getDungeonManager().reloadDungeons();
-				ChatUtils.message(sender, ChatUtils.getMessage(Message.RELOAD_RELOADED));
+				StringUtils.message(sender, StringUtils.getMessage(Message.RELOAD_RELOADED));
 				
 				return true;
 			}
@@ -71,7 +71,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the CommandSender is a Player
 				 */
 				if (!(sender instanceof Player)) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.NEED_TO_BE_PLAYER));
+					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
 				}
 				
@@ -81,7 +81,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player has permission
 				 */
 				if (!sender.hasPermission("proceduraldungeons.admin")) {
-					ChatUtils.message(sender,  ChatUtils.getMessage(Message.CHESTWAND_NO_PERMISSION));
+					StringUtils.message(sender,  StringUtils.getMessage(Message.CHESTWAND_NO_PERMISSION));
 					return true;
 				}
 				
@@ -90,7 +90,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player put in the right arguments
 				 */
 				if (args.length < 4) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.CHESTWAND_INCORRECT));
+					StringUtils.message(sender, StringUtils.getMessage(Message.CHESTWAND_INCORRECT));
 					return true;
 				}
 				
@@ -98,7 +98,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the tileset exists
 				 */
 				if (plugin.getDungeonManager().getTileSet(args[1]) == null) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.CHESTWAND_TILESET_NOT_EXIST));
+					StringUtils.message(sender, StringUtils.getMessage(Message.CHESTWAND_TILESET_NOT_EXIST));
 					return true;
 				}
 				
@@ -109,19 +109,19 @@ public class DungeonCommand implements CommandExecutor {
 				 */
 				for (RoomType tile : RoomType.values()) {
 					if (tile.toString().equalsIgnoreCase(args[2])) {
-						ItemStack wand = ItemUtils.createItemStack(Material.BLAZE_ROD, 1, "&6Chest Wand", Arrays.asList("", "&7Left-Click the schematic pasting location and Right-Click", "&7the possible chest location to add it to the variation"));
+						ItemStack wand = ItemUtils.createItemStack(Material.BLAZE_ROD, 1, "&6Chest Wand", Arrays.asList("", "&7Left-Click the schematic pasting location and Right-Click", "&7the possible chest location to add it to the variation"), null);
 						NBT nbt = NBT.get(wand);
 						nbt.setString("WandType", "Chest");
 						nbt.setString("TileSet", tileSet.getTileSetName());
 						nbt.setString("RoomType", tile.toString());
 						nbt.setString("Variation", args[3]);
 						player.getInventory().addItem(nbt.apply(wand));
-						ChatUtils.message(sender, ChatUtils.getMessage(Message.CHESTWAND_WAND_GIVEN));
+						StringUtils.message(sender, StringUtils.getMessage(Message.CHESTWAND_WAND_GIVEN));
 						return true;
 					}
 				}
 
-				ChatUtils.message(sender, ChatUtils.getMessage(Message.CHESTWAND_TILE_NOT_VALID));
+				StringUtils.message(sender, StringUtils.getMessage(Message.CHESTWAND_TILE_NOT_VALID));
 				return true;
 			}
 			
@@ -130,7 +130,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the CommandSender is a Player
 				 */
 				if (!(sender instanceof Player)) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.NEED_TO_BE_PLAYER));
+					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
 				}
 				
@@ -140,7 +140,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player has permission
 				 */
 				if (!sender.hasPermission("proceduraldungeons.admin")) {
-					ChatUtils.message(sender,  ChatUtils.getMessage(Message.MOBWAND_NO_PERMISSION));
+					StringUtils.message(sender,  StringUtils.getMessage(Message.MOBWAND_NO_PERMISSION));
 					return true;
 				}
 
@@ -148,7 +148,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player put in the right arguments
 				 */
 				if (args.length < 4) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.MOBWAND_INCORRECT));
+					StringUtils.message(sender, StringUtils.getMessage(Message.MOBWAND_INCORRECT));
 					return true;
 				}
 
@@ -156,7 +156,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the tileset exists
 				 */
 				if (plugin.getDungeonManager().getTileSet(args[1]) == null) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.MOBWAND_TILESET_NOT_EXIST));
+					StringUtils.message(sender, StringUtils.getMessage(Message.MOBWAND_TILESET_NOT_EXIST));
 					return true;
 				}
 				
@@ -167,19 +167,19 @@ public class DungeonCommand implements CommandExecutor {
 				 */
 				for (RoomType tile : RoomType.values()) {
 					if (tile.toString().equalsIgnoreCase(args[2])) {
-						ItemStack wand = ItemUtils.createItemStack(Material.BLAZE_ROD, 1, "&6Mob Wand", Arrays.asList("", "&7Left-Click the schematic pasting location and Right-Click", "&7the possible mob location to add it to the variation"));
+						ItemStack wand = ItemUtils.createItemStack(Material.BLAZE_ROD, 1, "&6Mob Wand", Arrays.asList("", "&7Left-Click the schematic pasting location and Right-Click", "&7the possible mob location to add it to the variation"), null);
 						NBT nbt = NBT.get(wand);
 						nbt.setString("WandType", "Mob");
 						nbt.setString("TileSet", tileSet.getTileSetName());
 						nbt.setString("RoomType", tile.toString());
 						nbt.setString("Variation", args[3]);
 						player.getInventory().addItem(nbt.apply(wand));
-						ChatUtils.message(sender, ChatUtils.getMessage(Message.MOBWAND_WAND_GIVEN));
+						StringUtils.message(sender, StringUtils.getMessage(Message.MOBWAND_WAND_GIVEN));
 						return true;
 					}
 				}
 
-				ChatUtils.message(sender, ChatUtils.getMessage(Message.MOBWAND_TILE_NOT_VALID));
+				StringUtils.message(sender, StringUtils.getMessage(Message.MOBWAND_TILE_NOT_VALID));
 				return true;
 			}
 			
@@ -188,7 +188,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the CommandSender is a Player
 				 */
 				if (!(sender instanceof Player)) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.NEED_TO_BE_PLAYER));
+					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
 				}
 				
@@ -198,7 +198,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player put in the right arguments
 				 */
 				if (args.length < 2 || !args[0].equalsIgnoreCase("join")) {
-					ChatUtils.message(player,  ChatUtils.getMessage(Message.DUNGEON_JOIN_INCORRECT));
+					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_INCORRECT));
 					return true;
 				}
 
@@ -206,7 +206,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the specified dungeon name exists in the config
 				 */
 				if (!plugin.getConfig().isSet("dungeons." + args[1])) {
-					ChatUtils.message(player,  ChatUtils.getMessage(Message.DUNGEON_JOIN_NOT_EXIST));
+					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_NOT_EXIST));
 					return true;
 				}
 
@@ -214,7 +214,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the player has permission for the specified dungeon
 				 */
 				if (!player.hasPermission("dungeon." + args[1])) {
-					ChatUtils.message(player,  ChatUtils.getMessage(Message.DUNGEON_JOIN_NO_PERM));
+					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_NO_PERM));
 					return true;
 				}
 				
@@ -223,7 +223,7 @@ public class DungeonCommand implements CommandExecutor {
 				 */
 				Party party = plugin.getPartyData().getPartyFromPlayer(player.getUniqueId());
 				if (party != null && !party.getOwner().equals(player.getUniqueId())) {
-					ChatUtils.message(player,  ChatUtils.getMessage(Message.NOT_LEADER));
+					StringUtils.message(player,  StringUtils.getMessage(Message.NOT_LEADER));
 					return true;
 				}
 				
@@ -232,7 +232,7 @@ public class DungeonCommand implements CommandExecutor {
 				 */
 				
 				if (plugin.getDungeonManager().getDungeonFromPlayer(player.getUniqueId(), party) != null) {
-					ChatUtils.message(player,  ChatUtils.getMessage(Message.DUNGEON_JOIN_ALREADY_IN));
+					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_ALREADY_IN));
 					return true;
 				}
 
@@ -240,9 +240,9 @@ public class DungeonCommand implements CommandExecutor {
 				 * Makes the player join the dungeon
 				 */
 				if (party != null) {
-					party.messageMembers(ChatUtils.getMessage(Message.DUNGEON_JOIN_GENERATING));
+					party.messageMembers(StringUtils.getMessage(Message.DUNGEON_JOIN_GENERATING));
 				} else {
-					ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_JOIN_GENERATING));
+					StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_JOIN_GENERATING));
 				}
 				plugin.getDungeonManager().joinDungeon(player, args[1]);
 				return true;
@@ -253,7 +253,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Checks if the CommandSender is a Player
 				 */
 				if (!(sender instanceof Player)) {
-					ChatUtils.message(sender, ChatUtils.getMessage(Message.NEED_TO_BE_PLAYER));
+					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
 				}
 				
@@ -265,7 +265,7 @@ public class DungeonCommand implements CommandExecutor {
 				Party party = plugin.getPartyData().getPartyFromPlayer(player.getUniqueId());
 				Dungeon dungeon = plugin.getDungeonManager().getDungeonFromPlayer(player.getUniqueId(), party);
 				if (dungeon == null) {
-					ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_LEAVE_NOT_IN));
+					StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_LEAVE_NOT_IN));
 					return true;
 				}
 
@@ -274,17 +274,17 @@ public class DungeonCommand implements CommandExecutor {
 				 */
 				if (party != null) {
 					plugin.getPartyData().removePlayerFromParty(party, player.getUniqueId());
-					ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
-					party.messageMembers(ChatUtils.replaceAll(ChatUtils.getMessage(Message.PARTY_PLAYER_LEFT), "{player}", player.getName()));
+					StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
+					party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.PARTY_PLAYER_LEFT), "{player}", player.getName()));
 					return true;
 				}
-				ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
+				StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
 				plugin.getDungeonManager().removeDungeon(dungeon);
 				return true;
 			}
 			
 			default: {
-				ChatUtils.message(sender, ChatUtils.getMessage(Message.DUNGEON_HELP));
+				StringUtils.message(sender, StringUtils.getMessage(Message.DUNGEON_HELP));
 				return true;
 			}
 				

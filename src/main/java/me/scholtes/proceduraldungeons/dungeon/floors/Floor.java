@@ -31,7 +31,7 @@ import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileVariation;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.Variation;
 import me.scholtes.proceduraldungeons.party.Party;
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 import me.scholtes.proceduraldungeons.utils.DungeonUtils;
 import me.scholtes.proceduraldungeons.utils.Message;
 import me.scholtes.proceduraldungeons.utils.WorldUtils;
@@ -266,19 +266,31 @@ public final class Floor {
 										continue;
 									}
 									bukkitPlayer.teleport(dungeon.getSpawnPoint());
+									bukkitPlayer.setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
+									if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
+										bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getEnterResourcePack()).getBytes());	
+									}
 								}
 								Bukkit.getPlayer(party.getOwner()).teleport(dungeon.getSpawnPoint());
-								party.messageMembers(ChatUtils.getMessage(Message.DUNGEON_JOIN_GENERATED));
-								party.messageMembers(ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
+								Bukkit.getPlayer(party.getOwner()).setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
+								if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
+									Bukkit.getPlayer(party.getOwner()).setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getEnterResourcePack()).getBytes());	
+								}
+								party.messageMembers(StringUtils.getMessage(Message.DUNGEON_JOIN_GENERATED));
+								party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
 							} else {
 
 								Player bukkitPlayer = Bukkit.getPlayer(dungeon.getPlayer());
 								if (bukkitPlayer == null) {
 									return;
 								}
-								ChatUtils.message(bukkitPlayer, ChatUtils.getMessage(Message.DUNGEON_JOIN_GENERATED));
-								ChatUtils.message(bukkitPlayer, ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
+								StringUtils.message(bukkitPlayer, StringUtils.getMessage(Message.DUNGEON_JOIN_GENERATED));
+								StringUtils.message(bukkitPlayer, StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
 								bukkitPlayer.teleport(dungeon.getSpawnPoint());
+								bukkitPlayer.setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
+								if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
+									bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getEnterResourcePack()).getBytes());	
+								}
 							}
 						});
 					});

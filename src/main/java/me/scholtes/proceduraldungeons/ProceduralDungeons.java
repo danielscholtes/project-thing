@@ -13,7 +13,7 @@ import me.scholtes.proceduraldungeons.dungeon.listeners.PlayerListeners;
 import me.scholtes.proceduraldungeons.dungeon.listeners.WandListeners;
 import me.scholtes.proceduraldungeons.party.PartyData;
 import me.scholtes.proceduraldungeons.party.commands.PartyCommand;
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 		getCommand("party").setExecutor(new PartyCommand(getDungeonManager(), getPartyData()));
 		
 		getDungeonManager().reloadDungeons();
-		ChatUtils.loadMessages(getMessageFile());
+		StringUtils.loadMessages(getMessageFile());
 		
 		/**
 		 * Registering the listeners

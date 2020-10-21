@@ -24,7 +24,7 @@ import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileVariation;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.Variation;
 import me.scholtes.proceduraldungeons.nbt.NBT;
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 
 public class WandListeners implements Listener {
 	
@@ -60,7 +60,7 @@ public class WandListeners implements Listener {
 		 * Whenever a player left clicks a block it updates the paste location
 		 */
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
-			ChatUtils.message(event.getPlayer(), "&aSet paste location");
+			StringUtils.message(event.getPlayer(), "&aSet paste location");
 			nbt.setInt("PasteLocX", event.getClickedBlock().getX());
 			nbt.setInt("PasteLocY", event.getClickedBlock().getY());
 			nbt.setInt("PasteLocZ", event.getClickedBlock().getZ());
@@ -70,7 +70,7 @@ public class WandListeners implements Listener {
 				return;
 			}
 
-			ChatUtils.message(event.getPlayer(), "&aAdded the chest location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
+			StringUtils.message(event.getPlayer(), "&aAdded the chest location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
 			handleChestWand(nbt);
 			return;
 		}
@@ -79,7 +79,7 @@ public class WandListeners implements Listener {
 		 * Whenever a player right clicks a block it updates the chest location
 		 */
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
-			ChatUtils.message(event.getPlayer(), "&aSet chest location");
+			StringUtils.message(event.getPlayer(), "&aSet chest location");
 			nbt.setInt("ChestLocX", event.getClickedBlock().getX());
 			nbt.setInt("ChestLocY", event.getClickedBlock().getY());
 			nbt.setInt("ChestLocZ", event.getClickedBlock().getZ());
@@ -89,7 +89,7 @@ public class WandListeners implements Listener {
 				return;
 			}
 
-			ChatUtils.message(event.getPlayer(), "&aAdded the chest location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
+			StringUtils.message(event.getPlayer(), "&aAdded the chest location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
 			handleChestWand(nbt);
 			return;
 		}
@@ -114,7 +114,7 @@ public class WandListeners implements Listener {
 		 * Whenever a player left clicks a block it updates the paste location
 		 */
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			ChatUtils.message(event.getPlayer(), "&aSet paste location");
+			StringUtils.message(event.getPlayer(), "&aSet paste location");
 			nbt.setInt("PasteLocX", event.getClickedBlock().getX());
 			nbt.setInt("PasteLocY", event.getClickedBlock().getY());
 			nbt.setInt("PasteLocZ", event.getClickedBlock().getZ());
@@ -123,7 +123,7 @@ public class WandListeners implements Listener {
 				return;
 			}
 
-			ChatUtils.message(event.getPlayer(), "&aAdded the mob location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
+			StringUtils.message(event.getPlayer(), "&aAdded the mob location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
 			handleMobWand(nbt);
 		}
 
@@ -131,7 +131,7 @@ public class WandListeners implements Listener {
 		 * Whenever a player rights clicks a block it updates the mob location
 		 */
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			ChatUtils.message(event.getPlayer(), "&aSet mob location");
+			StringUtils.message(event.getPlayer(), "&aSet mob location");
 			nbt.setInt("MobLocX", event.getClickedBlock().getX());
 			nbt.setInt("MobLocY", event.getClickedBlock().getY());
 			nbt.setInt("MobLocZ", event.getClickedBlock().getZ());
@@ -140,7 +140,7 @@ public class WandListeners implements Listener {
 				return;
 			}
 
-			ChatUtils.message(event.getPlayer(), "&aAdded the mob location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
+			StringUtils.message(event.getPlayer(), "&aAdded the mob location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
 			handleMobWand(nbt);
 		}
 	}

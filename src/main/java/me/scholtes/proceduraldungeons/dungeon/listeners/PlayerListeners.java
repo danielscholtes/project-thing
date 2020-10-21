@@ -20,7 +20,7 @@ import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.party.PartyData;
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 import me.scholtes.proceduraldungeons.utils.Message;
 
 public class PlayerListeners implements Listener {
@@ -140,25 +140,25 @@ public class PlayerListeners implements Listener {
 
 		Party party = partyData.getPartyFromPlayer(dungeon.getPlayer());
 		if (party != null) {
-			party.messageMembers(ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_PLAYER_DIE_PARTY), "{player}", victim.getName()));
+			party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_DIE_PARTY), "{player}", victim.getName()));
 		} else {
-			ChatUtils.message(victim, ChatUtils.getMessage(Message.DUNGEON_PLAYER_DIE));
+			StringUtils.message(victim, StringUtils.getMessage(Message.DUNGEON_PLAYER_DIE));
 		}
 		
 		dungeon.setTotalLives(dungeon.getTotalLives() - 1);
 		if (dungeon.getTotalLives() > 0) {
 			if (party != null) {
-				party.messageMembers(ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}",  String.valueOf(dungeon.getTotalLives())));
+				party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}",  String.valueOf(dungeon.getTotalLives())));
 			} else {
-				ChatUtils.message(victim, ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
+				StringUtils.message(victim, StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
 			}
 			return;
 		}
 		
 		if (party != null) {
-			party.messageMembers(ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LOST_ALL_LIVES_PARTY), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportNoLivesDelay())));
+			party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LOST_ALL_LIVES_PARTY), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportNoLivesDelay())));
 		} else {
-			ChatUtils.message(victim, ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LOST_ALL_LIVES), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportNoLivesDelay())));
+			StringUtils.message(victim, StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LOST_ALL_LIVES), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportNoLivesDelay())));
 		}
 		
 		Bukkit.getScheduler().runTaskLater(ProceduralDungeons.getInstance(), () -> {
@@ -187,7 +187,7 @@ public class PlayerListeners implements Listener {
 			}
 		}
 		
-		ChatUtils.message(player, ChatUtils.getMessage(Message.DUNGEON_CANT_USE_COMMAND));
+		StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_CANT_USE_COMMAND));
 		event.setCancelled(true);
 	}
 

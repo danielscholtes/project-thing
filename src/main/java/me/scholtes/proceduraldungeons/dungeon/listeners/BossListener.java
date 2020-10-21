@@ -13,7 +13,7 @@ import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.party.PartyData;
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 import me.scholtes.proceduraldungeons.utils.Message;
 
 public class BossListener implements Listener {
@@ -60,9 +60,9 @@ public class BossListener implements Listener {
 		if (dungeon.getBossID().equals(event.getMob().getUniqueId())) {
 			Party party = partyData.getPartyFromPlayer(dungeon.getPlayer());
 			if (party != null) {
-				party.messageMembers(ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
+				party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
 			} else {
-				ChatUtils.message(Bukkit.getPlayer(dungeon.getPlayer()), ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
+				StringUtils.message(Bukkit.getPlayer(dungeon.getPlayer()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
 			}
 			
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {

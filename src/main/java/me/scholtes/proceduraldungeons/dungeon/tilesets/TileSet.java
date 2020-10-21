@@ -41,8 +41,8 @@ public class TileSet {
 					continue;
 				}
 				
-				String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + roomType.toString() + File.separator;
-				File file = new File(path, "variations.yml");
+				String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator;
+				File file = new File(path, roomType.toString() + "_variations.yml");
 				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 				
 				List<Variation> tileVariations = new ArrayList<Variation>();
@@ -61,12 +61,13 @@ public class TileSet {
 			roomHeight = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".room_height");
 			bossHeight = ProceduralDungeons.getInstance().getConfig().getDouble("tile_sets." + tileSetName + ".boss_height");
 
-			String pathStairs = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + "STAIRS" + File.separator;
-			File fileStairs = new File(pathStairs, "variations.yml");
+			String pathStairs = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator;
+			String pathSchematics = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSetName + File.separator + "schematics" + File.separator;
+			File fileStairs = new File(pathStairs, "STAIRS_variations.yml");
 			FileConfiguration configStairs = YamlConfiguration.loadConfiguration(fileStairs);
 
 			for (String variation : configStairs.getStringList("variations")) {
-				stairVariations.add(new File(pathStairs, variation + ".schem"));
+				stairVariations.add(new File(pathSchematics, variation + ".schem"));
 			}
 		});
 		

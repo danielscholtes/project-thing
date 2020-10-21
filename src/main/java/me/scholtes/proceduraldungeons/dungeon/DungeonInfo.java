@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -31,6 +32,10 @@ public class DungeonInfo {
 	private final FileConfiguration config;
 	private final Set<Material> canBreakBlocks;
 	private final Set<String> allowedCommands;
+	private final GameMode enterGamemode;
+	private final GameMode leaveGamemode;
+	private final String enterResourcePack;
+	private final String leaveResourcePack;
 
 	/**
 	 * Constructor for the {@link DungeonInfo}
@@ -46,6 +51,10 @@ public class DungeonInfo {
 		String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + "dungeons" + File.separator;
 		File file = new File(path, ProceduralDungeons.getInstance().getConfig().getString("dungeons." + dungeonName + ".file") + ".yml");
 		this.config = YamlConfiguration.loadConfiguration(file);
+		enterGamemode = GameMode.valueOf(config.getString("gamemode.enter_dungeon").toUpperCase());
+		leaveGamemode = GameMode.valueOf(config.getString("gamemode.leave_dungeon").toUpperCase());
+		enterResourcePack = config.getString("resource_pack.enter_dungeon");
+		leaveResourcePack = config.getString("resource_pack.leave_dungeon");
 		
 		/**
 		 * Loads all the information about this DungeonInfo
@@ -161,6 +170,42 @@ public class DungeonInfo {
 	 */
 	public int getMaxFloors() {
 		return maxFloors;
+	}
+	
+	/**
+	 * Gets the {@link GameMode} the player has to be in when joining the {@link Dungeon}
+	 * 
+	 * @return {@link GameMode} the player has to be in when joining
+	 */
+	public GameMode getEnterGameMode() {
+		return enterGamemode;
+	}
+	
+	/**
+	 * Gets the {@link GameMode} the player has to be in when leaving the {@link Dungeon}
+	 * 
+	 * @return {@link GameMode} the player has to be in when leaving
+	 */
+	public GameMode getLeaveGameMode() {
+		return leaveGamemode;
+	}
+	
+	/**
+	 * Gets the Resource Pack the player has to be in when entering the {@link Dungeon}
+	 * 
+	 * @return Resource Pack the player has to be in when entering
+	 */
+	public String getEnterResourcePack() {
+		return enterResourcePack;
+	}
+	
+	/**
+	 * Gets the Resource Pack the player has to be in when leaving the {@link Dungeon}
+	 * 
+	 * @return {@link GameMode} the player has to be in when leaving
+	 */
+	public String getLeaveResourcePack() {
+		return leaveResourcePack;
 	}
 
 	/**

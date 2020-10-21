@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 import me.scholtes.proceduraldungeons.utils.Message;
 
 public class PartyData {
@@ -82,21 +82,22 @@ public class PartyData {
 			
 			if (dungeon.getTotalLives() > dungeon.getDungeonInfo().getLivesPerPlayer()) {
 				dungeon.setTotalLives(dungeon.getTotalLives() - 3);
-				List<String> message = ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_PLAYER_LEAVE), "{player}", Bukkit.getPlayer(playerUUID).getName());
-				List<String> newMessage = ChatUtils.replaceAll(message, "{lives}", String.valueOf(dungeon.getDungeonInfo().getLivesPerPlayer()));
+				List<String> message = StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_LEAVE), "{player}", Bukkit.getPlayer(playerUUID).getName());
+				List<String> newMessage = StringUtils.replaceAll(message, "{lives}", String.valueOf(dungeon.getDungeonInfo().getLivesPerPlayer()));
 				for (UUID uuid : party.getMembers()) {
 					if (uuid.equals(playerUUID)) {
 						continue;
 					}
-					ChatUtils.message(Bukkit.getPlayer(uuid), newMessage);
-					ChatUtils.message(Bukkit.getPlayer(party.getOwner()), ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
+					StringUtils.message(Bukkit.getPlayer(uuid), newMessage);
+					StringUtils.message(Bukkit.getPlayer(party.getOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
 				}
 				if (!playerUUID.equals(party.getOwner())) {
-					ChatUtils.message(Bukkit.getPlayer(party.getOwner()), newMessage);
-					ChatUtils.message(Bukkit.getPlayer(party.getOwner()), ChatUtils.replaceAll(ChatUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
+					StringUtils.message(Bukkit.getPlayer(party.getOwner()), newMessage);
+					StringUtils.message(Bukkit.getPlayer(party.getOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
 				}
 			}
 			Bukkit.getPlayer(playerUUID).teleport(dungeon.getDungeonInfo().getFinishLocation());
+			Bukkit.getPlayer(playerUUID).setGameMode(dungeon.getDungeonInfo().getLeaveGameMode());
 		}
 		
 
@@ -114,7 +115,7 @@ public class PartyData {
 				parties.remove(uuid);
 			}
 			parties.remove(party.getOwner());
-			party.messageMembers(ChatUtils.getMessage(Message.PARTY_DISBANDED));
+			party.messageMembers(StringUtils.getMessage(Message.PARTY_DISBANDED));
 		}
 	}
 	

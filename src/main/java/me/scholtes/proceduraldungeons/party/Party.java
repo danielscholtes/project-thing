@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
-import me.scholtes.proceduraldungeons.utils.ChatUtils;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 
 public class Party {
 	
@@ -57,11 +57,11 @@ public class Party {
 	public void messageMembers(String message) {
 		for (UUID uuid : this.members) {
 			if (Bukkit.getPlayer(uuid) != null) {
-				ChatUtils.message(Bukkit.getPlayer(uuid), message);
+				StringUtils.message(Bukkit.getPlayer(uuid), message);
 			}
 		}
 		if (Bukkit.getPlayer(owner) != null) {
-			ChatUtils.message(Bukkit.getPlayer(owner), message);
+			StringUtils.message(Bukkit.getPlayer(owner), message);
 		}
 	}
 	
@@ -73,11 +73,11 @@ public class Party {
 	public void messageMembers(List<String> message) {
 		for (UUID uuid : this.members) {
 			if (Bukkit.getPlayer(uuid) != null) {
-				ChatUtils.message(Bukkit.getPlayer(uuid), message);
+				StringUtils.message(Bukkit.getPlayer(uuid), message);
 			}
 		}
 		if (Bukkit.getPlayer(owner) != null) {
-			ChatUtils.message(Bukkit.getPlayer(owner), message);
+			StringUtils.message(Bukkit.getPlayer(owner), message);
 		}
 	}
 

@@ -29,12 +29,13 @@ public abstract class Variation {
 		 * Loads all the information about the TileVariation
 		 */
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
-			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + roomType.toString() + File.separator;
-			File file = new File(path, "variations.yml");
+			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator;
+			String pathSchematics = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + "schematics" + File.separator;
+			File file = new File(path, roomType.toString() + "_variations.yml");
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
 			chestLocations = config.getStringList("variations." + variation + ".chests");
-			schematic = new File(path, variation + ".schem");
+			schematic = new File(pathSchematics, variation + ".schem");
 			mobLocations = config.getStringList("variations." + variation + ".mobs");
 		});
 	}
