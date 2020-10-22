@@ -60,6 +60,7 @@ public class DungeonCommand implements CommandExecutor {
 				 * Reloads all dungeon information and messages
 				 */
 				StringUtils.loadMessages(plugin.getMessageFile());
+				plugin.reloadConfig();
 				plugin.getDungeonManager().reloadDungeons();
 				StringUtils.message(sender, StringUtils.getMessage(Message.RELOAD_RELOADED));
 				
