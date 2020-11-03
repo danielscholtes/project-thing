@@ -2,6 +2,7 @@ package me.scholtes.proceduraldungeons.dungeon;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +37,8 @@ public class DungeonInfo {
 	private final GameMode leaveGamemode;
 	private final String enterResourcePack;
 	private final String leaveResourcePack;
+	private final List<String> joinCommands;
+	private final List<String> leaveCommands;
 
 	/**
 	 * Constructor for the {@link DungeonInfo}
@@ -55,6 +58,8 @@ public class DungeonInfo {
 		leaveGamemode = GameMode.valueOf(config.getString("gamemode.leave_dungeon").toUpperCase());
 		enterResourcePack = config.getString("resource_pack.enter_dungeon");
 		leaveResourcePack = config.getString("resource_pack.leave_dungeon");
+		joinCommands = config.getStringList("commands.join");
+		leaveCommands = config.getStringList("commands.leave");
 		
 		/**
 		 * Loads all the information about this DungeonInfo
@@ -206,6 +211,24 @@ public class DungeonInfo {
 	 */
 	public String getLeaveResourcePack() {
 		return leaveResourcePack;
+	}
+	
+	/**
+	 * Gets a {@link List<String>} of the commands to run when joininh the {@link Dungeon}
+	 * 
+	 * @return {@link List<String>} of the commands to run when player joins
+	 */
+	public List<String> getJoinCommands() {
+		return joinCommands;
+	}
+	
+	/**
+	 * Gets a {@link List<String>} of the commands to run when leaving the {@link Dungeon}
+	 * 
+	 * @return {@link List<String>} of the commands to run when player leaves
+	 */
+	public List<String> getLeaveCommands() {
+		return leaveCommands;
 	}
 
 	/**

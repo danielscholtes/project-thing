@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,16 +19,6 @@ public class StringUtils {
 	// Regex Pattern for hex color codes
 	private static final Pattern HEX_PATTERN = Pattern.compile("#<([A-Fa-f0-9]){6}>");
 	private static final Map<Message, List<String>> messages = new HashMap<Message, List<String>>();
-	
-	/**
-	 * Generates a SHA-1 based on the text
-	 * 
-	 * @param text the {@link String} to use as SHA-1
-	 */
-	public static String generateSHA1(String text) {
-		return DigestUtils.sha1Hex(text);
-		
-	}
 	
 	/**
 	 * Colorizes the given string

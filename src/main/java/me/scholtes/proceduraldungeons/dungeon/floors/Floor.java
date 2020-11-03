@@ -142,12 +142,6 @@ public final class Floor {
 								continue;
 							}
 							
-							if (dungeon.getSpawnPoint() == null) {
-								startRoomX = x;
-								startRoomY = y;
-								dungeon.setSpawnPoint(new Location(dungeon.getWorld(), startWorldX + x * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2), newHeight + (tileSet.getRoomHeight() / 2),  startWorldY + y * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2)));
-							}
-							
 							List<Variation> variations = tileSet.getVariations().get(rooms.get(room).getRoomType());
 							
 							TileVariation variation = (TileVariation) variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
@@ -158,6 +152,23 @@ public final class Floor {
 							if (startRoomX == x && startRoomY == y && floorInfo.getFloor() > 1) {
 								File randomStairs = tileSet.getStairVariations().get(ThreadLocalRandom.current().nextInt(tileSet.getStairVariations().size()));
 								WorldUtils.pasteSchematic(randomStairs, dungeon.getWorld().getName(), prevStartWorldX + exitRoomX * oldTileSize - (oldTileSize / 2), previousHeight, prevStartWorldY + exitRoomY * oldTileSize - (oldTileSize / 2));	
+							}
+							
+							if (dungeon.getSpawnPoint() == null) {
+								startRoomX = x;
+								startRoomY = y;
+								if (!variation.getMobLocations().isEmpty()) {
+									String loc = variation.getMobLocations().get(0);
+									String[] split = loc.split(";");
+									double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
+									double locY = newHeight + Double.valueOf(split[1]);
+									double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
+									Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
+									
+									dungeon.setSpawnPoint(location);
+								} else {
+									dungeon.setSpawnPoint(new Location(dungeon.getWorld(), startWorldX + x * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2), newHeight + (tileSet.getRoomHeight() / 2),  startWorldY + y * tileSet.getRoomSize() - (tileSet.getRoomSize() / 2)));
+								}
 							}
 							
 							/**
@@ -193,9 +204,9 @@ public final class Floor {
 						 */
 
 						BossFloor bossFloor = (BossFloor) floorInfo.getDungeonInfo().getFloors().get(-1);
-						double height = newHeight - tileSet.getBossHeight();
 						List<TileSet> bossTileSets =  bossFloor.getTileSets();
 						TileSet bossTileSet =  bossTileSets.get(ThreadLocalRandom.current().nextInt(bossTileSets.size()));	
+						double height = newHeight - bossTileSet.getBossHeight();
 						List<Variation> variations = bossTileSet.getVariations().get(RoomType.BOSS);
 						BossVariation variation = (BossVariation) variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
 						double positionXSchematic = startWorldXNew + ((bossTileSet.getRoomSize() - tileSet.getRoomSize()) / 2);
@@ -211,6 +222,7 @@ public final class Floor {
 						Boss randomBoss = bosses.get(ThreadLocalRandom.current().nextInt(bosses.size()));
 						
 						String[] split = variation.getBossLocation().split(";");
+
 						double locX = startWorldXNew + Double.valueOf(split[0]);
 						double locY = height + Double.valueOf(split[1]);
 						double locZ = startWorldYNew + Double.valueOf(split[2]);
@@ -268,13 +280,18 @@ public final class Floor {
 									bukkitPlayer.teleport(dungeon.getSpawnPoint());
 									bukkitPlayer.setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
 									if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
-										bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getEnterResourcePack()).getBytes());	
+										Bukkit.getScheduler().runTaskLater(plugin, () -> {
+											bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());
+										}, 10L);
 									}
 								}
 								Bukkit.getPlayer(party.getOwner()).teleport(dungeon.getSpawnPoint());
 								Bukkit.getPlayer(party.getOwner()).setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
 								if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
-									Bukkit.getPlayer(party.getOwner()).setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getEnterResourcePack()).getBytes());	
+									Bukkit.getScheduler().runTaskLater(plugin, () -> {
+										Bukkit.getPlayer(party.getOwner()).setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());
+									}, 10L);
+									Bukkit.getPlayer(party.getOwner()).setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());	
 								}
 								party.messageMembers(StringUtils.getMessage(Message.DUNGEON_JOIN_GENERATED));
 								party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
@@ -289,8 +306,14 @@ public final class Floor {
 								bukkitPlayer.teleport(dungeon.getSpawnPoint());
 								bukkitPlayer.setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
 								if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
-									bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getEnterResourcePack()).getBytes());	
+									Bukkit.getScheduler().runTaskLater(plugin, () -> {
+										bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());
+									}, 10L);
 								}
+							}
+
+							for (String cmd : dungeon.getDungeonInfo().getJoinCommands()) {
+								Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getPlayer()).getName()).replaceAll("\\{world\\}", dungeon.getWorld().getName()));	
 							}
 						});
 					});

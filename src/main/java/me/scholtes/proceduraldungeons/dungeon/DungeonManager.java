@@ -22,7 +22,6 @@ import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.utils.ItemUtils;
-import me.scholtes.proceduraldungeons.utils.StringUtils;
 
 public class DungeonManager {
 
@@ -135,7 +134,9 @@ public class DungeonManager {
 			p.teleport(dungeon.getDungeonInfo().getFinishLocation());
 			p.setGameMode(dungeon.getDungeonInfo().getLeaveGameMode());
 			if (!dungeon.getDungeonInfo().getLeaveResourcePack().equalsIgnoreCase("none")) {
-				p.setResourcePack(dungeon.getDungeonInfo().getLeaveResourcePack(), StringUtils.generateSHA1(dungeon.getDungeonInfo().getLeaveResourcePack()).getBytes());	
+				Bukkit.getScheduler().runTaskLater(ProceduralDungeons.getInstance(), () -> {
+					p.setResourcePack(dungeon.getDungeonInfo().getLeaveResourcePack());
+				}, 10L);
 			}
 		}
 		
@@ -165,6 +166,11 @@ public class DungeonManager {
 		}
 		
 		dungeons.remove(dungeon.getPlayer());
+
+		for (String cmd : dungeon.getDungeonInfo().getLeaveCommands()) {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getPlayer()).getName()));	
+		}
+		
 	}
 	
 	/**
