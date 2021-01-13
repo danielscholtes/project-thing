@@ -1,6 +1,7 @@
 package me.scholtes.proceduraldungeons.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public enum Message {
@@ -72,14 +73,13 @@ public enum Message {
 	
 	/**
 	 * Constructor for the {@link Message}
-	 * 
-	 * @param defaultMessage The {@link List<String>} message
+	 *
+	 * @param message The message
+	 * @param path The path
 	 */
 	Message(String message, String path) {
-		this.defaultMessage = new ArrayList<String>();
-		for (String s : message.split(";")) {
-			this.defaultMessage.add(s);
-		}
+		this.defaultMessage = new ArrayList<>();
+		Collections.addAll(this.defaultMessage, message.split(";"));
 		this.path = path;
 	}
 	

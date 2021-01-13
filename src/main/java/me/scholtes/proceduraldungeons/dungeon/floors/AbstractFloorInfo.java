@@ -16,8 +16,8 @@ import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 public abstract class AbstractFloorInfo {
 
 	private List<String> items;
-	private List<TileSet> tileSets;
-	private Set<Mob> mobs;
+	private final List<TileSet> tileSets;
+	private final Set<Mob> mobs;
 	private double chestChance;
 	private int minItems;
 	private int maxItems;
@@ -36,11 +36,11 @@ public abstract class AbstractFloorInfo {
 		if (floor.equalsIgnoreCase("boss")) {
 			this.floor = -1;
 		} else { 
-			this.floor = Integer.valueOf(floor);
+			this.floor = Integer.parseInt(floor);
 		}
-		mobs = new HashSet<Mob>();
-		items = new ArrayList<String>();
-		tileSets = new ArrayList<TileSet>();
+		mobs = new HashSet<>();
+		items = new ArrayList<>();
+		tileSets = new ArrayList<>();
 		
 		/**
 		 * Loads in all the information about this AbstractFloorInfo
@@ -93,9 +93,9 @@ public abstract class AbstractFloorInfo {
 	}
 
 	/**
-	 * Gets the mimimum amount of items a chest can have
+	 * Gets the minimum amount of items a chest can have
 	 * 
-	 * @return Mimimum amount of items
+	 * @return Minimum amount of items
 	 */
 	public int getMinItems() {
 		return minItems;

@@ -58,7 +58,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 		 */
 
 		String[] loc = getConfig().getString("crash_location").split(";");
-		Location crashLocation = new Location(Bukkit.getWorld(loc[3]), Double.valueOf(loc[0]), Double.valueOf(loc[1]), Double.valueOf(loc[2]));
+		Location crashLocation = new Location(Bukkit.getWorld(loc[3]), Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]));
 		for (World world : Bukkit.getWorlds()) {
 			if (world == null) {
 				continue;

@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
-import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.nbt.NBT;
@@ -27,7 +26,6 @@ public class DungeonCommand implements CommandExecutor {
 	 * The constructor of the {@link DungeonCommand}
 	 * 
 	 * @param plugin The instance of {@link ProceduralDungeons}
-	 * @param dungeonManager The instance of {@link DungeonManager}
 	 */
 	public DungeonCommand(ProceduralDungeons plugin) {
 		this.plugin = plugin;

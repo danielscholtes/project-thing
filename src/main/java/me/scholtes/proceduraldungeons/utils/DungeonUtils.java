@@ -10,12 +10,12 @@ public class DungeonUtils {
 	 * Checks if the door to a room is valid in the specified {@link Direction}
 	 * 
 	 * @param room The {@link Room} to check the directions for
-	 * @param dungeon Instance of the {@link Floor} that the {@link Room} belongs to
+	 * @param floor Instance of the {@link Floor} that the {@link Room} belongs to
 	 * @param roomTypeString A {@link String} that represent the doors the {@link Room} has
 	 * @param direction The {@link Direction} to check if adjacent position has a room
 	 * @param opposite The {@link Direction} the adjacent room has to have for the door to be valid
 	 * @param checkNoRoom A {@link boolean} to see if it should check if the adjacent room is null
-	 * @return
+	 * @return The final string of the room type
 	 */
 	public static String checkDirection(Room room, Floor floor, String roomTypeString, Direction direction, Direction opposite, boolean checkNoRoom) {
 		if (roomTypeString.contains(direction.toString())) {

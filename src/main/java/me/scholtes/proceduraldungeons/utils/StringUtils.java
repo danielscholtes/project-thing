@@ -18,7 +18,7 @@ public class StringUtils {
 	
 	// Regex Pattern for hex color codes
 	private static final Pattern HEX_PATTERN = Pattern.compile("#<([A-Fa-f0-9]){6}>");
-	private static final Map<Message, List<String>> messages = new HashMap<Message, List<String>>();
+	private static final Map<Message, List<String>> messages = new HashMap<>();
 	
 	/**
 	 * Colorizes the given string
@@ -52,7 +52,7 @@ public class StringUtils {
 	 * @return Colorized version of the {@link List<String>}
 	 */
 	public static List<String> color(List<String> list) {
-		List<String> colored = new ArrayList<String>();
+		List<String> colored = new ArrayList<>();
 		for (String s : list) {
 			colored.add(color(s));
 		}
@@ -74,7 +74,7 @@ public class StringUtils {
 	 * Sends a message to the specified sender with colorized text
 	 * 
 	 * @param sender The {@link CommandSender} who should receive the message
-	 * @param message {@link List<String} to colorize and send
+	 * @param message {@link List<>} to colorize and send
 	 */
 	public static void message(CommandSender sender, List<String> message) {
 		for (String text : message) {
@@ -83,7 +83,7 @@ public class StringUtils {
 	}
 	
 	public static List<String> replaceAll(List<String> message, String from, String to) {
-		List<String> newMessage = new ArrayList<String>();
+		List<String> newMessage = new ArrayList<>();
 		for (String s : message) {
 			newMessage.add(s.replace(from, to));
 		}

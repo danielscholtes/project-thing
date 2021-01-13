@@ -91,7 +91,6 @@ public class WandListeners implements Listener {
 
 			StringUtils.message(event.getPlayer(), "&aAdded the chest location to the tileset: " + nbt.getString("TileSet") + ", tile: " + nbt.getString("RoomType") + ", variation: " + nbt.getString("Variation"));
 			handleChestWand(nbt);
-			return;
 		}
 	}
 	
@@ -179,14 +178,14 @@ public class WandListeners implements Listener {
 		int diffX = nbt.getInt("MobLocX") - nbt.getInt("PasteLocX");
 		int diffY = nbt.getInt("MobLocY") - nbt.getInt("PasteLocY");
 		int diffZ = nbt.getInt("MobLocZ") - nbt.getInt("PasteLocZ");
-		String location = String.valueOf(diffX) + ";" + String.valueOf(diffY) + ";" + String.valueOf(diffZ);
+		String location = diffX + ";" + diffY + ";" + diffZ;
 		
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + roomType.toString() + File.separator;
 			File file = new File(path, "variations.yml");
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-			List<String> locations = new ArrayList<String>();
+			List<String> locations = new ArrayList<>();
 			if (config.isSet("variations." + variationName  + ".mobs")) {
 				locations = config.getStringList("variations." + variationName  + ".mobs");
 			}
@@ -234,14 +233,14 @@ public class WandListeners implements Listener {
 		int diffX = nbt.getInt("ChestLocX") - nbt.getInt("PasteLocX");
 		int diffY = nbt.getInt("ChestLocY") - nbt.getInt("PasteLocY");
 		int diffZ = nbt.getInt("ChestLocZ") - nbt.getInt("PasteLocZ");
-		String location = String.valueOf(diffX) + ";" + String.valueOf(diffY) + ";" + String.valueOf(diffZ);
+		String location = diffX + ";" + diffY + ";" + diffZ;
 		
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + roomType.toString() + File.separator;
 			File file = new File(path, "variations.yml");
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-			List<String> locations = new ArrayList<String>();
+			List<String> locations = new ArrayList<>();
 			if (config.isSet("variations." + variationName  + ".chests")) {
 				locations = config.getStringList("variations." + variationName  + ".chests");
 			}

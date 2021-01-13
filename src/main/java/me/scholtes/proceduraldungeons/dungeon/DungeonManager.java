@@ -25,13 +25,13 @@ import me.scholtes.proceduraldungeons.utils.ItemUtils;
 
 public class DungeonManager {
 
-	private Map<UUID, Dungeon> dungeons = new ConcurrentHashMap<UUID, Dungeon>();
-	private Map<String, DungeonInfo> dungeonInfo = new ConcurrentHashMap<String, DungeonInfo>();
-	private Map<String, TileSet> tileSets = new ConcurrentHashMap<String, TileSet>();
-	private Map<String, ItemStack> items = new ConcurrentHashMap<String, ItemStack>();
+	private final Map<UUID, Dungeon> dungeons = new ConcurrentHashMap<>();
+	private final Map<String, DungeonInfo> dungeonInfo = new ConcurrentHashMap<>();
+	private final Map<String, TileSet> tileSets = new ConcurrentHashMap<>();
+	private final Map<String, ItemStack> items = new ConcurrentHashMap<>();
 
 	/**
-	 * Loads all the {@link ItemStack} and puts it into a {@link Map<String, ItemStack>}
+	 * Loads all the {@link ItemStack} and puts it into a {@link Map<>}
 	 */
 	public void loadItems() {
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
@@ -87,7 +87,7 @@ public class DungeonManager {
 	}
 	
 	/**
-	 * Loads all the {@link DungeonInfo} and puts it into a {@link Map<String, DungeonInfo>}
+	 * Loads all the {@link DungeonInfo} and puts it into a {@link Map<>}
 	 */
 	public void loadDungeonInfo() {
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
@@ -100,7 +100,7 @@ public class DungeonManager {
 	}
 	
 	/**
-	 * Loads all the {@link TileSet} and puts it into a {@link Map<String, TileSet>}
+	 * Loads all the {@link TileSet} and puts it into a {@link Map<>}
 	 */
 	public void loadTileSets() {
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
@@ -226,10 +226,10 @@ public class DungeonManager {
 	}
 	
 	/**
-	 * Gets a {@link Map<UUID, Dungeon>} with all the solo players and/or party leaders 
+	 * Gets a {@link Map<>} with all the solo players and/or party leaders
 	 * currently in a dungeon
 	 * 
-	 * @return A {@link Map<UUID, Dungeon>} with all players in a dungeon
+	 * @return A {@link Map<>} with all players in a dungeon
 	 */
 	public Map<UUID, Dungeon> getDungeons() {
 		return dungeons;

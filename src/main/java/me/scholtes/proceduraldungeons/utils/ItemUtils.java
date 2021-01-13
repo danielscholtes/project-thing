@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class ItemUtils {
 	
 	/**
-	 * Creates an {@link ItemStack} with the specified paramaters
+	 * Creates an {@link ItemStack} with the specified parameters
 	 * 
 	 * @param material The {@link Material} of the {@link ItemStack}
 	 * @param amount The amount of the {@link ItemStack}
@@ -35,7 +35,7 @@ public class ItemUtils {
 			for (String enchant : enchants) {
 				String[] split = enchant.split(";");
 				Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(split[0].toLowerCase()));
-				int level = Integer.valueOf(split[1]);
+				int level = Integer.parseInt(split[1]);
 				item.addUnsafeEnchantment(enchantment, level);
 			}
 		}

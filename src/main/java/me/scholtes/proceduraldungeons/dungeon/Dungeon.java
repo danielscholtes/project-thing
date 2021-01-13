@@ -22,7 +22,7 @@ public class Dungeon {
 	private final UUID dungeonID;
 	private final World world;
 	private int maxFloors = 0;
-	private int totalLives = 0;
+	private int totalLives;
 	private UUID player;
 	private Location spawnPoint = null;
 	private UUID bossID = null;
@@ -31,7 +31,7 @@ public class Dungeon {
 	 * Constructor for the {@link Dungeon}
 	 * 
 	 * @param plugin The instance of {@link ProceduralDungeons}
-	 * @param dungeonName The name of the dungeon
+	 * @param dungeonInfo The {@link DungeonInfo} of this dungeon
 	 * @param player The UUID of the main dungeon player
 	 */
 	public Dungeon(ProceduralDungeons plugin, DungeonInfo dungeonInfo, UUID player) {
@@ -123,7 +123,7 @@ public class Dungeon {
 	/**
 	 * Sets the boss {@link UUID} of the {@link Dungeon}
 	 * 
-	 * @param Boss {@link UUID} of the {@link Dungeon}
+	 * @param bossID {@link UUID} of the {@link Dungeon}
 	 */
 	public void setBossID(UUID bossID) {
 		this.bossID = bossID;
@@ -177,7 +177,7 @@ public class Dungeon {
 	/**
 	 * Gets the {@link World} of the {@link Dungeon}
 	 * 
-	 * @param player The world of the dungeon
+	 * @return Returns the {@link World} of the {@link Dungeon}
 	 */
 	public World getWorld() {
 		return world;

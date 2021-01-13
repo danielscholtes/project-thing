@@ -18,6 +18,6 @@ public enum RoomType {
 	SOUTH(),
 	WEST(),
 	BOSS(),
-	INVALID();
+	INVALID()
 
 }

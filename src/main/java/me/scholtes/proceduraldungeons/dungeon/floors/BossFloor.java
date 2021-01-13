@@ -3,6 +3,7 @@ package me.scholtes.proceduraldungeons.dungeon.floors;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.scholtes.proceduraldungeons.dungeon.AbstractMob;
 import org.bukkit.Bukkit;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
@@ -12,7 +13,7 @@ import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 
 public class BossFloor extends AbstractFloorInfo{
 
-	private List<Boss> bosses;
+	private final List<Boss> bosses;
 	
 	/**
 	 * Constructor for the {@link BossFloor}

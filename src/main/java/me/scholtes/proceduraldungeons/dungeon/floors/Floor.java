@@ -39,11 +39,11 @@ import me.scholtes.proceduraldungeons.utils.WorldUtils;
 public final class Floor {
 	
 	private final ProceduralDungeons plugin;
-	private final Map<String, Room> rooms = new ConcurrentHashMap<String, Room>();
-	private final Set<Room> queue = new HashSet<Room>();
+	private final Map<String, Room> rooms = new ConcurrentHashMap<>();
+	private final Set<Room> queue = new HashSet<>();
 	private final Dungeon dungeon;
 	private final FloorInfo floorInfo;
-	private int maxRooms;
+	private final int maxRooms;
 
 	private int previousRoomSize = 0;
 	private int count = 0;
@@ -160,9 +160,9 @@ public final class Floor {
 								if (!variation.getMobLocations().isEmpty()) {
 									String loc = variation.getMobLocations().get(0);
 									String[] split = loc.split(";");
-									double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
-									double locY = newHeight + Double.valueOf(split[1]);
-									double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
+									double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.parseDouble(split[0]);
+									double locY = newHeight + Double.parseDouble(split[1]);
+									double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.parseDouble(split[2]);
 									Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
 									
 									dungeon.setSpawnPoint(location);
@@ -223,9 +223,9 @@ public final class Floor {
 						
 						String[] split = variation.getBossLocation().split(";");
 
-						double locX = startWorldXNew + Double.valueOf(split[0]);
-						double locY = height + Double.valueOf(split[1]);
-						double locZ = startWorldYNew + Double.valueOf(split[2]);
+						double locX = startWorldXNew + Double.parseDouble(split[0]);
+						double locY = height + Double.parseDouble(split[1]);
+						double locZ = startWorldYNew + Double.parseDouble(split[2]);
 						Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
 						
 						rooms.clear();
@@ -235,6 +235,7 @@ public final class Floor {
 						 * Teleports the players to the dungeon
 						 */
 						Bukkit.getScheduler().runTask(plugin, () -> {
+
 							while (dungeon.getSpawnPoint().getBlock().getType() != Material.AIR || 
 									dungeon.getSpawnPoint().clone().add(0, 1, 0).getBlock().getType()!= Material.AIR || 
 											dungeon.getSpawnPoint().clone().add(0, 2, 0).getBlock().getType() != Material.AIR) {
@@ -313,7 +314,7 @@ public final class Floor {
 							}
 
 							for (String cmd : dungeon.getDungeonInfo().getJoinCommands()) {
-								Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getPlayer()).getName()).replaceAll("\\{world\\}", dungeon.getWorld().getName()));	
+								Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getPlayer()).getName()).replaceAll("\\{world\\}", dungeon.getWorld().getName()));
 							}
 						});
 					});
@@ -342,9 +343,9 @@ public final class Floor {
 			
 			Bukkit.getScheduler().runTask(plugin, () -> {
 				String[] split = loc.split(";");
-				double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
-				double locY = height + Double.valueOf(split[1]);
-				double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
+				double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.parseDouble(split[0]);
+				double locY = height + Double.parseDouble(split[1]);
+				double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.parseDouble(split[2]);
 				Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
 				
 				location.getBlock().setType(Material.CHEST);
@@ -383,12 +384,11 @@ public final class Floor {
 				
 				Bukkit.getScheduler().runTask(plugin, () -> {
 					String[] split = loc.split(";");
-					double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.valueOf(split[0]);
-					double locY = height + Double.valueOf(split[1]);
-					double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.valueOf(split[2]);
+					double locX = (startWorldX + x * tileSet.getRoomSize()) + Double.parseDouble(split[0]);
+					double locY = height + Double.parseDouble(split[1]);
+					double locZ = (startWorldY + y * tileSet.getRoomSize()) + Double.parseDouble(split[2]);
 					Location location = new Location(dungeon.getWorld(), locX, locY, locZ);
-					int mobAmount = 1;
-					mobAmount = ThreadLocalRandom.current().nextInt((mob.getMaxMobs() -  mob.getMinMobs()) + 1) + mob.getMinMobs();
+					int mobAmount = ThreadLocalRandom.current().nextInt((mob.getMaxMobs() -  mob.getMinMobs()) + 1) + mob.getMinMobs();
 					
 					for (int i = 0; i < mobAmount; i++) {
 						MythicMobs.inst().getMobManager().spawnMob(mob.getName(), location);
@@ -426,7 +426,7 @@ public final class Floor {
 	/**
 	 * Gets all the {@link Room}s this instance of the {@link Floor} has
 	 * 
-	 * @return A {@link Map<String, Room>} containing the rooms
+	 * @return A {@link Map<>} containing the rooms
 	 */
 	public Map<String, Room> getRooms() {
 		return rooms;

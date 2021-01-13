@@ -7,7 +7,7 @@ public enum Direction {
 	SOUTH(0, -1),
 	WEST(-1, 0);
 	
-	private int x, y;
+	private final int x, y;
 	
 	/**
 	 * Constructor for the {@link Direction}

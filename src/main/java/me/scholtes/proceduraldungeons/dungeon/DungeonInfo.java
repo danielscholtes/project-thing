@@ -48,8 +48,8 @@ public class DungeonInfo {
 	 */
 	public DungeonInfo(String dungeonName, DungeonManager dungeonManager) {
 		this.dungeonName = dungeonName;
-		canBreakBlocks = new HashSet<Material>();
-		allowedCommands = new HashSet<String>();
+		canBreakBlocks = new HashSet<>();
+		allowedCommands = new HashSet<>();
 
 		String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + "dungeons" + File.separator;
 		File file = new File(path, ProceduralDungeons.getInstance().getConfig().getString("dungeons." + dungeonName + ".file") + ".yml");
@@ -65,19 +65,19 @@ public class DungeonInfo {
 		 * Loads all the information about this DungeonInfo
 		 */
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
-			floors = new ConcurrentHashMap<Integer, AbstractFloorInfo>();
+			floors = new ConcurrentHashMap<>();
 			for (String floor : config.getConfigurationSection("floors").getKeys(false)) {
 				if (floor.equalsIgnoreCase("boss")) {
 					int floorNumber = -1;
 					floors.put(floorNumber, new BossFloor(getInstance(), dungeonManager, floor));
 				} else {
-					int floorNumber = Integer.valueOf(floor);
+					int floorNumber = Integer.parseInt(floor);
 					floors.put(floorNumber, new FloorInfo(getInstance(), dungeonManager, floor));
 				}
 			}
 			
 			String[] location = config.getString("location_teleport_after").split(";");
-			finishLocation = new Location(Bukkit.getWorld(location[3]), Double.valueOf(location[0]), Double.valueOf(location[1]), Double.valueOf(location[2]));
+			finishLocation = new Location(Bukkit.getWorld(location[3]), Double.parseDouble(location[0]), Double.parseDouble(location[1]), Double.parseDouble(location[2]));
 			
 			minFloors = config.getInt("min_floors");
 			maxFloors = config.getInt("max_floors");
@@ -95,9 +95,9 @@ public class DungeonInfo {
 	}
 
 	/**
-	 * Gets all the {@link FloorInfo} in a {@link Map<Integer, FloorInfo>}
+	 * Gets all the {@link FloorInfo} in a {@link Map<>}
 	 * 
-	 * @return {@link Map<Integer, FloorInfo>} with the {@link FloorInfo}
+	 * @return {@link Map<>} with the {@link FloorInfo}
 	 */
 	public Map<Integer, AbstractFloorInfo> getFloors() {
 		return floors;

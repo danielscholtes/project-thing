@@ -1,5 +1,6 @@
 package me.scholtes.proceduraldungeons.dungeon.floors;
 
+import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
 import org.bukkit.Bukkit;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;

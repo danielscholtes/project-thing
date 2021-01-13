@@ -72,6 +72,9 @@ public class PartyData {
 	 * @param playerUUID The player to remove's {@link UUID}
 	 */
 	public void removePlayerFromParty(Party party, UUID playerUUID) {
+		if (party == null) {
+			return;
+		}
 		Dungeon dungeon = ProceduralDungeons.getInstance().getDungeonManager().getDungeonFromPlayer(party.getOwner(), party);
 		if (dungeon != null) {
 			if (playerUUID.equals(party.getOwner())) {
@@ -101,11 +104,13 @@ public class PartyData {
 		}
 		
 
-		if (playerUUID.equals(party.getOwner())) {
-			party.setOwner(party.getMembers().get(0));
-			party.getMembers().remove(0);
-		} else {
-			party.getMembers().remove(playerUUID);
+		if (party.getMembers().size() > 0) {
+			if (playerUUID.equals(party.getOwner())) {
+				party.setOwner(party.getMembers().get(0));
+				party.getMembers().remove(0);
+			} else {
+				party.getMembers().remove(playerUUID);
+			}
 		}
 		
 		parties.remove(playerUUID);

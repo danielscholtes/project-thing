@@ -10,7 +10,7 @@ import me.scholtes.proceduraldungeons.utils.StringUtils;
 
 public class Party {
 	
-	private List<UUID> members = new ArrayList<UUID>();
+	private final List<UUID> members = new ArrayList<>();
 	private UUID owner;
 	
 	/**
@@ -34,7 +34,7 @@ public class Party {
 	/**
 	 * Sets the {@link Party} leader
 	 * 
-	 * @return The {@link Party} leader
+	 * @param newOwner The {@link Party} leader
 	 */
 	public void setOwner(UUID newOwner) {
 		this.owner = newOwner;

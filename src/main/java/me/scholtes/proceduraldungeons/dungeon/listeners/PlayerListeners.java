@@ -199,9 +199,12 @@ public class PlayerListeners implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
+
+		partyData.getInvitations().remove(player.getUniqueId());
+
 		Party party = partyData.getPartyFromPlayer(player.getUniqueId());
-		
-		if (party == null) {
+
+		if (party == null || party.getMembers().size() == 0) {
 			Dungeon dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party);
 			if (dungeon == null) {
 				return;
@@ -209,7 +212,7 @@ public class PlayerListeners implements Listener {
 			dungeonManager.removeDungeon(dungeon);
 			return;
 		}
-		
+
 		partyData.removePlayerFromParty(party, player.getUniqueId());
 	}
 
@@ -221,17 +224,20 @@ public class PlayerListeners implements Listener {
 	@EventHandler
 	public void onKick(PlayerKickEvent event) {
 		Player player = event.getPlayer();
+
+		partyData.getInvitations().remove(player.getUniqueId());
+
 		Party party = partyData.getPartyFromPlayer(player.getUniqueId());
-		Dungeon dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party);
-		if (dungeon == null) {
-			return;
-		}
-		
-		if (party == null) {
+
+		if (party == null || party.getMembers().size() == 0) {
+			Dungeon dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party);
+			if (dungeon == null) {
+				return;
+			}
 			dungeonManager.removeDungeon(dungeon);
 			return;
 		}
-		
+
 		partyData.removePlayerFromParty(party, player.getUniqueId());
 	}
 

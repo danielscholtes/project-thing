@@ -2,6 +2,7 @@ package me.scholtes.proceduraldungeons.dungeon.listeners;
 
 import java.util.UUID;
 
+import me.scholtes.proceduraldungeons.dungeon.Boss;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -47,7 +48,7 @@ public class BossListener implements Listener {
 		}
 		
 		final Dungeon dungeon;
-		if (event.getKiller() != null && event.getKiller() instanceof Player && dungeonManager.getDungeonFromPlayer(((Player) event.getKiller()).getUniqueId(), partyData.getPartyFromPlayer(((Player) event.getKiller()).getUniqueId())) != null) {
+		if (event.getKiller() != null && event.getKiller() instanceof Player && dungeonManager.getDungeonFromPlayer(event.getKiller().getUniqueId(), partyData.getPartyFromPlayer(event.getKiller().getUniqueId())) != null) {
 			Player player = (Player) event.getKiller();
 			dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), partyData.getPartyFromPlayer(player.getUniqueId()));
 		} else {
