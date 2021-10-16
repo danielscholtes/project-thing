@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.boydti.fawe.FaweAPI;
-import com.boydti.fawe.util.EditSessionBuilder;
+import com.fastasyncworldedit.core.FaweAPI;
+import com.fastasyncworldedit.core.util.EditSessionBuilder;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -41,8 +41,8 @@ public class WorldUtils {
 			try (ClipboardReader reader = format.getReader(input)) {
 				clipboard = reader.read();
 				try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(worldName)).fastmode(true).build()) {
-				    Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).build();
-				    try {
+					Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).build();
+					try {
 						Operations.complete(operation);
 					} catch (WorldEditException e) {
 						e.printStackTrace();

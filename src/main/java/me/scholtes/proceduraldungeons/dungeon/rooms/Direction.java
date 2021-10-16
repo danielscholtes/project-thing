@@ -1,12 +1,23 @@
 package me.scholtes.proceduraldungeons.dungeon.rooms;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Direction {
 	
 	NORTH(0, 1),
 	EAST(1, 0),
 	SOUTH(0, -1),
 	WEST(-1, 0);
-	
+
+	public static Map<Direction, Direction> oppositeDirections = new HashMap<>();
+	static {
+		oppositeDirections.put(Direction.NORTH, Direction.SOUTH);
+		oppositeDirections.put(Direction.SOUTH, Direction.NORTH);
+		oppositeDirections.put(Direction.EAST, Direction.WEST);
+		oppositeDirections.put(Direction.WEST, Direction.EAST);
+	}
+
 	private final int x, y;
 	
 	/**

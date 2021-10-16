@@ -29,8 +29,8 @@ public class TileSet {
 	 */
 	public TileSet(String tileSetName) {
 		this.tileSetName = tileSetName;
-		variations = new ConcurrentHashMap<RoomType, List<Variation>>();
-		stairVariations = new ArrayList<File>();
+		variations = new ConcurrentHashMap<>();
+		stairVariations = new ArrayList<>();
 		
 		/**
 		 * Loads all the information about this TileSet

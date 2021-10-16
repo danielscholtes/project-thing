@@ -28,56 +28,6 @@ public final class Room {
 		this.roomType = roomType;
 		this.posx = posx;
 		this.posy = posy;
-		if (floor.getRooms().size() < floor.getMaxRooms()) {
-			this.floor.getQueue().add(this);
-		}
-		generateRooms();
-	}
-
-	/**
-	 * Checks if it can generate a new {@link Room} in a {@link Direction}, and if
-	 * it can then it does
-	 */
-	private void generateRooms() {
-		/**
-		 * Generates Rooms asynchronously
-		 */
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				/**
-				 * Makes sure the Room didn't get overriden
-				 */
-                if (floor.getRooms().get(posx + "_" + posy) != getInstance()) {
-                	floor.getQueue().remove(getInstance());
-                    return;
-                }
-				String roomTypeString = roomType.toString();
-
-				/**
-				 * Checks if Direction is valid, if yes generate a new Room and
-				 * if not update the available doors of this Room
-				 */
-				roomTypeString = checkDoors(roomTypeString, Direction.NORTH, Direction.SOUTH);
-				roomTypeString = checkDoors(roomTypeString, Direction.EAST, Direction.WEST);
-				roomTypeString = checkDoors(roomTypeString, Direction.SOUTH, Direction.NORTH);
-				roomTypeString = checkDoors(roomTypeString, Direction.WEST, Direction.EAST);
-
-				floor.getQueue().remove(getInstance());
-
-				/**
-				 * Updates RoomType of the Room according to previous checks
-				 */
-				if (roomTypeString.equals("")) {
-					floor.getRooms().remove(posx + "_" + posy);
-				} else {
-					if (roomTypeString.startsWith("_")) {
-						roomTypeString = roomTypeString.substring(1);
-					}
-					setRoomType(RoomType.valueOf(roomTypeString));
-				}
-			}
-		}.runTaskLaterAsynchronously(ProceduralDungeons.getInstance(), 1L);
 	}
 
 	/**
@@ -114,57 +64,6 @@ public final class Room {
 	 */
 	public void setRoomType(RoomType roomType) {
 		this.roomType = roomType;
-	}
-
-	/**
-	 * Gets the instance of this {@link Room}
-	 * 
-	 * @return Instance of the room
-	 */
-	private Room getInstance() {
-		return this;
-	}
-
-	/**
-	 * Checks if the {@link Room} can generate a new room in the specified
-	 * {@link Direction}. If so, it generates a room with a door in the
-	 * opposite {@link Direction}.
-	 * 
-	 * @param roomTypeString The available doors of this room
-	 * @param direction The {@link Direction} to check in
-	 * @param opposite The opposite {@link Direction}
-	 * @return A {@link String} representing the available doors
-	 */
-	private String checkDoors(String roomTypeString, final Direction direction, final Direction opposite) {
-		final String getter = (posx + direction.getX()) + "_" + (posy + direction.getY());
-
-		/*
-		 * Checks if there is a door in this direction
-		 */
-		if (roomTypeString.contains(direction.toString())) {
-			final Room room = floor.getRooms().get(getter);
-			/*
-			 * Updates available doors if there is a room in the direction that
-			 * has no door in the opposite direction
-			 */
-			roomTypeString = DungeonUtils.checkDirection(this, floor, roomTypeString, direction, opposite, false);
-			
-			/*
-			 * Checks if there is no room in the direction, and if not checks if
-			 * it has reached the max room limit, if not it generates a new room
-			 * in that direction that has a door in the opposite direction
-			 */
-			if (room == null) {
-				if (floor.getRooms().size() < floor.getMaxRooms()) {
-					RoomType randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
-					while (!randomRoomType.toString().contains(opposite.toString())) {
-						randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
-					}
-					floor.getRooms().put(getter, new Room(floor, randomRoomType, (posx + direction.getX()), (posy + direction.getY())));
-				}
-			}
-		}
-		return roomTypeString;
 	}
 
 }
