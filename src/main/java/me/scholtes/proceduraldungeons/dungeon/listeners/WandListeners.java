@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
@@ -19,10 +20,9 @@ import org.bukkit.inventory.ItemStack;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
-import me.scholtes.proceduraldungeons.dungeon.tilesets.BossVariation;
+import me.scholtes.proceduraldungeons.dungeon.tilesets.BossTileVariation;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileVariation;
-import me.scholtes.proceduraldungeons.dungeon.tilesets.Variation;
 import me.scholtes.proceduraldungeons.nbt.NBT;
 import me.scholtes.proceduraldungeons.utils.StringUtils;
 
@@ -56,9 +56,7 @@ public class WandListeners implements Listener {
 		
 		event.setCancelled(true);
 		
-		/**
-		 * Whenever a player left clicks a block it updates the paste location
-		 */
+		// Whenever a player left clicks a block it updates the paste location
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
 			StringUtils.message(event.getPlayer(), "&aSet paste location");
 			nbt.setInt("PasteLocX", event.getClickedBlock().getX());
@@ -75,9 +73,7 @@ public class WandListeners implements Listener {
 			return;
 		}
 
-		/**
-		 * Whenever a player right clicks a block it updates the chest location
-		 */
+		// Whenever a player right clicks a block it updates the chest location
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND) {
 			StringUtils.message(event.getPlayer(), "&aSet chest location");
 			nbt.setInt("ChestLocX", event.getClickedBlock().getX());
@@ -109,9 +105,7 @@ public class WandListeners implements Listener {
 		
 		event.setCancelled(true);
 
-		/**
-		 * Whenever a player left clicks a block it updates the paste location
-		 */
+		// Whenever a player left clicks a block it updates the paste location
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			StringUtils.message(event.getPlayer(), "&aSet paste location");
 			nbt.setInt("PasteLocX", event.getClickedBlock().getX());
@@ -126,9 +120,7 @@ public class WandListeners implements Listener {
 			handleMobWand(nbt);
 		}
 
-		/**
-		 * Whenever a player rights clicks a block it updates the mob location
-		 */
+		// Whenever a player rights clicks a block it updates the mob location
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			StringUtils.message(event.getPlayer(), "&aSet mob location");
 			nbt.setInt("MobLocX", event.getClickedBlock().getX());
@@ -152,10 +144,10 @@ public class WandListeners implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
-		if (event.getPlayer().getItemInHand() == null) {
+		if (event.getPlayer().getItemInHand().getType() == Material.AIR) {
 			return;
 		}
-		
+
 		ItemStack wand = event.getPlayer().getItemInHand();
 		NBT nbt = NBT.get(wand);
 		if (!nbt.hasKey("TileSet")) {
@@ -205,7 +197,7 @@ public class WandListeners implements Listener {
 				e.printStackTrace();
 			}
 			
-			for (Variation variation : tileSet.getVariations().get(RoomType.valueOf(nbt.getString("RoomType")))) {
+			for (TileVariation variation : tileSet.getVariations().get(RoomType.valueOf(nbt.getString("RoomType")))) {
 				if (variation.getVariationName().equalsIgnoreCase(variationName)) {
 					variation.getMobLocations().add(location);
 					return;
@@ -213,7 +205,7 @@ public class WandListeners implements Listener {
 			}
 
 			if (roomType == RoomType.BOSS) {
-				dungeonManager.getTileSet(nbt.getString("TileSet")).getVariations().get(RoomType.valueOf(nbt.getString("RoomType"))).add(new BossVariation(tileSet, variationName, roomType));
+				dungeonManager.getTileSet(nbt.getString("TileSet")).getVariations().get(RoomType.valueOf(nbt.getString("RoomType"))).add(new BossTileVariation(tileSet, variationName, roomType));
 				return;
 			}
 			dungeonManager.getTileSet(nbt.getString("TileSet")).getVariations().get(RoomType.valueOf(nbt.getString("RoomType"))).add(new TileVariation(tileSet, variationName, roomType));
@@ -260,7 +252,7 @@ public class WandListeners implements Listener {
 				e.printStackTrace();
 			}
 			
-			for (Variation variation : tileSet.getVariations().get(RoomType.valueOf(nbt.getString("RoomType")))) {
+			for (TileVariation variation : tileSet.getVariations().get(RoomType.valueOf(nbt.getString("RoomType")))) {
 				if (variation.getVariationName().equalsIgnoreCase(variationName)) {
 					variation.getChestLocations().add(location);
 					return;
@@ -268,7 +260,7 @@ public class WandListeners implements Listener {
 			}
 
 			if (roomType == RoomType.BOSS) {
-				dungeonManager.getTileSet(nbt.getString("TileSet")).getVariations().get(RoomType.valueOf(nbt.getString("RoomType"))).add(new BossVariation(tileSet, variationName, roomType));
+				dungeonManager.getTileSet(nbt.getString("TileSet")).getVariations().get(RoomType.valueOf(nbt.getString("RoomType"))).add(new BossTileVariation(tileSet, variationName, roomType));
 				return;
 			}
 			dungeonManager.getTileSet(nbt.getString("TileSet")).getVariations().get(RoomType.valueOf(nbt.getString("RoomType"))).add(new TileVariation(tileSet, variationName, roomType));

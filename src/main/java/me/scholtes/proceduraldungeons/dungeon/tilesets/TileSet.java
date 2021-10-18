@@ -15,7 +15,7 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 
 public class TileSet {
 	
-	private final Map<RoomType, List<Variation>> variations;
+	private final Map<RoomType, List<TileVariation>> variations;
 	private double roomSize;
 	private double roomHeight;
 	private double bossHeight;
@@ -32,9 +32,7 @@ public class TileSet {
 		variations = new ConcurrentHashMap<>();
 		stairVariations = new ArrayList<>();
 		
-		/**
-		 * Loads all the information about this TileSet
-		 */
+		// Loads all the information about this TileSet
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			for (RoomType roomType : RoomType.values()) {
 				if (roomType == RoomType.INVALID) {
@@ -45,10 +43,10 @@ public class TileSet {
 				File file = new File(path, roomType.toString() + "_variations.yml");
 				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 				
-				List<Variation> tileVariations = new ArrayList<Variation>();
+				List<TileVariation> tileVariations = new ArrayList<>();
 				if (roomType == RoomType.BOSS) {
 					for (String variation : config.getConfigurationSection("variations").getKeys(false)) {
-						tileVariations.add(new BossVariation(getInstance(), variation, roomType));
+						tileVariations.add(new BossTileVariation(getInstance(), variation, roomType));
 					}
 				} else {
 					for (String variation : config.getConfigurationSection("variations").getKeys(false)) {
@@ -74,11 +72,11 @@ public class TileSet {
 	}
 
 	/**
-	 * Gets a {@link Map<RoomType, List<Variation>>} of all the {@link Variation}
+	 * Gets a {@link Map<RoomType, List<TileVariation>>} of all the {@link TileVariation}
 	 * 
-	 * @return A {@link Map<RoomType, List<Variation>>} of all the {@link Variation}
+	 * @return A {@link Map<RoomType, List<TileVariation>>} of all the {@link TileVariation}
 	 */
-	public Map<RoomType, List<Variation>> getVariations() {
+	public Map<RoomType, List<TileVariation>> getVariations() {
 		return variations;
 	}
 	

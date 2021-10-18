@@ -21,10 +21,9 @@ import me.scholtes.proceduraldungeons.dungeon.Mob;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Direction;
 import me.scholtes.proceduraldungeons.dungeon.rooms.Room;
 import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
-import me.scholtes.proceduraldungeons.dungeon.tilesets.BossVariation;
+import me.scholtes.proceduraldungeons.dungeon.tilesets.BossTileVariation;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileVariation;
-import me.scholtes.proceduraldungeons.dungeon.tilesets.Variation;
 import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.utils.StringUtils;
 import me.scholtes.proceduraldungeons.utils.DungeonUtils;
@@ -152,9 +151,9 @@ public final class Floor {
 							continue;
 						}
 
-						List<Variation> variations = tileSet.getVariations().get(rooms.get(room).getRoomType());
+						List<TileVariation> variations = tileSet.getVariations().get(rooms.get(room).getRoomType());
 
-						TileVariation variation = (TileVariation) variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
+						TileVariation variation = variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
 
 						//WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), startWorldX + x * tileSet.getRoomSize(), newHeight , startWorldY + y * tileSet.getRoomSize());
 						WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), startWorldX + x * tileSet.getRoomSize() + ((tileSet.getRoomSize() - oldTileSize) / 2), newHeight , startWorldY + y * tileSet.getRoomSize() + ((tileSet.getRoomSize() - oldTileSize) / 2));
@@ -209,8 +208,8 @@ public final class Floor {
 					List<TileSet> bossTileSets =  bossFloor.getTileSets();
 					TileSet bossTileSet =  bossTileSets.get(ThreadLocalRandom.current().nextInt(bossTileSets.size()));
 					double height = newHeight - bossTileSet.getBossHeight();
-					List<Variation> variations = bossTileSet.getVariations().get(RoomType.BOSS);
-					BossVariation variation = (BossVariation) variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
+					List<TileVariation> variations = bossTileSet.getVariations().get(RoomType.BOSS);
+					BossTileVariation variation = (BossTileVariation) variations.get(ThreadLocalRandom.current().nextInt(variations.size()));
 					double positionXSchematic = startWorldXNew + ((bossTileSet.getRoomSize() - tileSet.getRoomSize()) / 2);
 					double positionYSchematic = startWorldYNew + ((bossTileSet.getRoomSize() - tileSet.getRoomSize()) / 2);
 					WorldUtils.pasteSchematic(variation.getSchematic(), dungeon.getWorld().getName(), positionXSchematic, height , positionYSchematic);
@@ -281,17 +280,13 @@ public final class Floor {
 								bukkitPlayer.teleport(dungeon.getSpawnPoint());
 								bukkitPlayer.setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
 								if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
-									Bukkit.getScheduler().runTaskLater(plugin, () -> {
-										bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());
-									}, 10L);
+									Bukkit.getScheduler().runTaskLater(plugin, () -> bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack()), 10L);
 								}
 							}
 							Bukkit.getPlayer(party.getOwner()).teleport(dungeon.getSpawnPoint());
 							Bukkit.getPlayer(party.getOwner()).setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
 							if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
-								Bukkit.getScheduler().runTaskLater(plugin, () -> {
-									Bukkit.getPlayer(party.getOwner()).setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());
-								}, 10L);
+								Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.getPlayer(party.getOwner()).setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack()), 10L);
 								Bukkit.getPlayer(party.getOwner()).setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());
 							}
 							party.messageMembers(StringUtils.getMessage(Message.DUNGEON_JOIN_GENERATED));
@@ -307,9 +302,7 @@ public final class Floor {
 							bukkitPlayer.teleport(dungeon.getSpawnPoint());
 							bukkitPlayer.setGameMode(dungeon.getDungeonInfo().getEnterGameMode());
 							if (!dungeon.getDungeonInfo().getEnterResourcePack().equalsIgnoreCase("none")) {
-								Bukkit.getScheduler().runTaskLater(plugin, () -> {
-									bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack());
-								}, 10L);
+								Bukkit.getScheduler().runTaskLater(plugin, () -> bukkitPlayer.setResourcePack(dungeon.getDungeonInfo().getEnterResourcePack()), 10L);
 							}
 						}
 
@@ -339,7 +332,7 @@ public final class Floor {
 	 * Generates all the chests for the {@link Room}
 	 * 
 	 * @param floorInfo The {@link AbstractFloorInfo} of this {@link Room}
-	 * @param variation The {@link Variation} of this {@link Room}
+	 * @param variation The {@link TileVariation} of this {@link Room}
 	 * @param startWorldX The X world position to add onto the spawning of the chests
 	 * @param startWorldY The Y world position to add onto the pasting of the chests
 	 * @param x The X coordinate of the {@link Room}
@@ -347,7 +340,7 @@ public final class Floor {
 	 * @param tileSet The {@link TileSet} for this {@link Room}
 	 * @param height The height of the {@link Room}
 	 */
-	private void generateChests(AbstractFloorInfo floorInfo, Variation variation, double startWorldX, double startWorldY, double x, double y, TileSet tileSet, double height) {
+	private void generateChests(AbstractFloorInfo floorInfo, TileVariation variation, double startWorldX, double startWorldY, double x, double y, TileSet tileSet, double height) {
 		for (String loc : variation.getChestLocations()) {
 			if (Math.random() >= floorInfo.getChestChance()) {
 				continue;
