@@ -110,7 +110,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 	 */
 	public PartyData getPartyData() {
 		if (partyData == null) {
-			partyData = new PartyData(getDungeonManager());
+			partyData = new PartyData();
 		}
 		return partyData;
 	}

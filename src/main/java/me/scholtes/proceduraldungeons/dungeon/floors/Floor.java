@@ -51,7 +51,7 @@ public final class Floor {
 	 * @param exitRoomX The X position of the exit room for the previous {@link Floor}
 	 * @param exitRoomY The Y position of the exit room for the previous {@link Floor}
 	 * @param previousHeight The pasting height of the last {@link Floor}
-	 * @param previousTileSize The previous tile size (room size) of the previous {@link Floor}
+	 * @param previousTileSize The tile size (room size) of the previous {@link Floor}
 	 */
 	public Floor(ProceduralDungeons plugin, Dungeon dungeon, FloorInfo floorInfo, double startWorldX, double startWorldY, double prevStartWorldX, double prevStartWorldY, int exitRoomX, int exitRoomY, double previousHeight, double previousTileSize) {
 		this.plugin = plugin;
@@ -267,7 +267,6 @@ public final class Floor {
 							dungeon.getSpawnPoint().clone().add(0, 2, 0).getBlock().setType(Material.AIR);
 						}
 
-						System.out.println(randomBoss.getName());
 						dungeon.setBossID(MythicMobs.inst().getMobManager().spawnMob(randomBoss.getName(), location).getUniqueId());
 
 						Party party = plugin.getPartyData().getPartyFromPlayer(dungeon.getDungeonOwner());
@@ -293,7 +292,7 @@ public final class Floor {
 							party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
 						} else {
 
-							Player bukkitPlayer = Bukkit.getPlayer(dungeon.getDungeonID());
+							Player bukkitPlayer = Bukkit.getPlayer(dungeon.getDungeonOwner());
 							if (bukkitPlayer == null) {
 								return;
 							}

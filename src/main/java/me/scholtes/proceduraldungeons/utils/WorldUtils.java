@@ -6,9 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.fastasyncworldedit.core.FaweAPI;
-import com.fastasyncworldedit.core.util.EditSessionBuilder;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -17,6 +18,8 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 public class WorldUtils {
 	
@@ -30,18 +33,19 @@ public class WorldUtils {
 	 * @param z The Z position
 	 */
 	public static void pasteSchematic(File file, String worldName, double x, double y, double z) {
-
 		FileInputStream input = null;
 		try {
 
 			input = new FileInputStream(file);
 			Clipboard clipboard;
+			Location location = new Location(Bukkit.getWorld(worldName), x, y, z);
 
 			ClipboardFormat format = ClipboardFormats.findByFile(file);
 			try (ClipboardReader reader = format.getReader(input)) {
 				clipboard = reader.read();
-				try (EditSession editSession = new EditSessionBuilder(FaweAPI.getWorld(worldName)).fastmode(true).build()) {
-					Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).build();
+				try (EditSession editSession = com.sk89q.worldedit.WorldEdit.getInstance().getEditSessionFactory()
+						.getEditSession(new BukkitWorld(location.getWorld()), -1, WorldEditPlugin.getInstance().wrapCommandSender(Bukkit.getConsoleSender()))) {
+					Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).ignoreAirBlocks(true).build();
 					try {
 						Operations.complete(operation);
 					} catch (WorldEditException e) {
@@ -56,7 +60,7 @@ public class WorldUtils {
 		} finally {
 			try {
 				if (input != null) {
-					input.close();	
+					input.close();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

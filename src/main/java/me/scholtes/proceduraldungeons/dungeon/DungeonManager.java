@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -25,10 +22,17 @@ import me.scholtes.proceduraldungeons.utils.ItemUtils;
 
 public class DungeonManager {
 
-	private final Map<UUID, Dungeon> dungeons = new ConcurrentHashMap<>();
-	private final Map<String, DungeonInfo> dungeonInfo = new ConcurrentHashMap<>();
-	private final Map<String, TileSet> tileSets = new ConcurrentHashMap<>();
-	private final Map<String, ItemStack> items = new ConcurrentHashMap<>();
+	private final Map<UUID, Dungeon> dungeons;
+	private final Map<String, DungeonInfo> dungeonInfo;
+	private final Map<String, TileSet> tileSets;
+	private final Map<String, ItemStack> items;
+
+	public DungeonManager() {
+		dungeons = new HashMap<>();
+		dungeonInfo = new HashMap<>();
+		tileSets = new HashMap<>();
+		items = new HashMap<>();
+	}
 
 	/**
 	 * Loads all the {@link ItemStack} and puts it into a {@link Map<>}
