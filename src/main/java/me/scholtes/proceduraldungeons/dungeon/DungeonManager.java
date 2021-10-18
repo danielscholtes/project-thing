@@ -140,7 +140,7 @@ public class DungeonManager {
 			}
 		}
 		
-		Party party = ProceduralDungeons.getInstance().getPartyData().getPartyFromPlayer(dungeon.getPlayer());
+		Party party = ProceduralDungeons.getInstance().getPartyData().getPartyFromPlayer(dungeon.getDungeonOwner());
 		if (party != null) {
 			for (UUID uuid : party.getMembers()) {
 				Player bukkitPlayer = Bukkit.getPlayer(uuid);
@@ -156,19 +156,17 @@ public class DungeonManager {
 
 		Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
 
-		/**
-		 * Deletes the world files of the dungeon world
-		 */
+		// Deletes the world files of the dungeon world
 		try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {
 			files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		dungeons.remove(dungeon.getPlayer());
+		dungeons.remove(dungeon.getDungeonOwner());
 
 		for (String cmd : dungeon.getDungeonInfo().getLeaveCommands()) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getPlayer()).getName()));	
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getDungeonOwner()).getName()));
 		}
 		
 	}
@@ -188,9 +186,7 @@ public class DungeonManager {
 
 			Bukkit.getServer().unloadWorld(dungeon.getWorld(), false);
 
-			/**
-			 * Deletes the world files of the dungeon world
-			 */
+			// Deletes the world files of the dungeon world
 			try (Stream<Path> files = Files.walk(dungeon.getWorld().getWorldFolder().toPath())) {
 				files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 			} catch (IOException e) {
@@ -205,21 +201,15 @@ public class DungeonManager {
 	 * Clears all dungeon information and loads it again with updated information
 	 */
 	public void reloadDungeons() {
-		/**
-		 * Gets rid of all active dungeons
-		 */
+		// Gets rid of all active dungeons
 		clearDungeons();
 		
-		/**
-		 * Clears all information
-		 */
+		// Clears all information
 		tileSets.clear();
 		dungeonInfo.clear();
 		items.clear();
 		
-		/**
-		 * Loads all the updated information
-		 */
+		// Loads all the updated information
 		loadItems();
 		loadDungeonInfo();
 		loadTileSets();

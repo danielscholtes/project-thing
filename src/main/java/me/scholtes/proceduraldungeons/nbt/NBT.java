@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 
+// Not my code, taken from an online user
 public class NBT {
 
 	private static final String version = "net.minecraft.server."

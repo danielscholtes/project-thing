@@ -37,25 +37,19 @@ public final class ProceduralDungeons extends JavaPlugin {
 		saveDefaultConfig();
 		instance = this;
 
-		/**
-		 * Registering the commands
-		 */
+		// Registering the commands
 		getCommand("dungeon").setExecutor(new DungeonCommand(this));
 		getCommand("party").setExecutor(new PartyCommand(getDungeonManager(), getPartyData()));
 		
 		getDungeonManager().reloadDungeons();
 		StringUtils.loadMessages(getMessageFile());
 		
-		/**
-		 * Registering the listeners
-		 */
+		// Registering the listeners
 		getServer().getPluginManager().registerEvents(new PlayerListeners(getDungeonManager(), getPartyData()), this);
 		getServer().getPluginManager().registerEvents(new BossListener(this, getDungeonManager(), getPartyData()), this);
 		getServer().getPluginManager().registerEvents(new WandListeners(getDungeonManager(), this), this);
 		
-		/**
-		 * Gets rid of any unremoved worlds from a potential crash
-		 */
+		// Gets rid of any unremoved worlds from a potential crash
 
 		String[] loc = getConfig().getString("crash_location").split(";");
 		Location crashLocation = new Location(Bukkit.getWorld(loc[3]), Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]));
@@ -74,9 +68,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 
 			Bukkit.getServer().unloadWorld(world, false);
 
-			/**
-			 * Deletes the world files of the dungeon world
-			 */
+			// Deletes the world files of the dungeon world
 			try (Stream<Path> files = Files.walk(world.getWorldFolder().toPath())) {
 				files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 			} catch (IOException e) {
@@ -118,7 +110,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 	 */
 	public PartyData getPartyData() {
 		if (partyData == null) {
-			partyData = new PartyData();
+			partyData = new PartyData(getDungeonManager());
 		}
 		return partyData;
 	}

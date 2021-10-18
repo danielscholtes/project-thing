@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 
 import org.bukkit.Bukkit;
 
+// Not my code, taken from an online user
 public enum NBTBaseType {
 	
 	BYTE(byte.class, "Byte"), BYTE_ARRAY(byte[].class, "ByteArray"), DOUBLE(double.class, "Double"), FLOAT(float.class,

@@ -42,9 +42,7 @@ public abstract class AbstractFloorInfo {
 		items = new ArrayList<>();
 		tileSets = new ArrayList<>();
 		
-		/**
-		 * Loads in all the information about this AbstractFloorInfo
-		 */
+		// Loads in all the information about this AbstractFloorInfo
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			
 			for (String tileSet : dungeonInfo.getConfig().getStringList("floors." + floor + ".tile_sets")) {

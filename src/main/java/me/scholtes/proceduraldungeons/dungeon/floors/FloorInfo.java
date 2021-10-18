@@ -22,9 +22,7 @@ public class FloorInfo extends AbstractFloorInfo {
 	public FloorInfo(DungeonInfo dungeonInfo, DungeonManager dungeonManager, String floor) {
 		super(dungeonInfo, dungeonManager, floor);
 		
-		/**
-		 * Loads in all the information about this AbstractFloorInfo
-		 */
+		// Loads in all the information about this AbstractFloorInfo
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			minRooms = dungeonInfo.getConfig().getInt("floors." + floor + ".min_rooms");
 			maxRooms = dungeonInfo.getConfig().getInt("floors." + floor + ".max_rooms");

@@ -61,9 +61,7 @@ public class DungeonInfo {
 		joinCommands = config.getStringList("commands.join");
 		leaveCommands = config.getStringList("commands.leave");
 		
-		/**
-		 * Loads all the information about this DungeonInfo
-		 */
+		// Loads all the information about this DungeonInfo
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			floors = new ConcurrentHashMap<>();
 			for (String floor : config.getConfigurationSection("floors").getKeys(false)) {

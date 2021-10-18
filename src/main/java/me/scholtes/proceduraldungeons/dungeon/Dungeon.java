@@ -23,7 +23,7 @@ public class Dungeon {
 	private final World world;
 	private int maxFloors = 0;
 	private int totalLives;
-	private UUID player;
+	private UUID dungeonOwner;
 	private Location spawnPoint = null;
 	private UUID bossID = null;
 
@@ -32,23 +32,21 @@ public class Dungeon {
 	 * 
 	 * @param plugin The instance of {@link ProceduralDungeons}
 	 * @param dungeonInfo The {@link DungeonInfo} of this dungeon
-	 * @param player The UUID of the main dungeon player
+	 * @param dungeonOwner The UUID of the main dungeon player
 	 */
-	public Dungeon(ProceduralDungeons plugin, DungeonInfo dungeonInfo, UUID player) {
+	public Dungeon(ProceduralDungeons plugin, DungeonInfo dungeonInfo, UUID dungeonOwner) {
 		this.plugin = plugin;
 		this.dungeonInfo = dungeonInfo;
-		this.player = player;
+		this.dungeonOwner = dungeonOwner;
 		this.dungeonID = UUID.randomUUID();
 		this.totalLives = dungeonInfo.getLivesPerPlayer();
 		
-		Party party = plugin.getPartyData().getPartyFromPlayer(player);
+		Party party = plugin.getPartyData().getPartyFromPlayer(dungeonOwner);
 		if (party != null) {
 			this.totalLives = dungeonInfo.getLivesPerPlayer() + (party.getMembers().size() * dungeonInfo.getLivesPerPlayer());
 		}
 
-		/**
-		 * Creates a void world
-		 */
+		// Creates a void world
 		WorldCreator creator = new WorldCreator("Dungeon-" + dungeonID.toString());
 		creator.generator(new VoidGenerator());
 		world = creator.createWorld();
@@ -66,13 +64,9 @@ public class Dungeon {
 	 * Generates the dungeon
 	 */
 	public void generateDungeon() {
-		/**
-		 * Generates the dungeon asynchronously
-		 */
+		// Generates the dungeon asynchronously
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
-			/**
-			 * Checks if the world was properly created
-			 */
+			// Checks if the world was properly created
 			if (getWorld() == null) {
 				return;
 			}
@@ -161,17 +155,17 @@ public class Dungeon {
 	 * 
 	 * @return The UUID of the main dungeon player
 	 */
-	public UUID getPlayer() {
-		return player;
+	public UUID getDungeonOwner() {
+		return dungeonOwner;
 	}
 	
 	/**
 	 * Sets the {@link UUID} of the main player (or the party leader) of the {@link Dungeon}
 	 * 
-	 * @param player The UUID of the main dungeon player
+	 * @param dungeonOwner The UUID of the main dungeon player
 	 */
-	public void setPlayer(UUID player) {
-		this.player = player;
+	public void setDungeonOwner(UUID dungeonOwner) {
+		this.dungeonOwner = dungeonOwner;
 	}
 	
 	/**

@@ -36,9 +36,7 @@ public class DungeonCommand implements CommandExecutor {
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		/**
-		 * Checks if player has any arguments
-		 */
+		// Checks if player has any arguments
 		if (args.length < 1) {
 			StringUtils.message(sender,  StringUtils.getMessage(Message.DUNGEON_HELP));
 			return true;
@@ -46,17 +44,13 @@ public class DungeonCommand implements CommandExecutor {
 		
 		switch (args[0].toLowerCase()) {
 			case "reload": {
-				/**
-				 * Checks if the player has permission
-				 */
+				// Checks if the player has permission
 				if (!sender.hasPermission("proceduraldungeons.admin")) {
 					StringUtils.message(sender,  StringUtils.getMessage(Message.RELOAD_NO_PERMISSION));
 					return true;
 				}
 
-				/**
-				 * Reloads all dungeon information and messages
-				 */
+				// Reloads all dungeon information and messages
 				StringUtils.loadMessages(plugin.getMessageFile());
 				plugin.reloadConfig();
 				plugin.getDungeonManager().reloadDungeons();
@@ -66,9 +60,7 @@ public class DungeonCommand implements CommandExecutor {
 			}
 			
 			case "chestwand": {
-				/**
-				 * Checks if the CommandSender is a Player
-				 */
+				// Checks if the CommandSender is a Player
 				if (!(sender instanceof Player)) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
@@ -76,26 +68,20 @@ public class DungeonCommand implements CommandExecutor {
 				
 				Player player = (Player) sender;
 				
-				/**
-				 * Checks if the player has permission
-				 */
+				// Checks if the player has permission
 				if (!sender.hasPermission("proceduraldungeons.admin")) {
 					StringUtils.message(sender,  StringUtils.getMessage(Message.CHESTWAND_NO_PERMISSION));
 					return true;
 				}
 				
 
-				/**
-				 * Checks if the player put in the right arguments
-				 */
+				// Checks if the player put in the right arguments
 				if (args.length < 4) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.CHESTWAND_INCORRECT));
 					return true;
 				}
 				
-				/**
-				 * Checks if the tileset exists
-				 */
+				// Checks if the tileset exists
 				if (plugin.getDungeonManager().getTileSet(args[1]) == null) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.CHESTWAND_TILESET_NOT_EXIST));
 					return true;
@@ -103,9 +89,7 @@ public class DungeonCommand implements CommandExecutor {
 				
 				TileSet tileSet = plugin.getDungeonManager().getTileSet(args[1]);
 				
-				/**
-				 * Checks if the tile is valid, and if so gives the player the wand
-				 */
+				// Checks if the tile is valid, and if so gives the player the wand
 				for (RoomType tile : RoomType.values()) {
 					if (tile.toString().equalsIgnoreCase(args[2])) {
 						ItemStack wand = ItemUtils.createItemStack(Material.BLAZE_ROD, 1, "&6Chest Wand", Arrays.asList("", "&7Left-Click the schematic pasting location and Right-Click", "&7the possible chest location to add it to the variation"), null);
@@ -125,9 +109,7 @@ public class DungeonCommand implements CommandExecutor {
 			}
 			
 			case "mobwand": {
-				/**
-				 * Checks if the CommandSender is a Player
-				 */
+				// Checks if the CommandSender is a Player
 				if (!(sender instanceof Player)) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
@@ -135,25 +117,19 @@ public class DungeonCommand implements CommandExecutor {
 				
 				Player player = (Player) sender;
 				
-				/**
-				 * Checks if the player has permission
-				 */
+				// Checks if the player has permission
 				if (!sender.hasPermission("proceduraldungeons.admin")) {
 					StringUtils.message(sender,  StringUtils.getMessage(Message.MOBWAND_NO_PERMISSION));
 					return true;
 				}
 
-				/**
-				 * Checks if the player put in the right arguments
-				 */
+				// Checks if the player put in the right arguments
 				if (args.length < 4) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.MOBWAND_INCORRECT));
 					return true;
 				}
 
-				/**
-				 * Checks if the tileset exists
-				 */
+				//  Checks if the tileset exists
 				if (plugin.getDungeonManager().getTileSet(args[1]) == null) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.MOBWAND_TILESET_NOT_EXIST));
 					return true;
@@ -161,9 +137,7 @@ public class DungeonCommand implements CommandExecutor {
 				
 				TileSet tileSet = plugin.getDungeonManager().getTileSet(args[1]);
 
-				/**
-				 * Checks if the tile is valid, and if so gives the player the wand
-				 */
+				// Checks if the tile is valid, and if so gives the player the wand
 				for (RoomType tile : RoomType.values()) {
 					if (tile.toString().equalsIgnoreCase(args[2])) {
 						ItemStack wand = ItemUtils.createItemStack(Material.BLAZE_ROD, 1, "&6Mob Wand", Arrays.asList("", "&7Left-Click the schematic pasting location and Right-Click", "&7the possible mob location to add it to the variation"), null);
@@ -183,9 +157,7 @@ public class DungeonCommand implements CommandExecutor {
 			}
 			
 			case "join": {
-				/**
-				 * Checks if the CommandSender is a Player
-				 */
+				// Checks if the CommandSender is a Player
 				if (!(sender instanceof Player)) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
@@ -193,51 +165,38 @@ public class DungeonCommand implements CommandExecutor {
 				
 				Player player = (Player) sender;
 				
-				/**
-				 * Checks if the player put in the right arguments
-				 */
+				// Checks if the player put in the right arguments
 				if (args.length < 2 || !args[0].equalsIgnoreCase("join")) {
 					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_INCORRECT));
 					return true;
 				}
 
-				/**
-				 * Checks if the specified dungeon name exists in the config
-				 */
+				// Checks if the specified dungeon name exists in the config
 				if (!plugin.getConfig().isSet("dungeons." + args[1])) {
 					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_NOT_EXIST));
 					return true;
 				}
 
-				/**
-				 * Checks if the player has permission for the specified dungeon
-				 */
+				// Checks if the player has permission for the specified dungeon
 				if (!player.hasPermission("dungeon." + args[1])) {
 					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_NO_PERM));
 					return true;
 				}
 				
-				/**
-				 * Checks if the player is in a party and a party leader
-				 */
+				// Checks if the player is in a party and a party leader
 				Party party = plugin.getPartyData().getPartyFromPlayer(player.getUniqueId());
 				if (party != null && !party.getOwner().equals(player.getUniqueId())) {
 					StringUtils.message(player,  StringUtils.getMessage(Message.NOT_LEADER));
 					return true;
 				}
 				
-				/**
-				 * Checks if the player is in a dungeon
-				 */
-				
+				// Checks if the player is in a dungeon
 				if (plugin.getDungeonManager().getDungeonFromPlayer(player.getUniqueId(), party) != null) {
 					StringUtils.message(player,  StringUtils.getMessage(Message.DUNGEON_JOIN_ALREADY_IN));
 					return true;
 				}
 
-				/**
-				 * Makes the player join the dungeon
-				 */
+				// Makes the player join the dungeon
 				if (party != null) {
 					party.messageMembers(StringUtils.getMessage(Message.DUNGEON_JOIN_GENERATING));
 				} else {
@@ -248,9 +207,7 @@ public class DungeonCommand implements CommandExecutor {
 			}
 			
 			case "leave": {
-				/**
-				 * Checks if the CommandSender is a Player
-				 */
+				// Checks if the CommandSender is a Player
 				if (!(sender instanceof Player)) {
 					StringUtils.message(sender, StringUtils.getMessage(Message.NEED_TO_BE_PLAYER));
 					return true;
@@ -258,9 +215,7 @@ public class DungeonCommand implements CommandExecutor {
 				
 				Player player = (Player) sender;
 				
-				/**
-				 * Checks if the player is in a dungeon
-				 */
+				// Checks if the player is in a dungeon
 				Party party = plugin.getPartyData().getPartyFromPlayer(player.getUniqueId());
 				Dungeon dungeon = plugin.getDungeonManager().getDungeonFromPlayer(player.getUniqueId(), party);
 				if (dungeon == null) {
@@ -268,9 +223,7 @@ public class DungeonCommand implements CommandExecutor {
 					return true;
 				}
 
-				/**
-				 * Makes the player leave the dungeon
-				 */
+				// Makes the player leave the dungeon
 				if (party != null) {
 					plugin.getPartyData().removePlayerFromParty(party, player.getUniqueId());
 					StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));

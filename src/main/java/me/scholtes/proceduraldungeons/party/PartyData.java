@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -16,10 +17,18 @@ import me.scholtes.proceduraldungeons.utils.Message;
 
 public class PartyData {
 	
-	private Map<UUID, Party> parties = new ConcurrentHashMap<UUID, Party>();
-	private Map<UUID, List<Party>> invitations = new ConcurrentHashMap<UUID, List<Party>>();
-	private Map<UUID, List<Integer>> invitationTasks = new ConcurrentHashMap<UUID, List<Integer>>();
-	
+	private final Map<UUID, Party> parties;
+	private final Map<UUID, List<Party>> invitations;
+	private final Map<UUID, List<Integer>> invitationTasks;
+	private final DungeonManager dungeonManager;
+
+	public PartyData(DungeonManager dungeonManager) {
+		this.parties = new ConcurrentHashMap<>();
+		this.invitations = new ConcurrentHashMap<>();
+		this.invitationTasks = new ConcurrentHashMap<>();
+		this.dungeonManager = dungeonManager;
+	}
+
 	/**
 	 * Gets the {@link Party} from the specified player {@link UUID}
 	 * 
@@ -75,35 +84,6 @@ public class PartyData {
 		if (party == null) {
 			return;
 		}
-		Dungeon dungeon = ProceduralDungeons.getInstance().getDungeonManager().getDungeonFromPlayer(party.getOwner(), party);
-		if (dungeon != null) {
-			if (playerUUID.equals(party.getOwner())) {
-				ProceduralDungeons.getInstance().getDungeonManager().getDungeons().remove(playerUUID);
-				ProceduralDungeons.getInstance().getDungeonManager().getDungeons().put(party.getMembers().get(0), dungeon);
-				dungeon.setPlayer(party.getMembers().get(0));
-			}
-			
-			if (dungeon.getTotalLives() > dungeon.getDungeonInfo().getLivesPerPlayer()) {
-				dungeon.setTotalLives(dungeon.getTotalLives() - 3);
-				List<String> message = StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_LEAVE), "{player}", Bukkit.getPlayer(playerUUID).getName());
-				List<String> newMessage = StringUtils.replaceAll(message, "{lives}", String.valueOf(dungeon.getDungeonInfo().getLivesPerPlayer()));
-				for (UUID uuid : party.getMembers()) {
-					if (uuid.equals(playerUUID)) {
-						continue;
-					}
-					StringUtils.message(Bukkit.getPlayer(uuid), newMessage);
-					StringUtils.message(Bukkit.getPlayer(party.getOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
-				}
-				if (!playerUUID.equals(party.getOwner())) {
-					StringUtils.message(Bukkit.getPlayer(party.getOwner()), newMessage);
-					StringUtils.message(Bukkit.getPlayer(party.getOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
-				}
-			}
-			Bukkit.getPlayer(playerUUID).teleport(dungeon.getDungeonInfo().getFinishLocation());
-			Bukkit.getPlayer(playerUUID).setGameMode(dungeon.getDungeonInfo().getLeaveGameMode());
-		}
-		
-
 		if (party.getMembers().size() > 0) {
 			if (playerUUID.equals(party.getOwner())) {
 				party.setOwner(party.getMembers().get(0));
@@ -112,15 +92,40 @@ public class PartyData {
 				party.getMembers().remove(playerUUID);
 			}
 		}
-		
+
 		parties.remove(playerUUID);
-		
+
 		if (party.getMembers().size() == 0) {
-			for (UUID uuid : party.getMembers()) {
-				parties.remove(uuid);
-			}
 			parties.remove(party.getOwner());
 			party.messageMembers(StringUtils.getMessage(Message.PARTY_DISBANDED));
+		}
+
+		Dungeon dungeon = ProceduralDungeons.getInstance().getDungeonManager().getDungeonFromPlayer(party.getOwner(), party);
+		if (dungeon != null) {
+			if (party.getMembers().size() == 0) {
+				dungeonManager.removeDungeon(dungeon);
+				return;
+			}
+
+			if (playerUUID.equals(dungeon.getDungeonOwner())) {
+				ProceduralDungeons.getInstance().getDungeonManager().getDungeons().remove(playerUUID);
+				ProceduralDungeons.getInstance().getDungeonManager().getDungeons().put(party.getOwner(), dungeon);
+				dungeon.setDungeonOwner(party.getOwner());
+			}
+			
+			if (dungeon.getTotalLives() > dungeon.getDungeonInfo().getLivesPerPlayer()) {
+				dungeon.setTotalLives(dungeon.getTotalLives() - 3);
+				List<String> message = StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_LEAVE), "{player}", Bukkit.getPlayer(playerUUID).getName());
+				List<String> newMessage = StringUtils.replaceAll(message, "{lives}", String.valueOf(dungeon.getDungeonInfo().getLivesPerPlayer()));
+				for (UUID uuid : party.getMembers()) {
+					StringUtils.message(Bukkit.getPlayer(uuid), newMessage);
+					StringUtils.message(Bukkit.getPlayer(party.getOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
+				}
+				StringUtils.message(Bukkit.getPlayer(party.getOwner()), newMessage);
+				StringUtils.message(Bukkit.getPlayer(party.getOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
+			}
+			Bukkit.getPlayer(playerUUID).teleport(dungeon.getDungeonInfo().getFinishLocation());
+			Bukkit.getPlayer(playerUUID).setGameMode(dungeon.getDungeonInfo().getLeaveGameMode());
 		}
 	}
 	
@@ -144,7 +149,7 @@ public class PartyData {
 		if (invitations.containsKey(toSend)) {
 			invitations.get(toSend).add(party);
 		} else {
-			List<Party> parties = new ArrayList<Party>();
+			List<Party> parties = new ArrayList<>();
 			parties.add(party);
 			invitations.put(toSend, parties);
 		}
@@ -172,7 +177,7 @@ public class PartyData {
 		if (invitationTasks.containsKey(toSend)) {
 			invitationTasks.get(toSend).add(taskID);
 		} else {
-			List<Integer> tasks = new ArrayList<Integer>();
+			List<Integer> tasks = new ArrayList<>();
 			tasks.add(taskID);
 			invitationTasks.put(toSend, tasks);
 		}

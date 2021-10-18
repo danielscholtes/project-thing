@@ -26,9 +26,7 @@ public class BossFloor extends AbstractFloorInfo{
 		super(dungeonInfo, dungeonManager, floor);
 		bosses = new ArrayList<>();
 		
-		/**
-		 * Loads in all the information about this BossFloor
-		 */
+		// Loads in all the information about this BossFloor
 		Bukkit.getScheduler().runTaskAsynchronously(ProceduralDungeons.getInstance(), () -> {
 			
 			for (String boss : dungeonInfo.getConfig().getStringList("floors.boss.bosses")) {

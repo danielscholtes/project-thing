@@ -59,16 +59,14 @@ public class BossListener implements Listener {
 		}
 		
 		if (dungeon.getBossID().equals(event.getMob().getUniqueId())) {
-			Party party = partyData.getPartyFromPlayer(dungeon.getPlayer());
+			Party party = partyData.getPartyFromPlayer(dungeon.getDungeonOwner());
 			if (party != null) {
 				party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
 			} else {
-				StringUtils.message(Bukkit.getPlayer(dungeon.getPlayer()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
+				StringUtils.message(Bukkit.getPlayer(dungeon.getDungeonOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
 			}
 			
-			Bukkit.getScheduler().runTaskLater(plugin, () -> {
-				dungeonManager.removeDungeon(dungeon);
-			}, 20L * dungeon.getDungeonInfo().getTeleportCompleteDelay());
+			Bukkit.getScheduler().runTaskLater(plugin, () -> dungeonManager.removeDungeon(dungeon), 20L * dungeon.getDungeonInfo().getTeleportCompleteDelay());
 		}
 	}
 	

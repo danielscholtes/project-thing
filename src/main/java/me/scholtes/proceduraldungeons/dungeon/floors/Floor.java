@@ -80,7 +80,7 @@ public final class Floor {
 		}
 
 		Queue<Room> roomQueue = new LinkedList<>();
-		rooms.put("0_0", new Room(this, randomRoomType, 0, 0));
+		rooms.put("0_0", new Room(randomRoomType, 0, 0));
 		roomQueue.add(rooms.get("0_0"));
 		int totalRooms = 1;
 
@@ -108,7 +108,7 @@ public final class Floor {
 				while (!randomRoomType.toString().contains(Direction.oppositeDirections.get(direction).toString())) {
 					randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
 				}
-				rooms.put(getter, new Room(this, randomRoomType, (currentRoom.getX() + direction.getX()), (currentRoom.getY() + direction.getY())));
+				rooms.put(getter, new Room(randomRoomType, (currentRoom.getX() + direction.getX()), (currentRoom.getY() + direction.getY())));
 				roomQueue.add(rooms.get(getter));
 				totalRooms++;
 			}
@@ -270,7 +270,7 @@ public final class Floor {
 						System.out.println(randomBoss.getName());
 						dungeon.setBossID(MythicMobs.inst().getMobManager().spawnMob(randomBoss.getName(), location).getUniqueId());
 
-						Party party = plugin.getPartyData().getPartyFromPlayer(dungeon.getPlayer());
+						Party party = plugin.getPartyData().getPartyFromPlayer(dungeon.getDungeonOwner());
 						if (party != null) {
 							for (UUID uuid : party.getMembers()) {
 								Player bukkitPlayer = Bukkit.getPlayer(uuid);
@@ -293,7 +293,7 @@ public final class Floor {
 							party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LIVES_LEFT), "{lives}", String.valueOf(dungeon.getTotalLives())));
 						} else {
 
-							Player bukkitPlayer = Bukkit.getPlayer(dungeon.getPlayer());
+							Player bukkitPlayer = Bukkit.getPlayer(dungeon.getDungeonID());
 							if (bukkitPlayer == null) {
 								return;
 							}
@@ -307,7 +307,7 @@ public final class Floor {
 						}
 
 						for (String cmd : dungeon.getDungeonInfo().getJoinCommands()) {
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getPlayer()).getName()).replaceAll("\\{world\\}", dungeon.getWorld().getName()));
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getDungeonOwner()).getName()).replaceAll("\\{world\\}", dungeon.getWorld().getName()));
 						}
 					});
 				});

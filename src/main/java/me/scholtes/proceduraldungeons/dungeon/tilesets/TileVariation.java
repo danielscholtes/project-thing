@@ -12,7 +12,7 @@ import me.scholtes.proceduraldungeons.dungeon.rooms.RoomType;
 public class TileVariation {
 	
 	private File schematic;
-	private String variationName;
+	private final String variationName;
 	private List<String> chestLocations;
 	private List<String> mobLocations;
 	

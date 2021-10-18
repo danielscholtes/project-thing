@@ -12,7 +12,7 @@ import org.bukkit.generator.ChunkGenerator;
 public class VoidGenerator extends ChunkGenerator {
 
 
-	/**
+	/*
 	 * IDK i found this on google because I couldn't be bothered to make it
 	 */
 	
@@ -21,8 +21,7 @@ public class VoidGenerator extends ChunkGenerator {
 	}
 	
 	public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {
-		ChunkData chunk = createChunkData(world);
-		return chunk;
+		return createChunkData(world);
 	}
 
 	public boolean canSpawn(World world, int x, int z) {

@@ -138,7 +138,7 @@ public class PlayerListeners implements Listener {
 		victim.teleport(dungeon.getSpawnPoint());
 		event.setCancelled(true);
 
-		Party party = partyData.getPartyFromPlayer(dungeon.getPlayer());
+		Party party = partyData.getPartyFromPlayer(dungeon.getDungeonOwner());
 		if (party != null) {
 			party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_DIE_PARTY), "{player}", victim.getName()));
 		} else {
@@ -161,9 +161,7 @@ public class PlayerListeners implements Listener {
 			StringUtils.message(victim, StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_LOST_ALL_LIVES), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportNoLivesDelay())));
 		}
 		
-		Bukkit.getScheduler().runTaskLater(ProceduralDungeons.getInstance(), () -> {
-			dungeonManager.removeDungeon(dungeon);
-		}, 20L * dungeon.getDungeonInfo().getTeleportNoLivesDelay());
+		Bukkit.getScheduler().runTaskLater(ProceduralDungeons.getInstance(), () -> dungeonManager.removeDungeon(dungeon), 20L * dungeon.getDungeonInfo().getTeleportNoLivesDelay());
 		
 	}
 
