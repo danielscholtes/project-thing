@@ -19,7 +19,7 @@ public class DungeonUtils {
 	public static String checkDirection(Room room, Floor floor, String roomTypeString, Direction direction, boolean checkNoRoom) {
 		if (roomTypeString.contains(direction.toString())) {
 			Room adjacentRoom = floor.getRooms().get((room.getX() + direction.getX()) + "_" + (room.getY() + direction.getY()));
-			if ((checkNoRoom && adjacentRoom == null) || (adjacentRoom != null && !adjacentRoom.getRoomType().toString().contains(Direction.oppositeDirections.get(direction).toString()))) {
+			if ((checkNoRoom && adjacentRoom == null) || (adjacentRoom != null && !adjacentRoom.getRoomType().toString().contains(Direction.getOpposite(direction).toString()))) {
 				if (direction == Direction.NORTH) {
 					roomTypeString = roomTypeString.replaceAll(direction.toString() + "_", "");
 				} else {

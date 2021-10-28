@@ -105,7 +105,7 @@ public final class Floor {
 				}
 
 				randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
-				while (!randomRoomType.toString().contains(Direction.oppositeDirections.get(direction).toString())) {
+				while (!randomRoomType.toString().contains(Direction.getOpposite(direction).toString())) {
 					randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
 				}
 				rooms.put(getter, new Room(randomRoomType, (currentRoom.getX() + direction.getX()), (currentRoom.getY() + direction.getY())));

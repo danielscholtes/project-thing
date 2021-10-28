@@ -45,7 +45,7 @@ public class WorldUtils {
 				clipboard = reader.read();
 				try (EditSession editSession = com.sk89q.worldedit.WorldEdit.getInstance().getEditSessionFactory()
 						.getEditSession(new BukkitWorld(location.getWorld()), -1, WorldEditPlugin.getInstance().wrapCommandSender(Bukkit.getConsoleSender()))) {
-					Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).ignoreAirBlocks(true).build();
+					Operation operation = new ClipboardHolder(clipboard).createPaste(editSession).to(BlockVector3.at(x, y, z)).build();
 					try {
 						Operations.complete(operation);
 					} catch (WorldEditException e) {
