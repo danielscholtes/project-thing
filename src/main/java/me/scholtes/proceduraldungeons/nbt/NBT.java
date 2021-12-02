@@ -23,9 +23,15 @@ public class NBT {
 
 	static {
 		try {
-			tagCompoundClass = Class.forName(version + ".NBTTagCompound");
-			nbtBaseClass = Class.forName(version + ".NBTBase");
-			nmsItemstackClass = Class.forName(version + ".ItemStack");
+			if (version.contains("1_17") || version.contains("1_18")) {
+				tagCompoundClass = Class.forName("net.minecraft.nbt.NBTTagCompound");
+				nbtBaseClass = Class.forName("net.minecraft.nbt.NBTBase");
+				nmsItemstackClass = Class.forName("net.minecraft.world.item.ItemStack");
+			} else {
+				tagCompoundClass = Class.forName(version + ".NBTTagCompound");
+				nbtBaseClass = Class.forName(version + ".NBTBase");
+				nmsItemstackClass = Class.forName(version + ".ItemStack");
+			}
 			craftItemstackClass = Class.forName(cbVersion + ".inventory.CraftItemStack");
 		} catch (Exception ex) {
 			ex.printStackTrace();
