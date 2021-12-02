@@ -44,7 +44,7 @@ public class WandListeners implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onChestWandInteract(PlayerInteractEvent event) {
-		if (event.getItem() == null) {
+		if (event.getItem() == null || event.getItem().getType() == Material.AIR) {
 			return;
 		}
 		
@@ -93,7 +93,7 @@ public class WandListeners implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onMobWandInteract(PlayerInteractEvent event) {
-		if (event.getItem() == null) {
+		if (event.getItem() == null || event.getItem().getType() == Material.AIR) {
 			return;
 		}
 		

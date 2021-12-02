@@ -85,9 +85,10 @@ public final class Floor {
 		int totalRooms = 1;
 
 		// Generate rooms
-		while (totalRooms < maxRooms) {
 
-			Room currentRoom = roomQueue.remove();
+		while (totalRooms < maxRooms && roomQueue.size() > 0) {
+
+			Room currentRoom = roomQueue.poll();
 			String roomTypeString = currentRoom.getRoomType().toString();
 
 			// Checks if Direction is valid, if yes generate a new Room and
