@@ -1,8 +1,10 @@
 package me.scholtes.proceduraldungeons.dungeon.listeners;
 
+import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -11,7 +13,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -27,6 +31,7 @@ public class PlayerListeners implements Listener {
 	
 	private final DungeonManager dungeonManager;
 	private final PartyData partyData;
+	private final UserManager userManager;
 	
 	/**
 	 * Constructor for the {@link PlayerListeners}
@@ -34,9 +39,10 @@ public class PlayerListeners implements Listener {
 	 * @param dungeonManager The instance of the {@link DungeonManager}
 	 * @param partyData The instance of the {@link PartyData}
 	 */
-	public PlayerListeners(DungeonManager dungeonManager, PartyData partyData) {
+	public PlayerListeners(DungeonManager dungeonManager, PartyData partyData, UserManager userManager) {
 		this.dungeonManager = dungeonManager;
 		this.partyData = partyData;
+		this.userManager = userManager;
 	}
 	
 	/**
@@ -140,7 +146,7 @@ public class PlayerListeners implements Listener {
 
 		Party party = partyData.getPartyFromPlayer(dungeon.getDungeonOwner());
 		if (party != null) {
-			party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_DIE_PARTY), "{player}", victim.getName()));
+			party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_DIE_PARTY), "{player}", userManager.getUsernameID(userManager.getID(victim.getUniqueId()))));
 		} else {
 			StringUtils.message(victim, StringUtils.getMessage(Message.DUNGEON_PLAYER_DIE));
 		}
@@ -203,6 +209,10 @@ public class PlayerListeners implements Listener {
 		Party party = partyData.getPartyFromPlayer(player.getUniqueId());
 
 		if (party == null || party.getMembers().size() == 0) {
+			if (party.getMembers().size() == 0) {
+				partyData.disbandParty(party);
+			}
+			userManager.logout(player.getUniqueId());
 			Dungeon dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party);
 			if (dungeon == null) {
 				return;
@@ -212,31 +222,25 @@ public class PlayerListeners implements Listener {
 		}
 
 		partyData.removePlayerFromParty(party, player.getUniqueId());
+		userManager.logout(player.getUniqueId());
 	}
 
-	/**
-	 * Handles players getting kicked when in dungeons
-	 * 
-	 * @param event The {@link PlayerKickEvent}
-	 */
 	@EventHandler
-	public void onKick(PlayerKickEvent event) {
-		Player player = event.getPlayer();
+	public void onJoin(PlayerJoinEvent event) {
+		event.getPlayer().sendTitle(StringUtils.color("&a&lWelcome"), "Type \"/help\" to get started", 10, 40, 10);
+	}
 
-		partyData.getInvitations().remove(player.getUniqueId());
+	@EventHandler
+	public void onEntityKill(EntityDamageByEntityEvent event) {
+		if (!(event.getEntity() instanceof LivingEntity)) return;
+		LivingEntity entity = (LivingEntity) event.getEntity();
+		if (event.getFinalDamage() < entity.getHealth()) return;
+		if (!(event.getDamager() instanceof Player)) return;
+		Player p = (Player) event.getDamager();
 
-		Party party = partyData.getPartyFromPlayer(player.getUniqueId());
+		if (dungeonManager.getDungeonFromPlayer(p.getUniqueId(), partyData.getPartyFromPlayer(p.getUniqueId())) == null) return;
 
-		if (party == null || party.getMembers().size() == 0) {
-			Dungeon dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party);
-			if (dungeon == null) {
-				return;
-			}
-			dungeonManager.removeDungeon(dungeon);
-			return;
-		}
-
-		partyData.removePlayerFromParty(party, player.getUniqueId());
+		userManager.incrementTotalKills(userManager.getID(p.getUniqueId()));
 	}
 
 }

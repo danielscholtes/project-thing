@@ -1,5 +1,8 @@
 package me.scholtes.proceduraldungeons;
 
+import me.scholtes.proceduraldungeons.dungeon.commands.*;
+import me.scholtes.proceduraldungeons.dungeon.manager.SQLManager;
+import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
-import me.scholtes.proceduraldungeons.dungeon.commands.DungeonCommand;
 import me.scholtes.proceduraldungeons.dungeon.listeners.BossListener;
 import me.scholtes.proceduraldungeons.dungeon.listeners.PlayerListeners;
 import me.scholtes.proceduraldungeons.dungeon.listeners.WandListeners;
@@ -27,6 +29,8 @@ public final class ProceduralDungeons extends JavaPlugin {
 
 	private static ProceduralDungeons instance = null;
 	private DungeonManager dungeonManager = null;
+	private SQLManager sqlManager = null;
+	private UserManager userManager = null;
 	private PartyData partyData = null;
 	private File messageFile = null;
 
@@ -39,14 +43,22 @@ public final class ProceduralDungeons extends JavaPlugin {
 
 		// Registering the commands
 		getCommand("dungeon").setExecutor(new DungeonCommand(this));
-		getCommand("party").setExecutor(new PartyCommand(getDungeonManager(), getPartyData()));
+		getCommand("party").setExecutor(new PartyCommand(getDungeonManager(), getPartyData(), getUserManager()));
+		getCommand("auth").setExecutor(new AuthCommand(getUserManager()));
+		getCommand("verify").setExecutor(new VerifyCommand(getUserManager()));
+		getCommand("login").setExecutor(new LoginCommand(getUserManager()));
+		getCommand("register").setExecutor(new RegisterCommand(getUserManager()));
+		getCommand("logout").setExecutor(new LogoutCommand(getUserManager(), getPartyData(), getDungeonManager()));
+		getCommand("statistics").setExecutor(new StatisticsCommand(getUserManager()));
+		getCommand("help").setExecutor(new HelpCommand(getUserManager(), getPartyData(), getDungeonManager()));
+		getCommand("resend").setExecutor(new ResendCommand(getUserManager()));
 		
 		getDungeonManager().reloadDungeons();
 		StringUtils.loadMessages(getMessageFile());
 		
 		// Registering the listeners
-		getServer().getPluginManager().registerEvents(new PlayerListeners(getDungeonManager(), getPartyData()), this);
-		getServer().getPluginManager().registerEvents(new BossListener(this, getDungeonManager(), getPartyData()), this);
+		getServer().getPluginManager().registerEvents(new PlayerListeners(getDungeonManager(), getPartyData(), getUserManager()), this);
+		getServer().getPluginManager().registerEvents(new BossListener(this), this);
 		getServer().getPluginManager().registerEvents(new WandListeners(getDungeonManager(), this), this);
 		
 		// Gets rid of any unremoved worlds from a potential crash
@@ -98,7 +110,7 @@ public final class ProceduralDungeons extends JavaPlugin {
 	 */
 	public DungeonManager getDungeonManager() {
 		if (dungeonManager == null) {
-			dungeonManager = new DungeonManager();
+			dungeonManager = new DungeonManager(getUserManager());
 		}
 		return dungeonManager;
 	}
@@ -110,9 +122,23 @@ public final class ProceduralDungeons extends JavaPlugin {
 	 */
 	public PartyData getPartyData() {
 		if (partyData == null) {
-			partyData = new PartyData();
+			partyData = new PartyData(getUserManager());
 		}
 		return partyData;
+	}
+
+	public SQLManager getSqlManager() {
+		if (sqlManager == null) {
+			sqlManager = new SQLManager();
+		}
+		return sqlManager;
+	}
+
+	public UserManager getUserManager() {
+		if (userManager == null) {
+			userManager = new UserManager(getSqlManager());
+		}
+		return userManager;
 	}
 
 	/**

@@ -2,6 +2,7 @@ package me.scholtes.proceduraldungeons.party;
 
 import java.util.*;
 
+import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -15,11 +16,13 @@ public class PartyData {
 	private final Map<UUID, Party> parties;
 	private final Map<UUID, List<Party>> invitations;
 	private final Map<UUID, List<Integer>> invitationTasks;
+	private final UserManager userManager;
 
-	public PartyData() {
+	public PartyData(UserManager userManager) {
 		this.parties = new HashMap<>();
 		this.invitations = new HashMap<>();
 		this.invitationTasks = new HashMap<>();
+		this.userManager = userManager;
 	}
 
 	/**
@@ -87,7 +90,7 @@ public class PartyData {
 
 			if (dungeon.getTotalLives() > dungeon.getDungeonInfo().getLivesPerPlayer()) {
 				dungeon.setTotalLives(dungeon.getTotalLives() - 3);
-				List<String> message = StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_LEAVE), "{player}", Bukkit.getPlayer(playerUUID).getName());
+				List<String> message = StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_PLAYER_LEAVE), "{player}", userManager.getUsernameID(userManager.getID(playerUUID)));
 				List<String> newMessage = StringUtils.replaceAll(message, "{lives}", String.valueOf(dungeon.getTotalLives()));
 				for (UUID uuid : party.getMembers()) {
 					if (uuid.equals(playerUUID)) {
@@ -118,9 +121,16 @@ public class PartyData {
 		parties.remove(playerUUID);
 
 		if (party.getMembers().size() == 0) {
-			parties.remove(party.getOwner());
-			party.messageMembers(StringUtils.getMessage(Message.PARTY_DISBANDED));
+			disbandParty(party);
 		}
+	}
+
+	public void disbandParty(Party party) {
+		parties.remove(party.getOwner());
+		for (UUID uuid : party.getMembers()) {
+			parties.remove(uuid);
+		}
+		party.messageMembers(StringUtils.getMessage(Message.PARTY_DISBANDED));
 	}
 	
 	/**

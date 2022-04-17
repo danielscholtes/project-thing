@@ -3,6 +3,7 @@ package me.scholtes.proceduraldungeons.dungeon.listeners;
 import java.util.UUID;
 
 import me.scholtes.proceduraldungeons.dungeon.Boss;
+import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,21 +20,15 @@ import me.scholtes.proceduraldungeons.utils.Message;
 
 public class BossListener implements Listener {
 
-	private final DungeonManager dungeonManager;
-	private final PartyData partyData;
 	private final ProceduralDungeons plugin;
 
 	/**
 	 * Constructor for the {@link PlayerListeners}
 	 * 
 	 * @param plugin The instance of {@link ProceduralDungeons}
-	 * @param dungeonManager The instance of the {@link DungeonManager}
-	 * @param partyData The instance of the {@link PartyData}
 	 */
-	public BossListener(ProceduralDungeons plugin, DungeonManager dungeonManager, PartyData partyData) {
+	public BossListener(ProceduralDungeons plugin) {
 		this.plugin = plugin;
-		this.dungeonManager = dungeonManager;
-		this.partyData = partyData;
 	}
 	
 	/**
@@ -48,25 +43,31 @@ public class BossListener implements Listener {
 		}
 		
 		final Dungeon dungeon;
-		if (event.getKiller() != null && event.getKiller() instanceof Player && dungeonManager.getDungeonFromPlayer(event.getKiller().getUniqueId(), partyData.getPartyFromPlayer(event.getKiller().getUniqueId())) != null) {
+		if (event.getKiller() != null && event.getKiller() instanceof Player && plugin.getDungeonManager().getDungeonFromPlayer(event.getKiller().getUniqueId(),
+				plugin.getPartyData().getPartyFromPlayer(event.getKiller().getUniqueId())) != null) {
 			Player player = (Player) event.getKiller();
-			dungeon = dungeonManager.getDungeonFromPlayer(player.getUniqueId(), partyData.getPartyFromPlayer(player.getUniqueId()));
+			dungeon = plugin.getDungeonManager().getDungeonFromPlayer(player.getUniqueId(), plugin.getPartyData().getPartyFromPlayer(player.getUniqueId()));
 		} else {
-			dungeon = dungeonManager.getDungeonFromID(UUID.fromString(event.getEntity().getWorld().getName().replaceAll("Dungeon-", "")));
+			dungeon = plugin.getDungeonManager().getDungeonFromID(UUID.fromString(event.getEntity().getWorld().getName().replaceAll("Dungeon-", "")));
 		}
 		if (dungeon == null) {
 			return;
 		}
 		
 		if (dungeon.getBossID().equals(event.getMob().getUniqueId())) {
-			Party party = partyData.getPartyFromPlayer(dungeon.getDungeonOwner());
+			Party party = plugin.getPartyData().getPartyFromPlayer(dungeon.getDungeonOwner());
 			if (party != null) {
+				plugin.getUserManager().incrementGamesWon(plugin.getUserManager().getID(party.getOwner()));
+				for (UUID member : party.getMembers()) {
+					plugin.getUserManager().incrementGamesWon(plugin.getUserManager().getID(member));
+				}
 				party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
 			} else {
+				plugin.getUserManager().incrementGamesWon(plugin.getUserManager().getID(dungeon.getDungeonOwner()));
 				StringUtils.message(Bukkit.getPlayer(dungeon.getDungeonOwner()), StringUtils.replaceAll(StringUtils.getMessage(Message.DUNGEON_COMPLETED), "{seconds}", String.valueOf(dungeon.getDungeonInfo().getTeleportCompleteDelay())));
 			}
 			
-			Bukkit.getScheduler().runTaskLater(plugin, () -> dungeonManager.removeDungeon(dungeon), 20L * dungeon.getDungeonInfo().getTeleportCompleteDelay());
+			Bukkit.getScheduler().runTaskLater(plugin, () -> plugin.getDungeonManager().removeDungeon(dungeon), 20L * dungeon.getDungeonInfo().getTeleportCompleteDelay());
 		}
 	}
 	

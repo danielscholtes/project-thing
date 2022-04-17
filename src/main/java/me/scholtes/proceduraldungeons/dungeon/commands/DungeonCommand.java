@@ -1,6 +1,8 @@
 package me.scholtes.proceduraldungeons.dungeon.commands;
 
 import java.util.Arrays;
+
+import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,6 +39,19 @@ public class DungeonCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		// Checks if player has any arguments
+		if (sender instanceof Player) {
+			if (!plugin.getUserManager().isLoggedIn(((Player) sender).getUniqueId())) {
+				StringUtils.message(sender, "&cYou aren't logged in");
+				return true;
+			}
+
+			int id = plugin.getUserManager().getID(((Player) sender).getUniqueId());
+			if (!plugin.getUserManager().isVerified(id)) {
+				StringUtils.message(sender, "&cYou aren't verified");
+				return true;
+			}
+		}
+
 		if (args.length < 1) {
 			StringUtils.message(sender,  StringUtils.getMessage(Message.DUNGEON_HELP));
 			return true;
@@ -227,11 +242,20 @@ public class DungeonCommand implements CommandExecutor {
 				if (party != null) {
 					plugin.getPartyData().removePlayerFromParty(party, player.getUniqueId());
 					StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
-					party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.PARTY_PLAYER_LEFT), "{player}", player.getName()));
+					party.messageMembers(StringUtils.replaceAll(StringUtils.getMessage(Message.PARTY_PLAYER_LEFT), "{player}",
+							plugin.getUserManager().getUsernameID(plugin.getUserManager().getID(player.getUniqueId()))));
 					return true;
 				}
 				StringUtils.message(player, StringUtils.getMessage(Message.DUNGEON_LEAVE_LEAVE));
 				plugin.getDungeonManager().removeDungeon(dungeon);
+				return true;
+			}
+
+			case "list": {
+				StringUtils.message(sender, "&aAvailable Dungeons");
+				for (String s : plugin.getDungeonManager().getDungeonNames()) {
+					StringUtils.message(sender, "&7- " + s);
+				}
 				return true;
 			}
 			

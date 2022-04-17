@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,12 +27,14 @@ public class DungeonManager {
 	private final Map<String, DungeonInfo> dungeonInfo;
 	private final Map<String, TileSet> tileSets;
 	private final Map<String, ItemStack> items;
+	private final UserManager userManager;
 
-	public DungeonManager() {
+	public DungeonManager(UserManager userManager) {
 		dungeons = new HashMap<>();
 		dungeonInfo = new HashMap<>();
 		tileSets = new HashMap<>();
 		items = new HashMap<>();
+		this.userManager = userManager;
 	}
 
 	/**
@@ -125,6 +128,7 @@ public class DungeonManager {
 	public void joinDungeon(Player player, String dungeonName) {
 		Dungeon dungeon = new Dungeon(ProceduralDungeons.getInstance(), getDungeonInfo(dungeonName), player.getUniqueId());
 		dungeons.put(player.getUniqueId(), dungeon);
+		userManager.incrementGamesPlayed(userManager.getID(player.getUniqueId()));
 		dungeon.generateDungeon();
 	}
 	
@@ -257,6 +261,10 @@ public class DungeonManager {
 	 */
 	public TileSet getTileSet(String tileSet) {
 		return tileSets.get(tileSet);
+	}
+
+	public Set<String> getDungeonNames() {
+		return dungeonInfo.keySet();
 	}
 	
 }
