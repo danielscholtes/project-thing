@@ -56,11 +56,7 @@ public class UserManager {
             int id = getUserIDUsername(username);
             loggedInUUID.put(uuid, id);
             loggedInUserID.put(id, uuid);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (SQLException | InvalidKeySpecException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         } finally {
             sqlManager.closeConnection(con);
@@ -110,7 +106,7 @@ public class UserManager {
     }
 
     public void sendEmailAuthentication(UUID uuid, int id, String email) {
-        String code = String.format("%5s", random.nextInt(10000)).replace(' ', '0');;
+        String code = String.format("%5s", random.nextInt(10000)).replace(' ', '0');
         authentication.put(uuid, new Verification(id, code));
 
         EmailManager.sendEmail(email, "Authentication Code - Procedural Dungeons", "Your authentication code is: " + code);

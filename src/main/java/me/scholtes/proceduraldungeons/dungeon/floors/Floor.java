@@ -307,7 +307,7 @@ public final class Floor {
 						}
 
 						for (String cmd : dungeon.getDungeonInfo().getJoinCommands()) {
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getDungeonOwner()).getName()).replaceAll("\\{world\\}", dungeon.getWorld().getName()));
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player}", Bukkit.getPlayer(dungeon.getDungeonOwner()).getName()).replaceAll("\\{world}", dungeon.getWorld().getName()));
 						}
 					});
 				});

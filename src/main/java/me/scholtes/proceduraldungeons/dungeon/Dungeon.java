@@ -47,7 +47,7 @@ public class Dungeon {
 		}
 
 		// Creates a void world
-		WorldCreator creator = new WorldCreator("Dungeon-" + dungeonID.toString());
+		WorldCreator creator = new WorldCreator("Dungeon-" + dungeonID);
 		creator.generator(new VoidGenerator());
 		world = creator.createWorld();
 		world.setAutoSave(false);

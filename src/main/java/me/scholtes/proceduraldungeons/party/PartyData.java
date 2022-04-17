@@ -59,9 +59,7 @@ public class PartyData {
 	public void addPlayerToParty(Party party, UUID player) {
 		parties.put(player, party);
 		party.getMembers().add(player);
-		if (invitations.containsKey(player)) {
-			invitations.remove(player);
-		}
+		invitations.remove(player);
 		if (invitationTasks.containsKey(player)) {
 			for (int task : invitationTasks.get(player)) {
 				Bukkit.getScheduler().cancelTask(task);

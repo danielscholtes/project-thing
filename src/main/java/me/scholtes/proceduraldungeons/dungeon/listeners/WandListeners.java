@@ -173,7 +173,7 @@ public class WandListeners implements Listener {
 		String location = diffX + ";" + diffY + ";" + diffZ;
 		
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + roomType.toString() + File.separator;
+			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + roomType + File.separator;
 			File file = new File(path, "variations.yml");
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
@@ -228,7 +228,7 @@ public class WandListeners implements Listener {
 		String location = diffX + ";" + diffY + ";" + diffZ;
 		
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + roomType.toString() + File.separator;
+			String path = ProceduralDungeons.getInstance().getDataFolder().getAbsolutePath() + File.separator + tileSet.getTileSetName() + File.separator + roomType + File.separator;
 			File file = new File(path, "variations.yml");
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 

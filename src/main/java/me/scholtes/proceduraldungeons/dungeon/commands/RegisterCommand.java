@@ -1,16 +1,12 @@
 package me.scholtes.proceduraldungeons.dungeon.commands;
 
 import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
-import me.scholtes.proceduraldungeons.utils.Message;
 import me.scholtes.proceduraldungeons.utils.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 public class RegisterCommand  implements CommandExecutor {
 
@@ -34,7 +30,7 @@ public class RegisterCommand  implements CommandExecutor {
             return true;
         }
 
-        if (args.length <= 1) {
+        if (args.length < 1) {
             StringUtils.message(sender, "&cPlease specify a username");
             return true;
         }

@@ -152,7 +152,7 @@ public class PartyCommand implements CommandExecutor {
 				}
 
 				// Checks if the player is in a dungeon
-				if (dungeonManager.getDungeonFromPlayer(player.getUniqueId(), party) != null) {
+				if (dungeonManager.getDungeonFromPlayer(player.getUniqueId(), null) != null) {
 					StringUtils.message(player, StringUtils.getMessage(Message.PARTY_JOIN_CANT_JOIN));
 					return true;
 				}

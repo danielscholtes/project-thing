@@ -13,10 +13,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
@@ -209,7 +207,7 @@ public class PlayerListeners implements Listener {
 		Party party = partyData.getPartyFromPlayer(player.getUniqueId());
 
 		if (party == null || party.getMembers().size() == 0) {
-			if (party.getMembers().size() == 0) {
+			if (party != null && party.getMembers().size() == 0) {
 				partyData.disbandParty(party);
 			}
 			userManager.logout(player.getUniqueId());

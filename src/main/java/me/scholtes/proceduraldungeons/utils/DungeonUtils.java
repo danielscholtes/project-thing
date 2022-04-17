@@ -21,9 +21,9 @@ public class DungeonUtils {
 			Room adjacentRoom = floor.getRooms().get((room.getX() + direction.getX()) + "_" + (room.getY() + direction.getY()));
 			if ((checkNoRoom && adjacentRoom == null) || (adjacentRoom != null && !adjacentRoom.getRoomType().toString().contains(Direction.getOpposite(direction).toString()))) {
 				if (direction == Direction.NORTH) {
-					roomTypeString = roomTypeString.replaceAll(direction.toString() + "_", "");
+					roomTypeString = roomTypeString.replaceAll(direction + "_", "");
 				} else {
-					roomTypeString = roomTypeString.replaceAll("_" + direction.toString(), "");
+					roomTypeString = roomTypeString.replaceAll("_" + direction, "");
 				}
 				roomTypeString = roomTypeString.replaceAll(direction.toString(), "");
 			}

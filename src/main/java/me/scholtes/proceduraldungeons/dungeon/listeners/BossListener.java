@@ -1,22 +1,18 @@
 package me.scholtes.proceduraldungeons.dungeon.listeners;
 
-import java.util.UUID;
-
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.Boss;
-import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.dungeon.Dungeon;
+import me.scholtes.proceduraldungeons.party.Party;
+import me.scholtes.proceduraldungeons.utils.Message;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
-import me.scholtes.proceduraldungeons.ProceduralDungeons;
-import me.scholtes.proceduraldungeons.dungeon.Dungeon;
-import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
-import me.scholtes.proceduraldungeons.party.Party;
-import me.scholtes.proceduraldungeons.party.PartyData;
-import me.scholtes.proceduraldungeons.utils.StringUtils;
-import me.scholtes.proceduraldungeons.utils.Message;
+import java.util.UUID;
 
 public class BossListener implements Listener {
 

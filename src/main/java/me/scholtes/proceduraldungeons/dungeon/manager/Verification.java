@@ -2,8 +2,8 @@ package me.scholtes.proceduraldungeons.dungeon.manager;
 
 public class Verification {
 
-    private int userID;
-    private String code;
+    private final int userID;
+    private final String code;
 
     public Verification(int userID, String code) {
         this.userID = userID;

@@ -10,7 +10,7 @@ public enum Direction {
 	SOUTH(0, -1),
 	WEST(-1, 0);
 
-	private static Map<Direction, Direction> oppositeDirections = new HashMap<>();
+	private final static Map<Direction, Direction> oppositeDirections = new HashMap<>();
 	static {
 		oppositeDirections.put(Direction.NORTH, Direction.SOUTH);
 		oppositeDirections.put(Direction.SOUTH, Direction.NORTH);

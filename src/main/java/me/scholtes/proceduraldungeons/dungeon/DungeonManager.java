@@ -1,14 +1,10 @@
 package me.scholtes.proceduraldungeons.dungeon;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
-
+import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
+import me.scholtes.proceduraldungeons.party.Party;
+import me.scholtes.proceduraldungeons.utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,10 +12,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.scholtes.proceduraldungeons.ProceduralDungeons;
-import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
-import me.scholtes.proceduraldungeons.party.Party;
-import me.scholtes.proceduraldungeons.utils.ItemUtils;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class DungeonManager {
 
@@ -174,7 +172,7 @@ public class DungeonManager {
 		dungeons.remove(dungeon.getDungeonOwner());
 
 		for (String cmd : dungeon.getDungeonInfo().getLeaveCommands()) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player\\}", Bukkit.getPlayer(dungeon.getDungeonOwner()).getName()));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replaceAll("\\{player}", Bukkit.getPlayer(dungeon.getDungeonOwner()).getName()));
 		}
 		
 	}
