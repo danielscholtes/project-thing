@@ -1,0 +1,29 @@
+name: ProceduralDungeons
+author: Scholtes
+version: 1.0.6-STABLE
+description: ProceduralDungeons
+main: me.scholtes.proceduraldungeons.ProceduralDungeons
+api-version: 1.16
+depend: [WorldEdit, MythicMobs]
+
+commands:
+  dungeon:
+    description: Main dungeon command
+  party:
+    description: Main party command
+  auth:
+    description: Auth
+  verify:
+    description: Verify
+  login:
+    description: Login
+  register:
+    description: Register
+  statistics:
+    description: Statistics
+  logout:
+    description: Logout
+  help:
+    description: Help
+  resend:
+    description: Resend
