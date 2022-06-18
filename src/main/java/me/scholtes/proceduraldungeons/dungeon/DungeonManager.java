@@ -1,7 +1,7 @@
 package me.scholtes.proceduraldungeons.dungeon;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
-import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.manager.UserManager;
 import me.scholtes.proceduraldungeons.dungeon.tilesets.TileSet;
 import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.utils.ItemUtils;
@@ -126,7 +126,6 @@ public class DungeonManager {
 	public void joinDungeon(Player player, String dungeonName) {
 		Dungeon dungeon = new Dungeon(ProceduralDungeons.getInstance(), getDungeonInfo(dungeonName), player.getUniqueId());
 		dungeons.put(player.getUniqueId(), dungeon);
-		userManager.incrementGamesPlayed(userManager.getID(player.getUniqueId()));
 		dungeon.generateDungeon();
 	}
 	

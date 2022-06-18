@@ -1,4 +1,4 @@
-package me.scholtes.proceduraldungeons.dungeon.manager;
+package me.scholtes.proceduraldungeons.manager;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

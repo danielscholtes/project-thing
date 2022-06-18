@@ -1,6 +1,6 @@
 package me.scholtes.proceduraldungeons.dungeon.listeners;
 
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.Boss;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;

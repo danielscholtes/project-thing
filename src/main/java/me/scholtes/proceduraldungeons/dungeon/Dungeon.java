@@ -3,6 +3,8 @@ package me.scholtes.proceduraldungeons.dungeon;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import me.scholtes.proceduraldungeons.utils.Message;
+import me.scholtes.proceduraldungeons.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
@@ -44,6 +46,15 @@ public class Dungeon {
 		Party party = plugin.getPartyData().getPartyFromPlayer(dungeonOwner);
 		if (party != null) {
 			this.totalLives = dungeonInfo.getLivesPerPlayer() + (party.getMembers().size() * dungeonInfo.getLivesPerPlayer());
+		}
+
+		if (party != null) {
+			plugin.getUserManager().incrementGamesWon(plugin.getUserManager().getID(party.getOwner()));
+			for (UUID member : party.getMembers()) {
+				plugin.getUserManager().incrementGamesWon(plugin.getUserManager().getID(member));
+			}
+		} else {
+			plugin.getUserManager().incrementGamesPlayed(plugin.getUserManager().getID(dungeonOwner));
 		}
 
 		// Creates a void world

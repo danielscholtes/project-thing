@@ -1,4 +1,4 @@
-package me.scholtes.proceduraldungeons.dungeon.manager;
+package me.scholtes.proceduraldungeons.manager;
 
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import org.bukkit.Bukkit;
@@ -25,15 +25,12 @@ public class EmailManager {
 
                 protected PasswordAuthentication getPasswordAuthentication() {
 
-                    return new PasswordAuthentication("proceduraldungeons@gmail.com", "thisismyproject1234");
+                    return new PasswordAuthentication("proceduraldungeons@gmail.com", "rtnzxwvvgpqqvcft");
 
                 }
 
             });
             System.out.println("Sending email...");
-
-            // Used to debug SMTP issues
-            session.setDebug(true);
 
             try {
                 // Create a default MimeMessage object.

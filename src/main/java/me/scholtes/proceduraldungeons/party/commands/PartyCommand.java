@@ -2,7 +2,7 @@ package me.scholtes.proceduraldungeons.party.commands;
 
 import java.util.UUID;
 
-import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

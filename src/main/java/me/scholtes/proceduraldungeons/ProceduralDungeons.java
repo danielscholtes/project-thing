@@ -1,8 +1,8 @@
 package me.scholtes.proceduraldungeons;
 
 import me.scholtes.proceduraldungeons.dungeon.commands.*;
-import me.scholtes.proceduraldungeons.dungeon.manager.SQLManager;
-import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.manager.SQLManager;
+import me.scholtes.proceduraldungeons.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

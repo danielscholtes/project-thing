@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.fastasyncworldedit.bukkit.util.BukkitTaskManager;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +14,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.scholtes.proceduraldungeons.ProceduralDungeons;
 import me.scholtes.proceduraldungeons.dungeon.Boss;
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
@@ -74,60 +74,11 @@ public final class Floor {
 	 * @param previousTileSize The previous tile size (room size) of the previous {@link Floor}
 	 */
 	public void generateFloor(int exitRoomX, int exitRoomY, double startWorldX, double startWorldY, double prevStartWorldX, double prevStartWorldY, double previousHeight, double previousTileSize) {
-		RoomType randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
-		while (randomRoomType == RoomType.INVALID || randomRoomType == RoomType.BOSS) {
-			randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
-		}
-
-		Queue<Room> roomQueue = new LinkedList<>();
-		rooms.put("0_0", new Room(randomRoomType, 0, 0));
-		roomQueue.add(rooms.get("0_0"));
-		int totalRooms = 1;
-
-		// Generate rooms
-
-		while (totalRooms < maxRooms && roomQueue.size() > 0) {
-
-			Room currentRoom = roomQueue.poll();
-			String roomTypeString = currentRoom.getRoomType().toString();
-
-			// Checks if Direction is valid, if yes generate a new Room and
-			// if not update the available doors of this Room
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.NORTH);
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.EAST);
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.SOUTH);
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.WEST);
-
-			for (Direction direction : Direction.values()) {
-				String getter = (currentRoom.getX() + direction.getX()) + "_" + (currentRoom.getY() + direction.getY());
-
-				if (!roomTypeString.contains(direction.toString()) || rooms.get(getter) != null || totalRooms >= maxRooms) {
-					continue;
-				}
-
-				randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
-				while (!randomRoomType.toString().contains(Direction.getOpposite(direction).toString())) {
-					randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
-				}
-				rooms.put(getter, new Room(randomRoomType, (currentRoom.getX() + direction.getX()), (currentRoom.getY() + direction.getY())));
-				roomQueue.add(rooms.get(getter));
-				totalRooms++;
-			}
-
-			// Updates RoomType of the Room according to previous checks
-			if (roomTypeString.equals("")) {
-				getRooms().remove(currentRoom.getX() + "_" + currentRoom.getY());
-			} else {
-				if (roomTypeString.startsWith("_")) {
-					roomTypeString = roomTypeString.substring(1);
-				}
-				currentRoom.setRoomType(RoomType.valueOf(roomTypeString));
-			}
-		}
+		generateRooms(0);
 
 		new BukkitRunnable() {
 			public void run() {
-				BukkitTaskManager.IMP.async(() -> {
+				BukkitTaskManager.taskManager().async(() -> {
 
 
 					int startRoomX = 0;
@@ -268,7 +219,7 @@ public final class Floor {
 							dungeon.getSpawnPoint().clone().add(0, 2, 0).getBlock().setType(Material.AIR);
 						}
 
-						dungeon.setBossID(MythicMobs.inst().getMobManager().spawnMob(randomBoss.getName(), location).getUniqueId());
+						dungeon.setBossID(MythicBukkit.inst().getMobManager().spawnMob(randomBoss.getName(), location).getUniqueId());
 
 						Party party = plugin.getPartyData().getPartyFromPlayer(dungeon.getDungeonOwner());
 						if (party != null) {
@@ -396,7 +347,7 @@ public final class Floor {
 					int mobAmount = ThreadLocalRandom.current().nextInt((mob.getMaxMobs() -  mob.getMinMobs()) + 1) + mob.getMinMobs();
 					
 					for (int i = 0; i < mobAmount; i++) {
-						MythicMobs.inst().getMobManager().spawnMob(mob.getName(), location);
+						MythicBukkit.inst().getMobManager().spawnMob(mob.getName(), location);
 					}
 				});
 			}
@@ -435,5 +386,66 @@ public final class Floor {
 	 */
 	public Map<String, Room> getRooms() {
 		return rooms;
+	}
+
+	public void generateRooms(int recursiveCount) {
+		RoomType randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
+		while (randomRoomType == RoomType.INVALID || randomRoomType == RoomType.BOSS) {
+			randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
+		}
+
+		Queue<Room> roomQueue = new LinkedList<>();
+		rooms.put("0_0", new Room(randomRoomType, 0, 0));
+		roomQueue.add(rooms.get("0_0"));
+		int totalRooms = 1;
+
+		// Generate rooms
+
+		while (totalRooms < maxRooms && roomQueue.size() > 0) {
+
+			Room currentRoom = roomQueue.poll();
+			String roomTypeString = currentRoom.getRoomType().toString();
+
+			// Checks if Direction is valid, if yes generate a new Room and
+			// if not update the available doors of this Room
+			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.NORTH);
+			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.EAST);
+			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.SOUTH);
+			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.WEST);
+
+			for (Direction direction : Direction.values()) {
+				String getter = (currentRoom.getX() + direction.getX()) + "_" + (currentRoom.getY() + direction.getY());
+
+				if (!roomTypeString.contains(direction.toString()) || rooms.get(getter) != null || totalRooms >= maxRooms) {
+					continue;
+				}
+
+				randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
+				while (!randomRoomType.toString().contains(Direction.getOpposite(direction).toString())) {
+					randomRoomType = RoomType.values()[ThreadLocalRandom.current().nextInt(RoomType.values().length)];
+				}
+				rooms.put(getter, new Room(randomRoomType, (currentRoom.getX() + direction.getX()), (currentRoom.getY() + direction.getY())));
+				roomQueue.add(rooms.get(getter));
+				totalRooms++;
+			}
+
+			// Updates RoomType of the Room according to previous checks
+			if (roomTypeString.equals("")) {
+				getRooms().remove(currentRoom.getX() + "_" + currentRoom.getY());
+			} else {
+				if (roomTypeString.startsWith("_")) {
+					roomTypeString = roomTypeString.substring(1);
+				}
+				currentRoom.setRoomType(RoomType.valueOf(roomTypeString));
+			}
+		}
+
+		if (recursiveCount >= 4) {
+			return;
+		}
+		if (totalRooms < floorInfo.getMinRooms()) {
+			rooms.clear();
+			generateRooms(recursiveCount++);
+		}
 	}
 }

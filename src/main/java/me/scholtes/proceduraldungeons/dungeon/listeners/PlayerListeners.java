@@ -1,6 +1,6 @@
 package me.scholtes.proceduraldungeons.dungeon.listeners;
 
-import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.manager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
@@ -225,7 +225,7 @@ public class PlayerListeners implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		event.getPlayer().sendTitle(StringUtils.color("&a&lWelcome"), "Type \"/help\" to get started", 10, 40, 10);
+		event.getPlayer().sendTitle(StringUtils.color("&a&lWelcome"), "Type \"/help\" to get started", 10, 80, 10);
 	}
 
 	@EventHandler

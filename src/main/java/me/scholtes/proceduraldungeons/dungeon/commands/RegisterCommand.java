@@ -1,6 +1,6 @@
 package me.scholtes.proceduraldungeons.dungeon.commands;
 
-import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.manager.UserManager;
 import me.scholtes.proceduraldungeons.utils.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

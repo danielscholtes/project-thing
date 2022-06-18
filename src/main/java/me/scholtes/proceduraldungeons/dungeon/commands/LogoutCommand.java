@@ -2,7 +2,7 @@ package me.scholtes.proceduraldungeons.dungeon.commands;
 
 import me.scholtes.proceduraldungeons.dungeon.Dungeon;
 import me.scholtes.proceduraldungeons.dungeon.DungeonManager;
-import me.scholtes.proceduraldungeons.dungeon.manager.UserManager;
+import me.scholtes.proceduraldungeons.manager.UserManager;
 import me.scholtes.proceduraldungeons.party.Party;
 import me.scholtes.proceduraldungeons.party.PartyData;
 import me.scholtes.proceduraldungeons.utils.StringUtils;
