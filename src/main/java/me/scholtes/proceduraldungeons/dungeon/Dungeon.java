@@ -49,9 +49,9 @@ public class Dungeon {
 		}
 
 		if (party != null) {
-			plugin.getUserManager().incrementGamesWon(plugin.getUserManager().getID(party.getOwner()));
+			plugin.getUserManager().incrementGamesPlayed(plugin.getUserManager().getID(party.getOwner()));
 			for (UUID member : party.getMembers()) {
-				plugin.getUserManager().incrementGamesWon(plugin.getUserManager().getID(member));
+				plugin.getUserManager().incrementGamesPlayed(plugin.getUserManager().getID(member));
 			}
 		} else {
 			plugin.getUserManager().incrementGamesPlayed(plugin.getUserManager().getID(dungeonOwner));
