@@ -267,19 +267,6 @@ public final class Floor {
 	}
 
 	/**
-	 * Checks if the {@link Room} can generate a new room in the specified
-	 * {@link Direction}. If so, it generates a room with a door in the
-	 * opposite {@link Direction}.
-	 *
-	 * @param roomTypeString The available doors of this room
-	 * @param direction The {@link Direction} to check in
-	 * @return A {@link String} representing the available doors
-	 */
-	private String fixRoomType(Room room, String roomTypeString, final Direction direction) {
-		return (roomTypeString.contains(direction.toString())) ? DungeonUtils.checkDirection(room, this, roomTypeString, direction, false) : roomTypeString;
-	}
-
-	/**
 	 * Generates all the chests for the {@link Room}
 	 * 
 	 * @param floorInfo The {@link AbstractFloorInfo} of this {@link Room}
@@ -363,11 +350,11 @@ public final class Floor {
 	 */
 	private RoomType getFinalRoomType(final Room room) {
 		String roomTypeString = room.getRoomType().toString();
-		
-		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.NORTH, true);
-		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.EAST, true);
-		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.SOUTH, true);
-		roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, Direction.WEST, true);
+
+		// Checks if Direction is valid, if not update the room type
+		for (Direction direction : Direction.values()) {
+			roomTypeString = DungeonUtils.checkDirection(room, this, roomTypeString, direction, true);
+		}
 		
 		if (roomTypeString.equals("")) {
 			return RoomType.INVALID;
@@ -376,6 +363,7 @@ public final class Floor {
 		if (roomTypeString.startsWith("_")) {
 			roomTypeString = roomTypeString.substring(1);
 		}
+
 		return RoomType.valueOf(roomTypeString);
 	}
 	
@@ -406,12 +394,10 @@ public final class Floor {
 			Room currentRoom = roomQueue.poll();
 			String roomTypeString = currentRoom.getRoomType().toString();
 
-			// Checks if Direction is valid, if yes generate a new Room and
-			// if not update the available doors of this Room
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.NORTH);
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.EAST);
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.SOUTH);
-			roomTypeString = fixRoomType(currentRoom, roomTypeString, Direction.WEST);
+			// Checks if Direction is valid, if not update the room type
+			for (Direction direction : Direction.values()) {
+				roomTypeString = DungeonUtils.checkDirection(currentRoom, this, roomTypeString, direction, false);
+			}
 
 			for (Direction direction : Direction.values()) {
 				String getter = (currentRoom.getX() + direction.getX()) + "_" + (currentRoom.getY() + direction.getY());
